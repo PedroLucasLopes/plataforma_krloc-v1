@@ -1,0 +1,593 @@
+{
+  "app": {
+    "subtitle": "Equipment rental"
+  },
+  "pageTitles": {
+    "dashboard": "Overview",
+    "contracts": "Contracts",
+    "contract": "Contract",
+    "equipment": "Equipment",
+    "equipmentUnit": "Equipment unit",
+    "accessories": "Accessories",
+    "clients": "Clients",
+    "client": "Client",
+    "lessees": "Job sites",
+    "lessee": "Job site",
+    "signedOut": "Signed out",
+    "unavailable": "Unavailable",
+    "signInError": "Sign-in failed",
+    "forbidden": "Not allowed",
+    "notFound": "Not found"
+  },
+  "nav": {
+    "overview": "Overview",
+    "operation": "Operation",
+    "inventory": "Inventory",
+    "customers": "Customers",
+    "contracts": "Contracts",
+    "equipment": "Equipment",
+    "accessories": "Accessories",
+    "clients": "Clients",
+    "lessees": "Job sites"
+  },
+  "common": {
+    "name": "Name",
+    "email": "Email",
+    "status": "Status",
+    "search": "Search",
+    "allStatuses": "All statuses",
+    "edit": "Edit",
+    "delete": "Delete",
+    "tryAgain": "Try again",
+    "goToOverview": "Go to overview",
+    "identifier": "Identifier",
+    "registered": "Registered",
+    "updated": "Last change"
+  },
+  "counts": {
+    "equipment": "{count} unit | {count} units",
+    "contracts": "{count} contract | {count} contracts",
+    "lessees": "{count} job site | {count} job sites"
+  },
+  "status": {
+    "equipment": {
+      "AVAILABLE": "Available",
+      "PENDING": "Reserved",
+      "LEASED": "Leased",
+      "REPLACE": "Replacement",
+      "MAINTENANCE": "Maintenance",
+      "STOLEN": "Stolen",
+      "RETIRED": "Retired"
+    },
+    "lease": {
+      "PENDING": "Pending",
+      "ACTIVE": "Active",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    }
+  },
+  "roles": {
+    "SUPERADMIN": "Super admin",
+    "ADMIN": "Admin",
+    "MANAGER": "Manager",
+    "VIEWER": "Viewer"
+  },
+  "rates": {
+    "daily": "Daily rate",
+    "weekly": "Weekly rate",
+    "biweekly": "Fortnightly rate",
+    "monthly": "Monthly rate",
+    "indemnity": "Indemnity"
+  },
+  "errors": {
+    "fallback": "Something went wrong. Try again.",
+    "status": {
+      "network": "The KRLoc API did not answer. Check your connection and try again.",
+      "badRequest": "The request was refused: {detail}",
+      "unauthorized": "Your session ended. Sign in again to continue.",
+      "forbidden": "The KRLoc API refused this action.",
+      "notFound": "The record was not found, or your role does not reach it.",
+      "wrongState": "This action does not fit the current status of the record.",
+      "conflict": "This record conflicts with one that already exists.",
+      "tooLarge": "The file is too large to send.",
+      "server": "The KRLoc API failed while processing this. Try again in a moment."
+    },
+    "api": {
+      "equipmentNotFound": "This equipment does not exist.",
+      "equipmentLeased": "This equipment is leased and cannot change until its contract returns it.",
+      "codeTooShort": "The code needs at least three characters.",
+      "codePrefix": "The code must start with KR.",
+      "noFile": "Choose a file to send.",
+      "fileTooLarge": "The file is larger than the 2 MB limit.",
+      "accessoryNotFound": "This accessory does not exist.",
+      "accessoriesUnavailable": "Some accessories are out of stock.",
+      "quantityDecrease": "Stock cannot be lowered here, only raised.",
+      "accessoryInUse": "This accessory is associated with equipment and cannot be removed.",
+      "clientNotFound": "This client does not exist.",
+      "clientHasLessees": "This client has job sites and cannot be deleted.",
+      "lesseeNotFound": "This job site does not exist.",
+      "lesseeOwner": "A job site cannot move to another client.",
+      "lesseeHasContracts": "This job site has contracts and cannot be deleted.",
+      "zipcodeNotFound": "This CEP was not found.",
+      "addressMismatch": "\"{value}\" does not match the CEP. Check the address.",
+      "phoneInvalid": "Enter a valid Brazilian phone number, with area code.",
+      "taxIdInvalid": "Enter a valid CPF or CNPJ.",
+      "zipcodeInvalid": "Enter a valid CEP, with eight digits.",
+      "stateInvalid": "Use the two-letter state code, such as SP.",
+      "endBeforeStart": "The end date cannot be before the start date.",
+      "contractNotFound": "This contract does not exist.",
+      "contractNotActive": "This contract is not active.",
+      "contractNotPending": "This contract has already started, so its equipment list is fixed.",
+      "contractInState": "This contract is {status}.",
+      "equipmentUnavailable": "Some equipment is no longer available.",
+      "equipmentReserved": "Some equipment was reserved by another contract in the meantime.",
+      "contractEquipmentNotReserved": "Some equipment in this contract is no longer reserved for it.",
+      "contractDocumentMissing": "Generate the contract document before starting.",
+      "contractHasEquipment": "The API refused to cancel this contract while it still lists equipment.",
+      "lastEquipment": "A contract needs at least one piece of equipment.",
+      "equipmentNotLeased": "This equipment is not out on this contract.",
+      "contractItemsOut": "Some equipment has not come back yet.",
+      "replaceDuplicate": "The same unit appears twice in the replacement.",
+      "replaceOldState": "Only equipment that came back for maintenance or was stolen can be replaced.",
+      "replaceNewUnavailable": "The replacement unit is no longer available.",
+      "replaceMismatch": "{from} and {to} are not the same equipment type.",
+      "replaceSameUnit": "{code} is the same unit. Choose another one.",
+      "replacePair": "The replacement pair could not be resolved.",
+      "replaceAccessories": "The replacement unit does not have the same accessories.",
+      "noActivity": "No equipment activity in this period.",
+      "duplicate": "A record with this data already exists.",
+      "originNotAllowed": "This request came from an origin the API does not accept.",
+      "csrf": "Your session changed in another tab. Reload the page and try again."
+    }
+  },
+  "signedOut": {
+    "title": "You signed out of KRLoc",
+    "description": "Your session with the SSO may still be open in other applications. Signing in again takes you straight back.",
+    "signIn": "Sign in again"
+  },
+  "unavailable": {
+    "title": "KRLoc is unavailable",
+    "description": "The KRLoc API did not answer, so we cannot confirm your session. Nothing was lost.",
+    "stillTitle": "Still unavailable",
+    "stillDescription": "The API has not answered yet. Try again in a moment."
+  },
+  "signInError": {
+    "access_denied": {
+      "title": "Your account has no access to KRLoc",
+      "description": "You signed in to the SSO, but your account has no role in the KRLoc project. Ask an SSO administrator for access, then try again."
+    },
+    "login_expired": {
+      "title": "The sign-in request expired",
+      "description": "A request lasts five minutes and only works in the browser where it started. Start again."
+    },
+    "state_mismatch": {
+      "title": "This answer belongs to another sign-in",
+      "description": "It happens when sign-in is open in two tabs at once. Start again from a single tab."
+    },
+    "sso_unavailable": {
+      "title": "The SSO is not responding",
+      "description": "Nothing was changed. Try again in a moment."
+    },
+    "login_failed": {
+      "title": "Sign-in could not be completed",
+      "description": "Try again. If it keeps happening, tell an administrator."
+    }
+  },
+  "forbidden": {
+    "title": "Your role does not reach this screen",
+    "description": "Ask an administrator of the SSO to grant it to your role in the KRLoc project."
+  },
+  "notFound": {
+    "title": "This page does not exist",
+    "description": "The address may be wrong, or the page moved."
+  },
+  "dashboard": {
+    "welcome": "Hello, {name}",
+    "description": "What is out on job sites, what is due and what is waiting to start.",
+    "totals": "Totals",
+    "charts": "Charts",
+    "share": "Share",
+    "loadFailed": "Part of the overview did not load",
+    "nothingTitle": "Nothing to show yet",
+    "nothingDescription": "Your role does not reach contracts, equipment or clients. Ask an administrator of the SSO.",
+    "stats": {
+      "active": "Active contracts",
+      "pending": "Waiting to start",
+      "available": "Available equipment",
+      "out": "Equipment out",
+      "dueSoon": "{count} due within a week | {count} due within a week",
+      "overdue": "{count} overdue | {count} overdue",
+      "noneDue": "None due this week",
+      "withoutDocument": "{count} without contract document | {count} without contract document",
+      "registered": "of {count} registered",
+      "maintenance": "None in maintenance | {count} in maintenance | {count} in maintenance"
+    },
+    "fleet": {
+      "title": "Equipment by status",
+      "empty": "No equipment registered yet."
+    },
+    "contracts": {
+      "title": "Contracts by status",
+      "empty": "No contracts yet."
+    },
+    "growth": {
+      "title": "Contracts started",
+      "description": "Last twelve months, by start date.",
+      "month": "Month"
+    },
+    "due": {
+      "title": "Due soon",
+      "description": "Active contracts that end within {days} days, and the ones already overdue.",
+      "when": "When",
+      "overdue": "{count} day overdue | {count} days overdue",
+      "inDays": "Today | Tomorrow | In {count} days",
+      "emptyTitle": "Nothing due this week",
+      "emptyDescription": "No active contract ends in the coming days."
+    },
+    "waiting": {
+      "title": "Waiting to start",
+      "description": "Pending contracts. Each one needs its contract document before starting.",
+      "noDocument": "Not generated",
+      "emptyTitle": "Nothing waiting",
+      "emptyDescription": "Every contract has already started or been closed."
+    }
+  },
+  "equipment": {
+    "description": "Every unit, with its rates and where it is now.",
+    "code": "Code",
+    "register": "Register equipment",
+    "import": "Import spreadsheet",
+    "importDescription": "Registers equipment in bulk. Rows that duplicate an existing unit are skipped.",
+    "searchPlaceholder": "Name or code",
+    "searchHint": "Text starting with KR searches by code.",
+    "loadFailed": "Could not load equipment",
+    "emptyTitle": "No equipment",
+    "emptyDescription": "Registered equipment appears here.",
+    "emptySearch": "No equipment matches the search.",
+    "retire": "Retire",
+    "retireTitle": "Retire this equipment?",
+    "retireMessage": "{code} leaves the available list and cannot join new contracts. Its contract history stays.",
+    "retired": "Equipment retired"
+  },
+  "equipmentForm": {
+    "createTitle": "Register equipment",
+    "createDescription": "The unit number is assigned in sequence. Rates are frozen into each contract when the unit is leased.",
+    "editTitle": "Edit {code}",
+    "namePlaceholder": "400L concrete mixer",
+    "enterName": "Enter the equipment name.",
+    "codeHint": "The equipment type, starting with KR. Anything after a dash is dropped.",
+    "codeRule": "Use at least three characters, starting with KR.",
+    "statusHint": "Leased, reserved and replacement are set by contracts.",
+    "statusByContract": "Set by the contract this unit is in.",
+    "rates": "Rates",
+    "enterDaily": "Enter the daily rate.",
+    "enterIndemnity": "Enter the indemnity value.",
+    "indemnityHint": "Charged if the unit is lost or stolen.",
+    "created": "Equipment registered",
+    "updated": "Equipment updated"
+  },
+  "equipmentUnit": {
+    "loadFailed": "Could not load this equipment",
+    "identification": {
+      "title": "Identification",
+      "description": "Type, unit number and where the unit is."
+    },
+    "codeHint": "Every unit of this type shares the code.",
+    "unit": "Unit number",
+    "contract": "Contract",
+    "openContract": "Open contract",
+    "inContract": "In a contract",
+    "rates": {
+      "title": "Rates",
+      "description": "Current price list. Contracts already issued keep the rates they were created with."
+    },
+    "accessories": {
+      "description": "Accessories that go out with this unit.",
+      "emptyTitle": "No accessories",
+      "emptyDescription": "Associated accessories are copied into every contract this unit joins."
+    },
+    "associate": "Associate accessories"
+  },
+  "spreadsheet": {
+    "file": "CSV spreadsheet",
+    "columns": "Columns read by name: {columns}.",
+    "chooseFile": "Choose the spreadsheet to import.",
+    "submit": "Import",
+    "done": "{count} record imported | {count} records imported",
+    "doneDescription": "Rows that duplicated existing records were skipped."
+  },
+  "accessories": {
+    "description": "Items that go out with equipment, and their stock.",
+    "register": "Register accessory",
+    "import": "Import spreadsheet",
+    "importDescription": "Registers accessories in bulk.",
+    "searchPlaceholder": "Accessory name",
+    "quantity": "In stock",
+    "loadFailed": "Could not load accessories",
+    "emptyTitle": "No accessories",
+    "emptyDescription": "Registered accessories appear here.",
+    "emptySearch": "No accessory matches the search.",
+    "remove": "Remove from stock",
+    "removeUnit": "Remove one unit",
+    "removeUnitTitle": "Remove one unit from stock?",
+    "removeUnitMessage": "One unit of {name} leaves stock: {from} becomes {to}.",
+    "deleteTitle": "Delete this accessory?",
+    "deleteMessage": "{name} has no units left, so the record itself is deleted.",
+    "unitRemoved": "One unit removed from stock",
+    "deleted": "Accessory deleted"
+  },
+  "accessoryForm": {
+    "createTitle": "Register accessory",
+    "editTitle": "Edit accessory",
+    "namePlaceholder": "Scaffold coupler",
+    "enterName": "Enter the accessory name.",
+    "quantityHint": "Units available to associate with equipment.",
+    "enterQuantity": "Enter the quantity in whole units.",
+    "quantityCantDecrease": "Stock cannot go below {count}.",
+    "enterIndemnity": "Enter the indemnity value.",
+    "created": "Accessory registered",
+    "updated": "Accessory updated"
+  },
+  "associate": {
+    "title": "Associate accessories with {code}",
+    "description": "Each associated accessory uses one unit of its stock.",
+    "hint": "Only accessories in stock that this unit does not have yet.",
+    "noneInStock": "No accessory in stock to associate.",
+    "option": "{name} · {count} in stock · indemnity {indemnity}",
+    "choose": "Choose at least one accessory.",
+    "submit": "Associate",
+    "loadFailed": "Could not load accessories",
+    "done": "{count} accessory associated | {count} accessories associated"
+  },
+  "clients": {
+    "description": "The owners of the contracts.",
+    "register": "Register client",
+    "searchPlaceholder": "Name or full email",
+    "searchHint": "Partial names work; email needs the full address.",
+    "taxId": "CPF or CNPJ",
+    "phone": "Phone",
+    "loadFailed": "Could not load clients",
+    "emptyTitle": "No clients",
+    "emptyDescription": "Registered clients appear here.",
+    "emptySearch": "No client matches the search.",
+    "deleteTitle": "Delete client",
+    "deleteMessage": "{name} is deleted. Only clients without job sites can be.",
+    "deleted": "Client deleted"
+  },
+  "clientForm": {
+    "createTitle": "Register client",
+    "createDescription": "The client owns the contracts. Job sites are registered next.",
+    "editTitle": "Edit client",
+    "name": "Name or company name",
+    "namePlaceholder": "Andrade Construction Ltd",
+    "enterName": "Enter the client name.",
+    "taxIdHint": "Checked by its verification digits. Punctuation is optional.",
+    "taxIdInvalid": "This CPF or CNPJ is not valid.",
+    "emailInvalid": "Enter a valid email address.",
+    "phoneHint": "With area code.",
+    "phoneInvalid": "Enter the phone with area code.",
+    "created": "Client registered",
+    "updated": "Client updated"
+  },
+  "client": {
+    "loadFailed": "Could not load this client",
+    "details": {
+      "title": "Details",
+      "description": "Identification, contact and billing address."
+    },
+    "lessees": {
+      "description": "Where this client's equipment goes.",
+      "emptyTitle": "No job sites",
+      "emptyDescription": "A contract starts from a job site. Register the first one."
+    },
+    "addLessee": "Add job site"
+  },
+  "address": {
+    "title": "Address",
+    "zipcode": "CEP",
+    "zipcodeHint": "The address fills in from the CEP.",
+    "derivedHint": "The address comes from the CEP. Change the CEP to move it.",
+    "filled": "Filled in from the CEP.",
+    "lookupFailed": "Could not look up this CEP. Fill in the address; the API checks it.",
+    "lookupFailedDerived": "Could not look up this CEP now. The API looks it up when saving.",
+    "zipcodeNotFound": "This CEP does not exist.",
+    "enterZipcode": "Enter the CEP, with eight digits.",
+    "street": "Street",
+    "enterStreet": "Enter the street.",
+    "number": "Number",
+    "numberDigits": "Use digits only.",
+    "neighborhood": "Neighborhood",
+    "city": "City",
+    "state": "State",
+    "stateLetters": "Two letters, such as SP."
+  },
+  "lessees": {
+    "description": "Where the equipment goes. Each job site belongs to a client.",
+    "register": "Register job site",
+    "searchPlaceholder": "Job site name",
+    "cityPlaceholder": "Any city",
+    "client": "Client",
+    "loadFailed": "Could not load job sites",
+    "emptyTitle": "No job sites",
+    "emptyDescription": "Registered job sites appear here.",
+    "emptySearch": "No job site matches the search.",
+    "deleteTitle": "Delete job site",
+    "deleteMessage": "{name} is deleted. Only job sites without contracts can be.",
+    "deleted": "Job site deleted"
+  },
+  "lesseeForm": {
+    "createTitle": "Register job site",
+    "createDescription": "Contracts are issued for a job site, and the equipment is delivered to its address.",
+    "editTitle": "Edit job site",
+    "namePlaceholder": "Paulista Tower",
+    "enterName": "Enter the job site name.",
+    "chooseClient": "Choose the client.",
+    "clientFixed": "A job site does not move to another client.",
+    "clientsLoadFailed": "Could not load clients",
+    "created": "Job site registered",
+    "updated": "Job site updated"
+  },
+  "lessee": {
+    "loadFailed": "Could not load this job site",
+    "details": {
+      "title": "Details",
+      "description": "Where it is and whose it is."
+    },
+    "contracts": {
+      "description": "Contracts issued for this job site.",
+      "emptyTitle": "No contracts",
+      "emptyDescription": "Contracts issued for this job site appear here."
+    }
+  },
+  "contracts": {
+    "description": "Rentals by job site, from the most recent.",
+    "new": "New contract",
+    "lessee": "Job site",
+    "start": "Start",
+    "end": "End",
+    "period": "Period",
+    "periodRange": "{start} to {end}",
+    "equipmentSearch": "Equipment",
+    "equipmentSearchPlaceholder": "Equipment name",
+    "loadFailed": "Could not load contracts",
+    "emptyTitle": "No contracts",
+    "emptyDescription": "Contracts appear here once issued.",
+    "emptySearch": "No contract matches the filters."
+  },
+  "contractForm": {
+    "title": "New contract",
+    "description": "Only available equipment can join. Its rates are frozen into the contract.",
+    "chooseLessee": "Choose the job site.",
+    "noLessees": "Register a job site first.",
+    "enterStart": "Enter the start date.",
+    "enterEnd": "Enter the end date.",
+    "endHint": "The planned return date.",
+    "endBeforeStart": "The end cannot be before the start.",
+    "equipmentHint": "Available equipment only. Search by code or name.",
+    "noEquipment": "No equipment is available right now.",
+    "equipmentOption": "{code} · {name} · {daily} per day",
+    "chooseEquipment": "Choose at least one piece of equipment.",
+    "loadFailed": "Could not load the options",
+    "submit": "Create contract",
+    "created": "Contract created",
+    "createdDescription": "The equipment is reserved. Generate the contract document to start."
+  },
+  "contract": {
+    "loadFailed": "Could not load this contract",
+    "summary": "Summary",
+    "finished": "Finished",
+    "document": "Contract document",
+    "documentHint": "Generated from the rates frozen into the contract.",
+    "closeBlocked": "Some equipment has not come back yet: {items}. Register the returns before closing.",
+    "lifecycle": {
+      "title": "Status",
+      "created": "Created {date}"
+    },
+    "next": {
+      "generate": "Generate the contract document. The contract can only start after it exists.",
+      "ready": "Contract document generated on {date}. The contract can start.",
+      "active": "Ends today. | Ends tomorrow. | Ends in {count} days.",
+      "overdue": "Ended {count} day ago. Register the returns and close the contract. | Ended {count} days ago. Register the returns and close the contract.",
+      "completed": "Closed on {date}.",
+      "cancelled": "Cancelled on {date}."
+    },
+    "actions": {
+      "generate": "Generate contract",
+      "regenerate": "Generate again",
+      "start": "Start contract",
+      "add": "Add equipment",
+      "cancel": "Cancel contract",
+      "report": "Financial report",
+      "replace": "Replace equipment",
+      "close": "Close contract",
+      "closure": "Closure document"
+    },
+    "items": {
+      "description": "The equipment in this contract, with the rates frozen when it joined.",
+      "emptyTitle": "No equipment",
+      "emptyDescription": "Equipment added to this contract appears here.",
+      "since": "Out since",
+      "returned": "Returned",
+      "remove": "Remove from contract",
+      "return": "Register return"
+    },
+    "accessories": {
+      "description": "Accessories that went out with the equipment."
+    },
+    "confirm": {
+      "startTitle": "Start this contract?",
+      "startMessage": "The reserved equipment goes out as leased from now on.",
+      "cancelTitle": "Cancel this contract?",
+      "cancelMessage": "The reserved equipment becomes available again. A cancelled contract cannot be reopened.",
+      "closeTitle": "Close this contract?",
+      "closeMessage": "Closing requires every piece of equipment to have its return registered.",
+      "removeTitle": "Remove equipment from the contract?",
+      "removeMessage": "{code} becomes available again and leaves this contract."
+    },
+    "done": {
+      "start": "Contract started",
+      "cancel": "Contract cancelled",
+      "close": "Contract closed",
+      "remove": "Equipment removed from the contract"
+    }
+  },
+  "addEquipment": {
+    "title": "Add equipment",
+    "description": "The equipment is reserved for this contract, with today's rates.",
+    "submit": "Add",
+    "done": "{count} unit added | {count} units added"
+  },
+  "returnEquipment": {
+    "title": "Register return",
+    "description": "{code} · {name}",
+    "outcome": "What happened",
+    "submit": "Register",
+    "options": {
+      "AVAILABLE": "Returned in good condition",
+      "MAINTENANCE": "Returned for maintenance",
+      "STOLEN": "Stolen"
+    },
+    "hints": {
+      "AVAILABLE": "The unit becomes available for other contracts.",
+      "MAINTENANCE": "The unit goes to maintenance and can be replaced in this contract.",
+      "STOLEN": "The unit stays open in this contract until it is resolved, and can be replaced."
+    },
+    "done": {
+      "AVAILABLE": "{code} returned and available again",
+      "MAINTENANCE": "{code} sent to maintenance",
+      "STOLEN": "{code} registered as stolen"
+    }
+  },
+  "replaceEquipment": {
+    "title": "Replace equipment",
+    "description": "A unit that came back for maintenance or was stolen is replaced by another of the same type. Billing continues from the original date.",
+    "old": "Unit to replace",
+    "oldOption": "{code} · {name} ({status})",
+    "chooseOld": "Choose the unit to replace.",
+    "new": "Replacement",
+    "newHint": "Available {code} units with the same number of accessories.",
+    "noCandidates": "No available {code} unit with the same accessories.",
+    "chooseNew": "Choose the replacement.",
+    "submit": "Replace",
+    "done": "Equipment replaced"
+  },
+  "financialReport": {
+    "title": "Financial report",
+    "description": "Includes the equipment that was on the job site on any day of the period.",
+    "from": "From",
+    "to": "To",
+    "enterStart": "Enter the first day.",
+    "enterEnd": "Enter the last day.",
+    "endBeforeStart": "The last day cannot be before the first.",
+    "submit": "Generate report"
+  },
+  "documents": {
+    "contractFile": "contract.docx",
+    "financialFile": "financial-report.docx",
+    "closureFile": "closure.docx",
+    "downloaded": "Document downloaded",
+    "contractReady": "Contract document downloaded",
+    "contractReadyDescription": "The contract can start now.",
+    "failed": "Could not generate the document"
+  }
+}
