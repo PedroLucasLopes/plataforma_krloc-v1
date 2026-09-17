@@ -18,6 +18,8 @@ no repositório da biblioteca, sai numa versão publicada, e só depois é consu
 neste projeto é composição com regra de domínio: diálogos, páginas e stores. Foi assim que nasceram
 `DlFileDrop`, `DlMoneyField` e `DlLifecycle`, na 0.3.0 da biblioteca.
 
+A revisão de segurança deste front está em [`PENTEST.md`](PENTEST.md).
+
 A interface fala **inglês, espanhol e português do Brasil**, e a pessoa troca pelo menu com o nome dela.
 Comentário em português, como no resto do ecossistema. Ver "Traduções".
 
