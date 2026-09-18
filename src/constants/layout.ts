@@ -22,8 +22,13 @@ export const LOOKUP_LIMIT = 500
 /** Espera antes de buscar enquanto a pessoa digita um filtro. */
 export const FILTER_DEBOUNCE_MS = 350
 
-/** Largura minima de cada cartao na grade de indicadores. */
-export const STAT_CARD_MIN_WIDTH = '210px'
+/**
+ * Largura minima de cada cartao de indicador. A linha e flex: este e o ponto a
+ * partir do qual o cartao cresce para preencher o que sobra. Em 170px cabem
+ * cinco numa tela de conteudo com 960px, que e onde a quebra deixava um cartao
+ * sozinho na segunda linha.
+ */
+export const STAT_CARD_MIN_WIDTH = '170px'
 
 /** Contrato ativo que termina dentro deste prazo entra no aviso do painel. */
 export const DUE_SOON_DAYS = 7

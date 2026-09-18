@@ -353,12 +353,16 @@
     }
 
     if (current?.status === 'ACTIVE') {
+      // A acao que da razao a esta tabela existir num contrato ativo: botao
+      // redondo preenchido, com o caminhao de volta, e nao mais um icone
+      // apagado de tecla Enter no meio da linha.
       return [{
         key: 'return',
         label: t('contract.items.return'),
-        icon: 'mdi-keyboard-return',
+        icon: 'mdi-truck-check-outline',
         method: 'PUT',
         path: `/elease/status/${current.id}`,
+        primary: true,
         unavailable: row => !isOut(byItemId.value.get(row.id)),
       }]
     }

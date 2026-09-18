@@ -13,6 +13,14 @@ export const API_PREFIX = '/api'
 export const LOGIN_PATH = '/auth/login'
 
 /**
+ * De quanto em quanto tempo a tela relê a sessao em `GET /api/auth/me`, enquanto
+ * a aba esta visivel. E o prazo para uma mudanca feita no SSO aparecer no menu e
+ * nas acoes: a API pergunta ao SSO a cada chamada dessa rota, e a propria API ja
+ * decide pelo papel novo antes disso.
+ */
+export const SESSION_RECHECK_MS = 30_000
+
+/**
  * Quem conduz o login, como a tela de login recusado o oferece: "Continuar com
  * SSO". Nome proprio, nao se traduz; o icone e a marca do SSO.
  */

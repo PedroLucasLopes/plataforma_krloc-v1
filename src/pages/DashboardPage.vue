@@ -478,20 +478,38 @@
 </script>
 
 <style scoped>
+/*
+ * Flex, e nao grid. Com `repeat(auto-fit, minmax(...))` a ultima linha mantem a
+ * largura das colunas e o que sobra vira buraco: cinco cartoes em quatro
+ * colunas deixavam o quinto sozinho, com dois tercos da linha vazios. No flex,
+ * quem fica na ultima linha cresce e ocupa a largura inteira.
+ */
 .stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(v-bind(STAT_CARD_MIN_WIDTH), 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 16px;
+}
+
+.stats > * {
+  flex: 1 1 v-bind(STAT_CARD_MIN_WIDTH);
+  min-width: 0;
 }
 
 .charts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 16px;
 }
 
+.charts > * {
+  /* `min-width: 0` para o grafico poder encolher: sem isso o conteudo define o
+     piso e a linha estoura para a direita. */
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
 .charts__wide {
-  grid-column: 1 / -1;
+  flex-basis: 100%;
 }
 
 .chart-placeholder {

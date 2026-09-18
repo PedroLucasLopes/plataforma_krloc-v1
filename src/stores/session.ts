@@ -28,6 +28,18 @@ export function safeReturnPath (path: string | null | undefined): string {
   return path.startsWith('/signed-out') || path.startsWith('/sign-in-error') ? '/' : path
 }
 
+/** O que o papel alcanca, numa string comparavel: papeis e rotas em ordem. */
+function accessKey (me: Me | null): string {
+  if (!me) {
+    return ''
+  }
+
+  const papeis = me.roles.toSorted().join(',')
+  const rotas = me.permissions.map(p => `${p.method} ${p.path}`).toSorted().join(',')
+
+  return `${papeis}|${rotas}`
+}
+
 /**
  * A sessao do KRLoc com o SSO, mantida pelo `@pedrolucaslopes/sso-client`.
  *
@@ -97,6 +109,41 @@ export const useSessionStore = defineStore('session', () => {
   }
 
   /**
+   * Rele quem e a pessoa e o que o papel dela alcanca, sem tirar a tela do lugar.
+   *
+   * Papel trocado ou pessoa tirada do projeto no SSO chegam aqui: a API pergunta
+   * ao SSO a cada `GET /auth/me` e, se o papel mudou, ja responde com o novo e
+   * renova o token no mesmo cookie. `me` so e trocado quando a resposta chega, e
+   * a API fora do ar nao derruba ninguem: a tela fica como esta ate a proxima.
+   */
+  async function revalidate (): Promise<'same' | 'changed' | 'ended' | 'unknown'> {
+    if (status.value !== 'authenticated' || pending) {
+      return 'unknown'
+    }
+
+    try {
+      const next = await sessionApi.me()
+      const changed = accessKey(next) !== accessKey(me.value)
+
+      me.value = next
+
+      return changed ? 'changed' : 'same'
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        const body = error.payload as { login_url?: unknown } | null
+
+        loginUrl = typeof body?.login_url === 'string' ? body.login_url : loginUrl
+        me.value = null
+        status.value = 'unauthenticated'
+
+        return 'ended'
+      }
+
+      return 'unknown'
+    }
+  }
+
+  /**
    * Relê o token anti-CSRF. Ele muda quando a pessoa entra de novo, inclusive
    * em outra aba; a camada HTTP chama isto quando a API recusa o que tinha.
    */
@@ -155,6 +202,7 @@ export const useSessionStore = defineStore('session', () => {
     can,
     ensure,
     refresh,
+    revalidate,
     reloadCsrf,
     beginLogin,
     signOut,

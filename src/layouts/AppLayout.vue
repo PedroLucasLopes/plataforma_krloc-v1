@@ -37,6 +37,7 @@
   import { computed, ref, toRef } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useRoute, useRouter } from 'vue-router'
+  import { useSessionWatch } from '@/composables/useSessionWatch'
   import { API_PREFIX } from '@/constants/api'
   import { APP_LOGO, APP_NAME, CONTENT_MAX_WIDTH } from '@/constants/layout'
   import { buildNavGroups } from '@/constants/navigation'
@@ -60,6 +61,9 @@
   const router = useRouter()
 
   providePermissions(toRef(session, 'permissions'), ref(API_PREFIX))
+
+  // O que mudar no SSO chega ao menu e as acoes sem sair e entrar de novo.
+  useSessionWatch()
 
   const navOpen = ref(false)
 

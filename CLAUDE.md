@@ -88,6 +88,22 @@ sozinha colocaria a pessoa de volta sem ela pedir.
 
 **Escrita leva `X-CSRF-Token`.** O valor chega em `GET /api/auth/me` e fica só na memória do store.
 
+### O que muda no SSO chega à tela sem novo login
+
+`GET /api/auth/me` era lido uma vez, na carga da página, e papel trocado no SSO só aparecia no menu
+depois de sair e entrar. `useSessionWatch`, montado no `AppLayout`, relê a sessão a cada
+`SESSION_RECHECK_MS` (30 segundos) com a aba visível, e na volta a ela, por foco ou visibilidade. A
+API pergunta ao SSO a cada chamada de `/auth/me` (introspecção, `sso-client` 0.4.0), então a resposta
+já traz o papel de agora, e a sessão já sai dali com o token novo.
+
+| O que mudou no SSO | O que a tela faz |
+|---|---|
+| papel ou rotas do papel | menu, cabeçalho e ações acompanham sozinhos, porque saem de `session.permissions`. Se a tela aberta deixou de ser alcançada, `/forbidden` |
+| acesso encerrado: pessoa tirada do projeto, projeto suspenso, grant revogado | vai ao login. Recusada pelo SSO, cai em `/sign-in-error`; ainda liberada, volta sozinha à mesma tela |
+
+Aba escondida não pergunta nada: quem não está olhando não precisa de tela em dia, e a API continua
+conferindo cada chamada, com o mesmo prazo.
+
 ### Login recusado
 
 Pessoa sem papel no projeto KRLoc entra no SSO, e o SSO devolve `access_denied` ao callback da API
@@ -154,6 +170,12 @@ lê toda string entre aspas simples ou crase com cara de chave: um namespace `im
 
 O menu sai das permissões por `deriveNavGroups`; `constants/navigation.ts` só dá rótulo, ícone, grupo e rota.
 
+**O painel não deixa buraco.** Cartões e gráficos são flex, com `flex: 1 1 <piso>` e `min-width: 0`:
+cabem quantos a largura permitir, e quem sobra na última linha cresce até a borda. A grade
+`repeat(auto-fit, minmax(...))` mantinha a largura das colunas na última linha, e cinco cartões em
+quatro colunas deixavam o quinto sozinho. O piso dos cartões é `STAT_CARD_MIN_WIDTH`, 170px, que põe
+os cinco numa linha com 960px de conteúdo.
+
 ## 📄 O contrato
 
 `DlLifecycle` mostra `Pendente › Ativo › Concluído`, com `Cancelado` como saída. Embaixo do ciclo, uma
@@ -165,6 +187,9 @@ frase diz o que falta. Cada situação oferece só o que a API aceita nela, e s�
 | `ACTIVE` | registrar a volta de cada equipamento (bom estado, manutenção, roubo), substituir o que voltou para manutenção ou foi roubado, relatório financeiro do período, fechar |
 | `COMPLETED` | documento de fechamento |
 
+- **A volta é a ação principal da linha.** Redonda, preenchida com a cor primária e com
+  `mdi-truck-check-outline`, pelo `primary` do `RowAction` (`dotlog-ui` 0.5.0). As outras ações da
+  linha continuam discretas. Trocar o ícone é uma linha em `ContractDetailPage.vue`.
 - **O preço do item é o congelado no contrato**, nunca o do equipamento.
 - **Substituir** só oferece unidade disponível do mesmo código, outra unidade, com o mesmo número de
   acessórios: as três regras da API.
@@ -186,7 +211,7 @@ frase diz o que falta. Cada situação oferece só o que a API aceita nela, e s�
 ├─ 🗣️ locales/       # en.json (referência), es.json, pt-BR.json
 ├─ 🔧 plugins/       # i18n.ts · vuetify.ts
 ├─ 🎨 constants/     # api, layout, navigation, status (pastilhas e ciclo), messages (API → chaves), theme
-├─ 🧰 composables/   # useForm (modal que se abre sozinho) · useConfirm
+├─ 🧰 composables/   # useForm (modal que se abre sozinho) · useConfirm · useSessionWatch (relê a sessão)
 ├─ 🔤 types/         # krloc.ts, espelho do que a API devolve
 └─ 🛠️ utils/         # format (data, dinheiro, unidade) · documents (CPF, CNPJ, CEP) · address · forms · files
 ```
@@ -276,6 +301,8 @@ transições param: a troca de página fica presa na tela anterior e o gráfico 
 - Toda escrita passa por `services/http.ts`, que anexa o `X-CSRF-Token`.
 - A tela de login recusado só mostra texto de código conhecido, fica fora do guard e não manda ao login
   sozinha.
+- `useSessionWatch` fica montado no `AppLayout`. Sem ele, papel trocado no SSO só chega ao menu
+  depois de sair e entrar.
 - Tela nova declara `meta.permission` com o mesmo método e caminho do catálogo do projeto KRLoc no SSO.
 - Ação que o papel não alcança sai do DOM; desabilitar fica para bloqueio por estado.
 - Preço de contrato vem do item do contrato, nunca do equipamento.
