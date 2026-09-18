@@ -134,9 +134,11 @@ do console do SSO:
 - **No componente,** `const { t } = useI18n()`. **Fora dele,** o `t` de `@/plugins/i18n`.
 - **Rótulo que depende da língua é lido na hora de desenhar:** `computed`, template ou getter. As pastilhas
   de `constants/status.ts` têm o rótulo num getter.
-- **Mensagem da API** é traduzida por `API_MESSAGE_KEYS` (texto exato → chave) e por padrões para as que
-  trazem valor dentro ("Equipment type mismatch: cannot replace X with Y"). Validação desconhecida do
-  class-validator entra como detalhe de `errors.status.badRequest`.
+- **Erro da API é traduzido pelo código**, no campo `error`: `ERROR_CODES`, em `constants/messages.ts`,
+  lista os que a tela conhece, e o texto mora em `errors.code.<código>`. A recusa da validação traz o
+  código de cada campo, com texto em `errors.field.<código>`. Código desconhecido cai na mensagem do
+  status, e o `message` do servidor **nunca** vai para a tela. Valor dentro do texto, como o status em
+  `contract_in_state`, vem de um membro próprio do corpo, nunca da frase.
 - **Plural** é do vue-i18n. Com três formas, a primeira é o zero: `"Hoje | Amanhã | Em {count} dias"`.
 - **`@` literal é `{'@'}`.**
 
@@ -210,7 +212,7 @@ frase diz o que falta. Cada situação oferece só o que a API aceita nela, e s�
 ├─ 🔌 services/      # http.ts (erro, CSRF, 401, 404 vazio, download) · krloc.ts (endpoints) · zipcode.ts
 ├─ 🗣️ locales/       # en.json (referência), es.json, pt-BR.json
 ├─ 🔧 plugins/       # i18n.ts · vuetify.ts
-├─ 🎨 constants/     # api, layout, navigation, status (pastilhas e ciclo), messages (API → chaves), theme
+├─ 🎨 constants/     # api, layout, navigation, status (pastilhas e ciclo), messages (códigos → chaves), theme
 ├─ 🧰 composables/   # useForm (modal que se abre sozinho) · useConfirm · useSessionWatch (relê a sessão)
 ├─ 🔤 types/         # krloc.ts, espelho do que a API devolve
 └─ 🛠️ utils/         # format (data, dinheiro, unidade) · documents (CPF, CNPJ, CEP) · address · forms · files
@@ -250,7 +252,7 @@ ele repete à mão o desenho, o `primary` e o `onPrimary` da biblioteca, com a v
 | A volta exige equipamento `LEASED`; substituto nasce `REPLACE` | substituto não registra volta, e contrato com substituição não fecha |
 | Desativar equipamento reservado ou substituto a API aceita | a tela esconde o botão: o contrato ficaria sem o equipamento |
 | Remover acessório com estoque tira uma unidade; sem estoque, apaga | o modal diz qual dos dois vai acontecer |
-| Mensagens de erro em inglês, algumas com valor dentro | `API_MESSAGE_KEYS` e `API_MESSAGE_PATTERNS`, em `constants/messages.ts` |
+| Erro sai com código em `error`, e valor em membro próprio | `apiErrorText`, em `constants/messages.ts`: código conhecido vira texto, o resto cai no status |
 | Upload até 2 MB | `DlFileDrop` recusa antes; o nginx aceita até 3 MB, acima do padrão de 1 MB |
 
 A consulta de CEP é a **única chamada que sai da origem**: vai à mesma base que a API usa, só com o CEP,
@@ -299,6 +301,8 @@ transições param: a troca de página fica presa na tela anterior e o gráfico 
 - Nenhum token, chave ou segredo em store, `localStorage`, log ou URL. O front não tem `.env`.
 - Texto de tela vai para `src/locales`, nas três línguas, e sai por `t()`.
 - Toda escrita passa por `services/http.ts`, que anexa o `X-CSRF-Token`.
+- Texto de erro sai do código em `error`, ou do status. O `message` do servidor nunca vai para a tela, e
+  a repetição depois do anti-CSRF depende do código `csrf_token_invalid`, não da frase.
 - A tela de login recusado só mostra texto de código conhecido, fica fora do guard e não manda ao login
   sozinha.
 - `useSessionWatch` fica montado no `AppLayout`. Sem ele, papel trocado no SSO só chega ao menu

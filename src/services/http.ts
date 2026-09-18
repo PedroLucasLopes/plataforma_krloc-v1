@@ -17,7 +17,7 @@
  * lingua corrente no momento da falha.
  */
 import { API_PREFIX } from '@/constants/api'
-import { apiMessage, STATUS_MESSAGE_KEYS } from '@/constants/messages'
+import { apiErrorText, STATUS_MESSAGE_KEYS } from '@/constants/messages'
 import { t } from '@/plugins/i18n'
 
 export class ApiError extends Error {
@@ -101,29 +101,23 @@ function record (payload: unknown): Record<string, unknown> {
   return payload && typeof payload === 'object' ? payload as Record<string, unknown> : {}
 }
 
-/** O texto do `@pedrolucaslopes/sso-client` quando o header anti-CSRF falta ou nao confere. */
-const CSRF_REJECTION = /^requisicao autenticada por cookie precisa do header/
+/** O codigo do erro, no campo `error`, quando a API mandou um. */
+function codeOf (payload: unknown): string | null {
+  const code = record(payload).error
 
+  return typeof code === 'string' ? code : null
+}
+
+/**
+ * O texto do erro sai do codigo, ou do status quando o codigo nao e conhecido.
+ * O `message` do servidor nunca: ele e para quem le a resposta crua, e mostra-lo
+ * poria na tela qualquer detalhe interno ou valor repetido da requisicao.
+ */
 function describe (status: number, payload: unknown): string {
-  const body = record(payload)
-  let raw: string[] = []
+  const known = apiErrorText(codeOf(payload), record(payload))
 
-  if (Array.isArray(body.message)) {
-    raw = body.message.map(String)
-  } else if (typeof body.message === 'string') {
-    raw = [body.message]
-  }
-
-  const known = raw.map(message => apiMessage(message))
-
-  if (raw.length > 0 && known.every(Boolean)) {
-    return known.join(' ')
-  }
-
-  // A validacao do class-validator vem em ingles e nomeia o campo. O que a tela
-  // conhece sai traduzido; o resto entra como veio, dentro de uma frase na lingua da tela.
-  if (status === 400 && raw.length > 0) {
-    return t('errors.status.badRequest', { detail: raw.map((message, index) => known[index] ?? message).join(' ') })
+  if (known) {
+    return known
   }
 
   const key = STATUS_MESSAGE_KEYS[status] ?? (status >= 500 ? STATUS_MESSAGE_KEYS[500] : undefined)
@@ -175,9 +169,9 @@ async function send (path: string, options: RequestOptions, accept: string, retr
   }
 
   if (response.status === 403 && !SAFE_METHODS.has(method) && !retried) {
-    const message = record(await readBody(response.clone())).message
+    const code = codeOf(await readBody(response.clone()))
 
-    if (typeof message === 'string' && CSRF_REJECTION.test(message) && await hooks.csrfRejected()) {
+    if (code === 'csrf_token_invalid' && await hooks.csrfRejected()) {
       return send(path, options, accept, true)
     }
   }
@@ -199,9 +193,7 @@ async function fail (response: Response, options: RequestOptions): Promise<never
     throw new ApiError(401, t('errors.status.unauthorized'), 'login_required', payload)
   }
 
-  const code = typeof record(payload).error === 'string' ? String(record(payload).error) : null
-
-  throw new ApiError(response.status, describe(response.status, payload), code, payload)
+  throw new ApiError(response.status, describe(response.status, payload), codeOf(payload), payload)
 }
 
 export async function request<T> (path: string, options: RequestOptions = {}): Promise<T> {
