@@ -71,6 +71,18 @@ const routes: RouteRecordRaw[] = [
         meta: { title: 'pageTitles.contract', nav: 'elease', permission: { method: 'GET', path: '/elease/:id' } },
       },
       {
+        path: 'financial',
+        name: 'closing',
+        component: () => import('@/pages/financial/ClosingPage.vue'),
+        meta: { title: 'pageTitles.closing', nav: 'finantial', permission: { method: 'GET', path: '/finantial' } },
+      },
+      {
+        path: 'financial/calculator',
+        name: 'calculator',
+        component: () => import('@/pages/financial/CalculatorPage.vue'),
+        meta: { title: 'pageTitles.calculator', nav: 'calculator', permission: { method: 'POST', path: '/finantial/simulate' } },
+      },
+      {
         path: 'equipment',
         name: 'equipment',
         component: () => import('@/pages/equipment/EquipmentPage.vue'),

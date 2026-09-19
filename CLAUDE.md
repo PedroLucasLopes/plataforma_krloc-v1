@@ -168,9 +168,27 @@ lê toda string entre aspas simples ou crase com cara de chave: um namespace `im
 | `/accessories` | `GET /accessory` | acessórios e estoque |
 | `/clients` · `/clients/:id` | `GET /client` · `GET /client/:id` | clientes, ficha e as obras do cliente |
 | `/lessees` · `/lessees/:id` | `GET /lessee` · `GET /lessee/:id` | obras, ficha e contratos da obra |
+| `/financial` | `GET /finantial` | fechamento do mês: cartões, abas de fechados, ativos, na obra, manutenções e roubos, e o documento do mês. O mês fica na URL |
+| `/financial/calculator` | `POST /finantial/simulate` | calculadora de contrato: equipamentos, período contratado e a devolução e a ocorrência de cada equipamento |
 | `/signed-out` · `/unavailable` · `/sign-in-error` | pública | saída, API fora do ar e login recusado |
 
 O menu sai das permissões por `deriveNavGroups`; `constants/navigation.ts` só dá rótulo, ícone, grupo e rota.
+A calculadora é `POST`, que o `deriveNavGroups` não transforma em item: ela entra no grupo Financeiro a mão,
+com a permissão dela.
+
+## 💰 Financeiro
+
+**A conta é toda da API**, pelas cláusulas do contrato de locação: a tela escreve o que chega e nunca
+refaz regra. O `CLAUDE.md` do `krloc-api-v1` tem a regra, cláusula por cláusula.
+
+- **`StatementBreakdown`** desenha um extrato: os totais em cartões e, por posição (o equipamento com os
+  substitutos dele), as linhas com a cláusula que manda cada uma. Serve ao contrato e à calculadora.
+- **No contrato**, a seção Financeiro lê `GET /finantial/:id` e relê a cada ação: pendente mostra o
+  contratado; ativo, o que correu até hoje; concluído, o extrato gravado no fechamento.
+- **Na calculadora, cada equipamento volta no próprio dia.** A devolução nasce no término contratado e o
+  segue enquanto a pessoa não a trocar; com defeito ou roubo sem substituto, a unidade sai da obra na
+  ocorrência. A última simulação fica no store, e volta ao abrir a tela de novo.
+- **Equipamento sem diária na tabela** sai com a conta zerada e um aviso: a API marca `missingPrice`.
 
 **O painel não deixa buraco.** Cartões e gráficos são flex, com `flex: 1 1 <piso>` e `min-width: 0`:
 cabem quantos a largura permitir, e quem sobra na última linha cresce até a borda. A grade
@@ -186,8 +204,11 @@ frase diz o que falta. Cada situação oferece só o que a API aceita nela, e s�
 | Situação | Ações |
 |---|---|
 | `PENDING` | gerar o documento do contrato, adicionar e tirar equipamento, cancelar; **começar só aparece com o documento gerado** |
-| `ACTIVE` | registrar a volta de cada equipamento (bom estado, manutenção, roubo), substituir o que voltou para manutenção ou foi roubado, relatório financeiro do período, fechar |
-| `COMPLETED` | documento de fechamento |
+| `ACTIVE` | registrar a volta de cada equipamento, substituto inclusive (bom estado, manutenção, roubo), substituir o que voltou para manutenção ou foi roubado, baixar o extrato, fechar |
+| `COMPLETED` | documento de fechamento (a baixa da cláusula 10ª) |
+
+- **Substituível** é o item que voltou para manutenção ou foi roubado e ainda não tem substituto: o
+  substituto aponta para ele por `replacesItemId`. O substituto que quebrar também pode ser trocado.
 
 - **A volta é a ação principal da linha.** Redonda, preenchida com a cor primária e com
   `mdi-truck-check-outline`, pelo `primary` do `RowAction` (`dotlog-ui` 0.5.0). As outras ações da
@@ -206,16 +227,16 @@ frase diz o que falta. Cada situação oferece só o que a API aceita nela, e s�
 💻 src/
 ├─ 🧭 router/        # rotas, guard de sessão e de permissão, barra de carregamento
 ├─ 🧱 layouts/       # AppLayout (DlAppShell) · GateLayout (saída, API fora do ar)
-├─ 📄 pages/         # Dashboard, SignedOut, Unavailable, SignInError, contracts/, equipment/, accessories/, clients/, lessees/
-├─ 🧩 components/    # diálogos de cadastro, AddressFields (CEP), ImportDialog · contract/ (ações do contrato)
-├─ 🗃️ stores/        # session, preferences, lookups, equipment, accessories, clients, lessees, contracts
+├─ 📄 pages/         # Dashboard, SignedOut, Unavailable, SignInError, contracts/, equipment/, accessories/, clients/, lessees/, financial/
+├─ 🧩 components/    # diálogos de cadastro, AddressFields (CEP), ImportDialog · contract/ (ações do contrato) · financial/ (extrato)
+├─ 🗃️ stores/        # session, preferences, lookups, equipment, accessories, clients, lessees, contracts, financial
 ├─ 🔌 services/      # http.ts (erro, CSRF, 401, 404 vazio, download) · krloc.ts (endpoints) · zipcode.ts
 ├─ 🗣️ locales/       # en.json (referência), es.json, pt-BR.json
 ├─ 🔧 plugins/       # i18n.ts · vuetify.ts
 ├─ 🎨 constants/     # api, layout, navigation, status (pastilhas e ciclo), messages (códigos → chaves), theme
 ├─ 🧰 composables/   # useForm (modal que se abre sozinho) · useConfirm · useSessionWatch (relê a sessão)
 ├─ 🔤 types/         # krloc.ts, espelho do que a API devolve
-└─ 🛠️ utils/         # format (data, dinheiro, unidade) · documents (CPF, CNPJ, CEP) · address · forms · files
+└─ 🛠️ utils/         # format (data, dinheiro, unidade) · months (fechamento) · documents (CPF, CNPJ, CEP) · address · forms · files
 ```
 
 **A marca do KRLoc é a escavadeira.** `APP_LOGO`, em `constants/layout.ts`, vai ao topo do menu pelo
@@ -249,7 +270,8 @@ ele repete à mão o desenho, o `primary` e o `onPrimary` da biblioteca, com a v
 | Começar exige `contract_generated` | "Começar contrato" só aparece depois de gerar o documento |
 | Cancelar recusa contrato com equipamento | a recusa aparece dentro do modal; hoje nenhum contrato com equipamento cancela |
 | Apagar obra sempre recusa; mandar o cliente na edição da obra sempre recusa | a recusa aparece no modal; a edição não manda o cliente, que fica travado |
-| A volta exige equipamento `LEASED`; substituto nasce `REPLACE` | substituto não registra volta, e contrato com substituição não fecha |
+| A volta aceita `LEASED` e `REPLACE`; substituto nasce `REPLACE` e aponta para o item que substitui | a volta vale para os dois; substituível é quem ainda não tem `replacedBy` |
+| A cobrança é por equipamento, até a volta de cada um | a tela não refaz conta: lê `GET /finantial/:id` e a calculadora |
 | Desativar equipamento reservado ou substituto a API aceita | a tela esconde o botão: o contrato ficaria sem o equipamento |
 | Remover acessório com estoque tira uma unidade; sem estoque, apaga | o modal diz qual dos dois vai acontecer |
 | Erro sai com código em `error`, e valor em membro próprio | `apiErrorText`, em `constants/messages.ts`: código conhecido vira texto, o resto cai no status |
@@ -259,6 +281,27 @@ A consulta de CEP é a **única chamada que sai da origem**: vai à mesma base q
 sem cookie e sem `Referer`.
 
 ---
+
+## 🚀 CI/CD
+
+`.github/workflows/ci.yml`, no GitHub Actions:
+
+| Quando | O que roda |
+|---|---|
+| pull request e push na `main` | `npm ci`, `npm audit` (produção sem aviso nenhum; o resto, sem alto), lint e build, que roda o type-check e confere as traduções |
+| pull request | a imagem é montada, sem publicar |
+| push na `main`, tag `v*` e à mão | a imagem do front, o nginx com o build, vai para o GitHub Container Registry, `ghcr.io/pedrolucaslopes/plataforma_krloc-v1`, com a tag do commit, `main` e a versão, proveniência e SBOM |
+
+- **O pacote privado.** O `npm ci` e o build da imagem leem `@pedrolucaslopes/dotlog-ui` com o `GITHUB_TOKEN` da
+  execução, quando o pacote libera leitura a este repositório (nas configurações do pacote, "Manage
+  Actions access"), ou com o secret `PACKAGES_READ_TOKEN`, um token clássico com `read:packages`. Sem um
+  dos dois, o `npm ci` do pipeline responde 403.
+- **O pipeline é superfície de ataque.** Actions fixadas por commit, `permissions: {}` no topo e o
+  mínimo por job, checkout sem credencial persistida, sem `pull_request_target`, e o token do npm como
+  secret do BuildKit. O Dependabot (`.github/dependabot.yml`) abre pull request para as actions e a
+  imagem base toda semana; o npm fica de fora, porque o pacote privado pede um token próprio dele.
+- **O deploy ainda não existe.** A imagem publicada é o artefato. O alvo é o Firebase Hosting, com os
+  rewrites de `/api` e `/sso` numa origem só, e entra quando houver o projeto no GCP.
 
 ## 🐳 Container
 
@@ -310,6 +353,7 @@ transições param: a troca de página fica presa na tela anterior e o gráfico 
 - Tela nova declara `meta.permission` com o mesmo método e caminho do catálogo do projeto KRLoc no SSO.
 - Ação que o papel não alcança sai do DOM; desabilitar fica para bloqueio por estado.
 - Preço de contrato vem do item do contrato, nunca do equipamento.
+- Valor cobrado vem da API: extrato, fechamento e calculadora. A tela não refaz regra de cobrança.
 - Dinheiro entra por `DlMoneyField` e sai por `formatMoney`, sempre em `CURRENCY`.
 - A tela não oferece o que a API recusa na situação do registro.
 - Rode `npm run type-check`, `npm run lint` e `npm run check:locales` antes de considerar pronto.

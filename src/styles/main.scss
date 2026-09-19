@@ -89,3 +89,29 @@ body {
   outline: 2px solid var(--dl-primary);
   outline-offset: 2px;
 }
+
+/* Aviso de uma linha dentro de ficha: o que falta, ou o que a conta nao cobre. */
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  border-radius: var(--dl-radius-sm, 6px);
+  color: var(--dl-on-surface);
+  background: rgba(var(--note-rgb), 0.08);
+  border: 1px solid rgba(var(--note-rgb), 0.32);
+
+  --note-rgb: var(--v-theme-on-surface-variant);
+}
+
+.note .v-icon {
+  flex-shrink: 0;
+  color: rgb(var(--note-rgb));
+}
+
+.note--success { --note-rgb: var(--v-theme-success); }
+.note--warning { --note-rgb: var(--v-theme-warning); }
+.note--error { --note-rgb: var(--v-theme-error); }

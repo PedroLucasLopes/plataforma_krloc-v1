@@ -1,4 +1,4 @@
-import type { EquipmentStatus, LeaseStatus, ReturnStatus } from '@/types/krloc'
+import type { EquipmentStatus, LeaseStatus, PositionEnd, ReturnStatus } from '@/types/krloc'
 import type { LifecycleExit, LifecycleStep, StatusDefinition } from '@pedrolucaslopes/dotlog-ui'
 import { t } from '@/plugins/i18n'
 
@@ -50,6 +50,17 @@ export const LEASE_STATUS = labelled<LeaseStatus>('lease', {
   CANCELLED: { tone: 'dark', icon: 'mdi-cancel' },
 })
 
+/**
+ * Como terminou a posicao de um equipamento no extrato: o original e os
+ * substitutos dele, cobrados como um aluguel so.
+ */
+export const POSITION_END = labelled<PositionEnd>('position', {
+  returned: { tone: 'success', icon: 'mdi-check-circle-outline' },
+  defect: { tone: 'warning', icon: 'mdi-wrench-outline' },
+  stolen: { tone: 'error', icon: 'mdi-alert-octagon-outline' },
+  open: { tone: 'info', icon: 'mdi-truck-outline' },
+})
+
 /** O que se registra na volta de um equipamento, na ordem em que a tela oferece. */
 export const RETURN_STATUS: ReturnStatus[] = ['AVAILABLE', 'MAINTENANCE', 'STOLEN']
 
@@ -67,8 +78,18 @@ export function leaseExits (caption?: string): LifecycleExit[] {
   return [{ key: 'CANCELLED', label: LEASE_STATUS.CANCELLED.label, icon: 'mdi-cancel', tone: 'dark', caption }]
 }
 
-/** Os papeis com que todo projeto nasce no SSO. Papel de nome livre aparece como veio. */
+/** Os papeis com que todo projeto nasce no SSO. */
 const DEFAULT_ROLES = new Set(['SUPERADMIN', 'ADMIN', 'MANAGER', 'VIEWER'])
+
+/**
+ * Papel de nome livre escrito como os padrao aparecem, como no console do SSO:
+ * `MESTRE_DE_OBRAS` vira "Mestre de obras". O nome gravado no SSO nao muda.
+ */
+function customRoleLabel (name: string): string {
+  const words = name.replaceAll('_', ' ').trim().toLowerCase()
+
+  return words.charAt(0).toUpperCase() + words.slice(1)
+}
 
 export function roleLabel (roles: readonly string[]): string | undefined {
   const [role] = roles
@@ -77,5 +98,5 @@ export function roleLabel (roles: readonly string[]): string | undefined {
     return undefined
   }
 
-  return DEFAULT_ROLES.has(role) ? t(`roles.${role}`) : role
+  return DEFAULT_ROLES.has(role) ? t(`roles.${role}`) : customRoleLabel(role)
 }

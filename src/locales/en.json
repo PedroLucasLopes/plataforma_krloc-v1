@@ -17,7 +17,9 @@
     "unavailable": "Unavailable",
     "signInError": "Sign-in failed",
     "forbidden": "Not allowed",
-    "notFound": "Not found"
+    "notFound": "Not found",
+    "closing": "Monthly closing",
+    "calculator": "Contract calculator"
   },
   "nav": {
     "overview": "Overview",
@@ -28,7 +30,10 @@
     "equipment": "Equipment",
     "accessories": "Accessories",
     "clients": "Clients",
-    "lessees": "Job sites"
+    "lessees": "Job sites",
+    "financial": "Financial",
+    "closing": "Monthly closing",
+    "calculator": "Calculator"
   },
   "common": {
     "name": "Name",
@@ -47,7 +52,8 @@
   "counts": {
     "equipment": "{count} unit | {count} units",
     "contracts": "{count} contract | {count} contracts",
-    "lessees": "{count} job site | {count} job sites"
+    "lessees": "{count} job site | {count} job sites",
+    "days": "{count} day | {count} days"
   },
   "status": {
     "equipment": {
@@ -64,6 +70,12 @@
       "ACTIVE": "Active",
       "COMPLETED": "Completed",
       "CANCELLED": "Cancelled"
+    },
+    "position": {
+      "returned": "Returned",
+      "defect": "Defect",
+      "stolen": "Stolen",
+      "open": "On site"
     }
   },
   "roles": {
@@ -128,6 +140,7 @@
       "no_activity_in_period": "No equipment activity in this period.",
       "no_results": "Nothing was found.",
       "origin_not_allowed": "This request came from an origin the API does not accept.",
+      "period_too_long": "The period is longer than billing allows.",
       "replace_accessories": "The replacement unit does not have the same accessories.",
       "replace_duplicate": "The same unit appears twice in the replacement.",
       "replace_new_unavailable": "The replacement unit is no longer available.",
@@ -139,7 +152,9 @@
       "zipcode_not_found": "This CEP was not found."
     },
     "field": {
+      "date_out_of_range": "Use a date between 2000 and 2099.",
       "end_before_start": "The end date cannot be before the start date.",
+      "period_too_long": "The period is too long: up to 5 years contracted, and returns up to 10 years after the start.",
       "phone_invalid": "Enter a valid Brazilian phone number, with area code.",
       "state_invalid": "Use the two-letter state code, such as SP.",
       "tax_id_invalid": "Enter a valid CPF or CNPJ.",
@@ -503,9 +518,9 @@
       "start": "Start contract",
       "add": "Add equipment",
       "cancel": "Cancel contract",
-      "report": "Financial report",
       "replace": "Replace equipment",
       "close": "Close contract",
+      "statement": "Download statement",
       "closure": "Closure document"
     },
     "items": {
@@ -526,7 +541,7 @@
       "cancelTitle": "Cancel this contract?",
       "cancelMessage": "The reserved equipment becomes available again. A cancelled contract cannot be reopened.",
       "closeTitle": "Close this contract?",
-      "closeMessage": "Closing requires every piece of equipment to have its return registered.",
+      "closeMessage": "Closing requires every piece of equipment to have its return registered. The closing statement is recorded and no longer changes.",
       "removeTitle": "Remove equipment from the contract?",
       "removeMessage": "{code} becomes available again and leaves this contract."
     },
@@ -535,6 +550,14 @@
       "cancel": "Contract cancelled",
       "close": "Contract closed",
       "remove": "Equipment removed from the contract"
+    },
+    "financial": {
+      "title": "Financial",
+      "pending": "The contracted value, at the prices frozen in this contract (clause 7).",
+      "active": "What has run until today, as if every piece of equipment came back today.",
+      "completed": "The statement recorded at the closing. It no longer changes.",
+      "completedComputed": "Calculated now: this contract closed before statements were recorded.",
+      "loadFailed": "Could not load the statement"
     }
   },
   "addEquipment": {
@@ -554,9 +577,9 @@
       "STOLEN": "Stolen"
     },
     "hints": {
-      "AVAILABLE": "The unit becomes available for other contracts.",
-      "MAINTENANCE": "The unit goes to maintenance and can be replaced in this contract.",
-      "STOLEN": "The unit stays open in this contract until it is resolved, and can be replaced."
+      "AVAILABLE": "The unit becomes available for other contracts, and its charge runs until today.",
+      "MAINTENANCE": "The unit goes to maintenance. Without a replacement, its charge stops today; with one, it stays a single rental.",
+      "STOLEN": "Use is charged until today, plus the equipment indemnity (clauses 6 and 7). The unit can be replaced."
     },
     "done": {
       "AVAILABLE": "{code} returned and available again",
@@ -566,7 +589,7 @@
   },
   "replaceEquipment": {
     "title": "Replace equipment",
-    "description": "A unit that came back for maintenance or was stolen is replaced by another of the same type. Billing continues from the original date.",
+    "description": "A unit that came back for maintenance or was stolen gives way to another of the same type. The equipment stays a single rental, counted from the original pickup.",
     "old": "Unit to replace",
     "oldOption": "{code} · {name} ({status})",
     "chooseOld": "Choose the unit to replace.",
@@ -577,23 +600,176 @@
     "submit": "Replace",
     "done": "Equipment replaced"
   },
-  "financialReport": {
-    "title": "Financial report",
-    "description": "Includes the equipment that was on the job site on any day of the period.",
-    "from": "From",
-    "to": "To",
-    "enterStart": "Enter the first day.",
-    "enterEnd": "Enter the last day.",
-    "endBeforeStart": "The last day cannot be before the first.",
-    "submit": "Generate report"
-  },
   "documents": {
     "contractFile": "contract.docx",
-    "financialFile": "financial-report.docx",
     "closureFile": "closure.docx",
     "downloaded": "Document downloaded",
     "contractReady": "Contract document downloaded",
     "contractReadyDescription": "The contract can start now.",
-    "failed": "Could not generate the document"
+    "failed": "Could not generate the document",
+    "statementFile": "statement.docx",
+    "closingFile": "monthly-closing.docx"
+  },
+  "financial": {
+    "package": {
+      "monthly": "{count} month | {count} months",
+      "biweekly": "{count} fortnight | {count} fortnights",
+      "weekly": "{count} week | {count} weeks",
+      "daily": "{count} day | {count} days"
+    },
+    "line": {
+      "contracted": "Contracted period ({days})",
+      "usage": "Use on site ({days})",
+      "renewal": "Renewal {index}, from {date} (clause 5)",
+      "renewals": "Renewals {first} to {last}, from {date} (clause 5)",
+      "renewalsDetail": "{count} × ({packages})",
+      "excess": "Excess days (clause 5, sole paragraph)",
+      "excessDaily": "{days} × {rate}: daily rate, no monthly price in the table",
+      "excessMonthly": "{days} × {rate}: 10% of the monthly {monthly}",
+      "indemnity": "Indemnity for {code} (clauses 6 and 7)",
+      "indemnityDetail": "Equipment value on the payment date"
+    },
+    "statement": {
+      "totals": "Totals",
+      "contracted": "Contracted",
+      "contractedHint": "{days} at the signing prices",
+      "rental": "Rental",
+      "untilToday": "Up to today, {date}",
+      "beyondContracted": "Kept beyond the contracted period",
+      "indemnity": "Indemnities",
+      "total": "Total to charge",
+      "totalSoFar": "Total so far",
+      "onReturn": "With the last return on {date}",
+      "frozen": "Recorded at the closing, on {date}",
+      "missingPrice": "No daily rate in the price table of {units}: their charge is zero. Fill in the table of these units.",
+      "emptyTitle": "Nothing to charge",
+      "emptyDescription": "This contract has no equipment to charge.",
+      "clauses": "Calculated by the lease contract clauses: each piece of equipment is charged for the calendar days from pickup to its actual return (clause 1, second paragraph), in the cheapest mix of daily, weekly, fortnightly and monthly rates of the table on the signing date (clause 7); once the contracted period is over, renewal for an equal period at the prices in force on expiry (clause 5) and excess days at 10% of the current monthly price (clause 5, sole paragraph); equipment indemnity at its value on the payment date (clauses 6 and 7).",
+      "plannedPeriod": "Contracted period: {start} to {end}",
+      "period": "From {start} to {end} · {days}",
+      "periodOpen": "Since {start}, still on site on {end} · {days}",
+      "onSite": "On site",
+      "positionTotal": "Total for this equipment",
+      "from": "From",
+      "to": "To",
+      "description": "Description",
+      "detail": "Detail",
+      "amount": "Amount"
+    },
+    "closing": {
+      "description": "Contracts closed in the month and what to charge for each, contracts still active at the end of the month, and the fleet on site, in maintenance and stolen.",
+      "month": "Month",
+      "loadFailed": "Could not load the closing",
+      "partial": "The month is not over: active contracts and fleet are counted until {date}.",
+      "summary": "Month summary",
+      "download": "Download closing",
+      "stats": {
+        "billed": "Billed in closed contracts",
+        "billedHint": "{count} contract closed | {count} contracts closed",
+        "indemnity": "Theft indemnities",
+        "stolenHint": "{count} theft in the month | {count} thefts in the month",
+        "active": "Active at month end",
+        "overdue": "{count} overdue | {count} overdue",
+        "noneOverdue": "None overdue",
+        "contracted": "Contracted in active",
+        "contractedHint": "Value of the contracted periods",
+        "accrued": "Accrued in active",
+        "accruedHint": "Until {date}",
+        "onSite": "Equipment on site",
+        "maintenanceHint": "{count} maintenance in the month | {count} maintenances in the month"
+      },
+      "tabs": {
+        "closed": "Closed",
+        "active": "Active",
+        "onSite": "On site",
+        "maintenance": "Maintenance",
+        "stolen": "Thefts"
+      },
+      "closed": {
+        "title": "Contracts closed in the month",
+        "description": "Every piece of equipment returned. What to charge, from the statement recorded at the closing.",
+        "emptyTitle": "No contract closed",
+        "emptyDescription": "Contracts closed in this month appear here.",
+        "finish": "Closed on",
+        "total": "To charge"
+      },
+      "active": {
+        "title": "Active at the end of the month",
+        "description": "Contracts that crossed the end of the month still active, with what ran until then.",
+        "emptyTitle": "No active contract",
+        "emptyDescription": "Contracts active at the end of this month appear here.",
+        "overdue": "{date} · overdue",
+        "accrued": "Until the closing"
+      },
+      "onSite": {
+        "title": "Equipment on site",
+        "description": "Units that were on a job site at the end of the month.",
+        "emptyTitle": "No equipment on site",
+        "emptyDescription": "Units on a job site at the end of this month appear here.",
+        "since": "On site since"
+      },
+      "maintenance": {
+        "title": "Maintenance in the month",
+        "description": "Units that came back for maintenance during the month.",
+        "emptyTitle": "No maintenance",
+        "emptyDescription": "Units that came back for maintenance in this month appear here.",
+        "date": "Came back on",
+        "replacement": "Replacement",
+        "replaced": "Replaced",
+        "notReplaced": "Not replaced"
+      },
+      "stolen": {
+        "title": "Thefts in the month",
+        "description": "Units registered as stolen during the month, with the indemnity charged.",
+        "emptyTitle": "No theft",
+        "emptyDescription": "Units registered as stolen in this month appear here.",
+        "date": "Registered on"
+      }
+    },
+    "calculator": {
+      "description": "Simulate what a contract costs: equipment, contracted period and the return date, with a defect or theft along the way. Same calculation as real contracts. Nothing is saved.",
+      "noEquipmentTitle": "No access to equipment",
+      "noEquipmentAccess": "The calculator needs the equipment list. Ask an administrator for access to equipment.",
+      "contract": "Simulated contract",
+      "contractDescription": "The contracted period sets the contracted value; the return of each piece of equipment sets what is charged.",
+      "chooseEquipment": "Choose at least one piece of equipment.",
+      "equipmentHint": "The calculation uses the price table in force on the start date.",
+      "enterStart": "Enter the start.",
+      "plannedEnd": "Contracted end",
+      "plannedDays": "{days} contracted",
+      "returnDate": "Return",
+      "substituteReturn": "Replacement return",
+      "leavesOnOccurrence": "Leaves the site on the occurrence",
+      "periodsLabel": "Contracted period",
+      "periods": {
+        "daily": "1 day",
+        "weekly": "1 week",
+        "biweekly": "1 fortnight",
+        "monthly": "1 month"
+      },
+      "enterPlannedEnd": "Enter the contracted end.",
+      "endBeforeStart": "The end cannot be before the start.",
+      "enterReturn": "Enter the return.",
+      "returnBeforeStart": "The return cannot be before the start.",
+      "onSiteDays": "{days} on site",
+      "late": "{days} past the end",
+      "units": "Return of each piece of equipment",
+      "unitsDescription": "Each piece of equipment runs from pickup to its own return. With a defect or theft and no replacement, the unit leaves the site that day; with a replacement, it stays a single rental until the replacement comes back. Theft adds the indemnity.",
+      "occurrence": "Occurrence",
+      "occurrenceDate": "Date",
+      "occurrences": {
+        "none": "None",
+        "defectReplaced": "Defect, replaced",
+        "defect": "Defect, not replaced",
+        "stolenReplaced": "Theft, replaced",
+        "stolen": "Theft, not replaced"
+      },
+      "occurrenceOutside": "The occurrence must be between the start and the return.",
+      "calculate": "Calculate",
+      "result": "Result",
+      "resultDescription": "Contract from {start} to {end}; last return on {returned}.",
+      "stale": "The fields changed after this calculation. Calculate again to see the updated value.",
+      "loadFailed": "Could not load the equipment"
+    }
   }
 }

@@ -165,6 +165,8 @@ export interface LeaseItem {
   finishDate: string | null
   startStatus: EquipmentStatus
   finalStatus: EquipmentStatus | null
+  /** O item que este substitui. A posicao do equipamento e o original e seus substitutos. */
+  replacesItemId: string | null
   createdAt: string
 }
 
@@ -221,4 +223,119 @@ export interface BatchResult {
 export interface GeneratedDocument {
   blob: Blob
   fileName: string | null
+}
+
+/* -------------------------------- financeiro -------------------------------- */
+
+export type PackageKind = 'monthly' | 'biweekly' | 'weekly' | 'daily'
+
+export interface PackageLine {
+  kind: PackageKind
+  count: number
+  unitPrice: number
+  amount: number
+}
+
+/** Uma linha da cobranca de uma posicao, com a clausula do contrato que a manda. */
+export type StatementLine
+  = | { kind: 'contracted' | 'usage', days: number, packages: PackageLine[], amount: number }
+    /** Prorrogacoes seguidas de mesmo preco: `count` delas, a partir da `index`. Extrato antigo nao tem `count`. */
+    | { kind: 'renewal', index: number, count?: number, from: string, days: number, packages: PackageLine[], unitAmount?: number, amount: number }
+    | { kind: 'excess', days: number, monthly: number | null, dailyRate: number, amount: number }
+    | { kind: 'indemnity', itemId: string, code: string, amount: number }
+
+/** Como a posicao terminou. `open` e a que ainda esta na obra. */
+export type PositionEnd = 'returned' | 'defect' | 'stolen' | 'open'
+
+export interface StatementUnit {
+  itemId: string
+  equipmentId: string
+  code: string
+  name: string
+  start: string
+  end: string | null
+  finalStatus: ReturnStatus | null
+}
+
+/** O lugar de um equipamento no contrato: o original e os substitutos, cobrados como um aluguel so. */
+export interface StatementPosition {
+  end: PositionEnd
+  /** Equipamento sem diaria na tabela: a conta sai zerada. */
+  missingPrice: boolean
+  start: string
+  endDate: string
+  days: number
+  units: StatementUnit[]
+  lines: StatementLine[]
+  contracted: number
+  rental: number
+  indemnity: number
+  total: number
+}
+
+/** `GET /finantial/:id`: o extrato do contrato pelas clausulas. */
+export interface ContractStatement {
+  contractId: string
+  status: LeaseStatus
+  startDate: string
+  plannedEndDate: string
+  finishDate: string | null
+  asOf: string
+  plannedDays: number
+  /** Concluido: o extrato gravado no fechamento, que nao muda mais. */
+  frozen: boolean
+  positions: StatementPosition[]
+  totals: { contracted: number, rental: number, indemnity: number, total: number }
+}
+
+/** `GET /finantial?month=`: o fechamento do mes. */
+export interface MonthlyClosing {
+  month: string
+  from: string
+  to: string
+  asOf: string
+  summary: {
+    closedContracts: number
+    billed: number
+    rental: number
+    indemnity: number
+    activeContracts: number
+    activeContracted: number
+    activeAccrued: number
+    overdueContracts: number
+    onSite: number
+    maintenance: number
+    stolen: number
+    /** Indenizacao dos roubos do mes, com contrato fechado ou nao. */
+    stolenIndemnity: number
+  }
+  closed: { contractId: string, client: string, lessee: string, startDate: string, finishDate: string, rental: number, indemnity: number, total: number }[]
+  active: { contractId: string, client: string, lessee: string, startDate: string, plannedEndDate: string, overdue: boolean, contracted: number, accrued: number }[]
+  onSite: { contractId: string, lessee: string, code: string, name: string, since: string }[]
+  maintenance: { contractId: string, lessee: string, code: string, name: string, date: string, replaced: boolean }[]
+  stolen: { contractId: string, lessee: string, code: string, name: string, date: string, indemnity: number }[]
+}
+
+/** Defeito ou roubo de um equipamento da simulacao, com ou sem substituto. */
+export interface SimulationEvent {
+  kind: 'defect' | 'stolen'
+  date: string
+  replaced: boolean
+}
+
+/**
+ * Um equipamento da simulacao e a devolucao dele. Com substituto, e a devolucao
+ * do substituto; sem, a unidade sai da obra na ocorrencia.
+ */
+export interface SimulationItem {
+  equipmentId: string
+  returnDate: string
+  event?: SimulationEvent
+}
+
+/** `POST /finantial/simulate`: a calculadora. Cada equipamento volta no proprio dia. */
+export interface SimulationInput {
+  items: SimulationItem[]
+  startDate: string
+  plannedEndDate: string
 }

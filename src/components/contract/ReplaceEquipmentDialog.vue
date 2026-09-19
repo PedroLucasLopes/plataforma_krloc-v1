@@ -50,8 +50,9 @@
    * outro disponivel do mesmo tipo.
    *
    * A API exige o mesmo codigo, outra unidade e o mesmo numero de acessorios, e
-   * cobra o substituto desde a data em que o antigo saiu. A tela so oferece o
-   * que cumpre as tres regras.
+   * liga o substituto ao item que ele substitui: o equipamento segue como um
+   * aluguel so, contado desde a retirada original. A tela so oferece o que
+   * cumpre as tres regras.
    */
   const props = defineProps<{
     contract: Contract

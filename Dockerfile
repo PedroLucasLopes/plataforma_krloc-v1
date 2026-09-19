@@ -18,7 +18,7 @@ RUN npm run build
 #######################  runtime  ######################
 # nginx-unprivileged ja escuta em 8080 e roda como usuario nao-root,
 # que e exatamente o contrato do Cloud Run.
-FROM nginxinc/nginx-unprivileged:1.27-alpine AS runtime
+FROM nginxinc/nginx-unprivileged:1.30-alpine AS runtime
 
 # Vazio desliga o repasse de /api: em producao quem roteia e o rewrite do
 # hosting, e o nginx nunca recebe essas chamadas. O compose preenche.

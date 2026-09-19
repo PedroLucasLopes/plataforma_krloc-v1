@@ -17,7 +17,9 @@
     "unavailable": "No disponible",
     "signInError": "Inicio de sesión fallido",
     "forbidden": "No permitido",
-    "notFound": "No encontrado"
+    "notFound": "No encontrado",
+    "closing": "Cierre del mes",
+    "calculator": "Calculadora de contrato"
   },
   "nav": {
     "overview": "Resumen",
@@ -28,7 +30,10 @@
     "equipment": "Equipos",
     "accessories": "Accesorios",
     "clients": "Clientes",
-    "lessees": "Obras"
+    "lessees": "Obras",
+    "financial": "Finanzas",
+    "closing": "Cierre del mes",
+    "calculator": "Calculadora"
   },
   "common": {
     "name": "Nombre",
@@ -47,7 +52,8 @@
   "counts": {
     "equipment": "{count} unidad | {count} unidades",
     "contracts": "{count} contrato | {count} contratos",
-    "lessees": "{count} obra | {count} obras"
+    "lessees": "{count} obra | {count} obras",
+    "days": "{count} día | {count} días"
   },
   "status": {
     "equipment": {
@@ -64,6 +70,12 @@
       "ACTIVE": "Activo",
       "COMPLETED": "Concluido",
       "CANCELLED": "Cancelado"
+    },
+    "position": {
+      "returned": "Devuelto",
+      "defect": "Falla",
+      "stolen": "Robado",
+      "open": "En la obra"
     }
   },
   "roles": {
@@ -128,6 +140,7 @@
       "no_activity_in_period": "Ningún movimiento de equipos en este período.",
       "no_results": "No se encontró nada.",
       "origin_not_allowed": "Esta solicitud vino de un origen que la API no acepta.",
+      "period_too_long": "El período supera lo que acepta el cobro.",
       "replace_accessories": "El sustituto no tiene los mismos accesorios.",
       "replace_duplicate": "La misma unidad aparece dos veces en la sustitución.",
       "replace_new_unavailable": "El sustituto dejó de estar disponible.",
@@ -139,7 +152,9 @@
       "zipcode_not_found": "No se encontró este CEP."
     },
     "field": {
+      "date_out_of_range": "Use una fecha entre 2000 y 2099.",
       "end_before_start": "La fecha final no puede ser anterior a la inicial.",
+      "period_too_long": "El período es demasiado largo: hasta 5 años de contrato, y devolución hasta 10 años después del inicio.",
       "phone_invalid": "Escribe un teléfono brasileño válido, con código de área.",
       "state_invalid": "Usa la sigla del estado, como SP.",
       "tax_id_invalid": "Escribe un CPF o CNPJ válido.",
@@ -503,9 +518,9 @@
       "start": "Empezar contrato",
       "add": "Agregar equipo",
       "cancel": "Cancelar contrato",
-      "report": "Informe financiero",
       "replace": "Sustituir equipo",
       "close": "Cerrar contrato",
+      "statement": "Descargar extracto",
       "closure": "Documento de cierre"
     },
     "items": {
@@ -526,7 +541,7 @@
       "cancelTitle": "¿Cancelar este contrato?",
       "cancelMessage": "Los equipos reservados vuelven a estar disponibles. Un contrato cancelado no se reabre.",
       "closeTitle": "¿Cerrar este contrato?",
-      "closeMessage": "Para cerrar, cada equipo necesita tener registrada su devolución.",
+      "closeMessage": "Para cerrar, cada equipo necesita tener registrada su devolución. El extracto del cierre queda registrado y no cambia después.",
       "removeTitle": "¿Quitar el equipo del contrato?",
       "removeMessage": "{code} vuelve a estar disponible y sale de este contrato."
     },
@@ -535,6 +550,14 @@
       "cancel": "Contrato cancelado",
       "close": "Contrato cerrado",
       "remove": "Equipo quitado del contrato"
+    },
+    "financial": {
+      "title": "Finanzas",
+      "pending": "El valor contratado, con la tabla congelada en este contrato (cláusula 7.ª).",
+      "active": "Lo que corrió hasta hoy, como si todos los equipos volvieran hoy.",
+      "completed": "El extracto registrado en el cierre. Ya no cambia.",
+      "completedComputed": "Calculado ahora: este contrato cerró antes de que el extracto empezara a registrarse.",
+      "loadFailed": "No se pudo cargar el extracto"
     }
   },
   "addEquipment": {
@@ -554,9 +577,9 @@
       "STOLEN": "Lo robaron"
     },
     "hints": {
-      "AVAILABLE": "La unidad queda disponible para otros contratos.",
-      "MAINTENANCE": "La unidad va a mantenimiento y puede sustituirse en este contrato.",
-      "STOLEN": "La unidad queda abierta en este contrato hasta resolverse, y puede sustituirse."
+      "AVAILABLE": "La unidad queda disponible para otros contratos, y su cobro corre hasta hoy.",
+      "MAINTENANCE": "La unidad va a mantenimiento. Sin sustituto, su cobro se detiene hoy; con sustituto, sigue un solo alquiler.",
+      "STOLEN": "El uso se cobra hasta hoy, más la indemnización del equipo (cláusulas 6.ª y 7.ª). La unidad puede sustituirse."
     },
     "done": {
       "AVAILABLE": "{code} devuelto y disponible de nuevo",
@@ -566,7 +589,7 @@
   },
   "replaceEquipment": {
     "title": "Sustituir equipo",
-    "description": "La unidad que volvió a mantenimiento o fue robada deja su lugar a otra del mismo tipo. El cobro sigue desde la fecha original.",
+    "description": "La unidad que volvió a mantenimiento o fue robada deja su lugar a otra del mismo tipo. El equipo sigue como un solo alquiler, contado desde el retiro original.",
     "old": "Unidad a sustituir",
     "oldOption": "{code} · {name} ({status})",
     "chooseOld": "Elige la unidad a sustituir.",
@@ -577,23 +600,176 @@
     "submit": "Sustituir",
     "done": "Equipo sustituido"
   },
-  "financialReport": {
-    "title": "Informe financiero",
-    "description": "Incluye los equipos que estuvieron en la obra algún día del período.",
-    "from": "Desde",
-    "to": "Hasta",
-    "enterStart": "Escribe el primer día.",
-    "enterEnd": "Escribe el último día.",
-    "endBeforeStart": "El último día no puede ser anterior al primero.",
-    "submit": "Generar informe"
-  },
   "documents": {
     "contractFile": "contrato.docx",
-    "financialFile": "informe-financiero.docx",
     "closureFile": "cierre.docx",
     "downloaded": "Documento descargado",
     "contractReady": "Documento del contrato descargado",
     "contractReadyDescription": "El contrato ya puede empezar.",
-    "failed": "No se pudo generar el documento"
+    "failed": "No se pudo generar el documento",
+    "statementFile": "extracto.docx",
+    "closingFile": "cierre-del-mes.docx"
+  },
+  "financial": {
+    "package": {
+      "monthly": "{count} mes | {count} meses",
+      "biweekly": "{count} quincena | {count} quincenas",
+      "weekly": "{count} semana | {count} semanas",
+      "daily": "{count} día | {count} días"
+    },
+    "line": {
+      "contracted": "Período contratado ({days})",
+      "usage": "Uso en la obra ({days})",
+      "renewal": "Prórroga {index}, desde el {date} (cláusula 5.ª)",
+      "renewals": "Prórrogas {first} a {last}, desde el {date} (cláusula 5.ª)",
+      "renewalsDetail": "{count} × ({packages})",
+      "excess": "Días excedentes (párrafo único de la cláusula 5.ª)",
+      "excessDaily": "{days} × {rate}: tarifa diaria, sin valor mensual en la tabla",
+      "excessMonthly": "{days} × {rate}: 10% del mensual de {monthly}",
+      "indemnity": "Indemnización de {code} (cláusulas 6.ª y 7.ª)",
+      "indemnityDetail": "Valor del equipo en el día del pago"
+    },
+    "statement": {
+      "totals": "Totales",
+      "contracted": "Contratado",
+      "contractedHint": "{days} con la tabla de la firma",
+      "rental": "Alquiler",
+      "untilToday": "Hasta hoy, {date}",
+      "beyondContracted": "Se quedó más allá del período contratado",
+      "indemnity": "Indemnizaciones",
+      "total": "Total a cobrar",
+      "totalSoFar": "Total hasta hoy",
+      "onReturn": "Con la última devolución el {date}",
+      "frozen": "Registrado en el cierre, el {date}",
+      "missingPrice": "Sin tarifa diaria en la tabla de precios de {units}: su cobro sale en cero. Complete la tabla de esas unidades.",
+      "emptyTitle": "Nada que cobrar",
+      "emptyDescription": "Este contrato no tiene equipos que cobrar.",
+      "clauses": "Cálculo según las cláusulas del contrato de alquiler: cada equipo se cobra por los días corridos del retiro a su devolución efectiva (1.ª, párrafo segundo), en la combinación más barata de día, semana, quincena y mes de la tabla de la fecha de la firma (7.ª); vencido el período contratado, prórroga por igual período con la tabla vigente al vencimiento (5.ª) y días excedentes al 10% del valor mensual actual (párrafo único de la 5.ª); indemnización del equipo por su valor en el día del pago (6.ª y 7.ª).",
+      "plannedPeriod": "Período contratado: del {start} al {end}",
+      "period": "Del {start} al {end} · {days}",
+      "periodOpen": "Desde el {start}, aún en la obra el {end} · {days}",
+      "onSite": "En la obra",
+      "positionTotal": "Total de este equipo",
+      "from": "Desde",
+      "to": "Hasta",
+      "description": "Descripción",
+      "detail": "Detalle",
+      "amount": "Valor"
+    },
+    "closing": {
+      "description": "Los contratos cerrados en el mes y cuánto cobrar de cada uno, los que siguen activos al final del mes, y la flota en la obra, en mantenimiento y robada.",
+      "month": "Mes",
+      "loadFailed": "No se pudo cargar el cierre",
+      "partial": "El mes aún no terminó: contratos activos y flota contados hasta {date}.",
+      "summary": "Resumen del mes",
+      "download": "Descargar cierre",
+      "stats": {
+        "billed": "Facturado en los cerrados",
+        "billedHint": "{count} contrato cerrado | {count} contratos cerrados",
+        "indemnity": "Indemnizaciones por robo",
+        "stolenHint": "{count} robo en el mes | {count} robos en el mes",
+        "active": "Activos al final del mes",
+        "overdue": "{count} atrasado | {count} atrasados",
+        "noneOverdue": "Ninguno atrasado",
+        "contracted": "Contratado en los activos",
+        "contractedHint": "Valor de los períodos contratados",
+        "accrued": "Corrido en los activos",
+        "accruedHint": "Hasta {date}",
+        "onSite": "Equipos en la obra",
+        "maintenanceHint": "{count} mantenimiento en el mes | {count} mantenimientos en el mes"
+      },
+      "tabs": {
+        "closed": "Cerrados",
+        "active": "Activos",
+        "onSite": "En la obra",
+        "maintenance": "Mantenimientos",
+        "stolen": "Robos"
+      },
+      "closed": {
+        "title": "Contratos cerrados en el mes",
+        "description": "Todos los equipos devueltos. Lo que cobrar, según el extracto registrado en el cierre.",
+        "emptyTitle": "Ningún contrato cerrado",
+        "emptyDescription": "Los contratos cerrados en este mes aparecen aquí.",
+        "finish": "Cerrado el",
+        "total": "A cobrar"
+      },
+      "active": {
+        "title": "Activos al final del mes",
+        "description": "Contratos que cruzaron el final del mes aún activos, con lo que corrió hasta entonces.",
+        "emptyTitle": "Ningún contrato activo",
+        "emptyDescription": "Los contratos activos al final de este mes aparecen aquí.",
+        "overdue": "{date} · atrasado",
+        "accrued": "Hasta el cierre"
+      },
+      "onSite": {
+        "title": "Equipos en la obra",
+        "description": "Las unidades que estaban en alguna obra al final del mes.",
+        "emptyTitle": "Ningún equipo en la obra",
+        "emptyDescription": "Las unidades en obra al final de este mes aparecen aquí.",
+        "since": "En la obra desde"
+      },
+      "maintenance": {
+        "title": "Mantenimientos en el mes",
+        "description": "Las unidades que volvieron a mantenimiento durante el mes.",
+        "emptyTitle": "Ningún mantenimiento",
+        "emptyDescription": "Las unidades que volvieron a mantenimiento en este mes aparecen aquí.",
+        "date": "Volvió el",
+        "replacement": "Sustituto",
+        "replaced": "Sustituido",
+        "notReplaced": "Sin sustituto"
+      },
+      "stolen": {
+        "title": "Robos en el mes",
+        "description": "Las unidades registradas como robadas durante el mes, con la indemnización cobrada.",
+        "emptyTitle": "Ningún robo",
+        "emptyDescription": "Las unidades registradas como robadas en este mes aparecen aquí.",
+        "date": "Registrado el"
+      }
+    },
+    "calculator": {
+      "description": "Simule cuánto cuesta un contrato: equipos, período contratado y la fecha de devolución, con una falla o un robo en el camino. La cuenta es la misma de los contratos reales. No se guarda nada.",
+      "noEquipmentTitle": "Sin acceso a los equipos",
+      "noEquipmentAccess": "La calculadora necesita la lista de equipos. Pida a un administrador el acceso a los equipos.",
+      "contract": "Contrato simulado",
+      "contractDescription": "El período contratado define el valor contratado; la devolución de cada equipo define lo que se cobra.",
+      "chooseEquipment": "Elija al menos un equipo.",
+      "equipmentHint": "La cuenta usa la tabla de precios vigente en la fecha de inicio.",
+      "enterStart": "Indique el inicio.",
+      "plannedEnd": "Fin contratado",
+      "plannedDays": "{days} contratados",
+      "returnDate": "Devolución",
+      "substituteReturn": "Devolución del sustituto",
+      "leavesOnOccurrence": "Sale de la obra en la incidencia",
+      "periodsLabel": "Período contratado",
+      "periods": {
+        "daily": "1 día",
+        "weekly": "1 semana",
+        "biweekly": "1 quincena",
+        "monthly": "1 mes"
+      },
+      "enterPlannedEnd": "Indique el fin contratado.",
+      "endBeforeStart": "El fin no puede ser antes del inicio.",
+      "enterReturn": "Indique la devolución.",
+      "returnBeforeStart": "La devolución no puede ser antes del inicio.",
+      "onSiteDays": "{days} en la obra",
+      "late": "{days} después del fin",
+      "units": "Devolución de cada equipo",
+      "unitsDescription": "Cada equipo corre desde el retiro hasta su propia devolución. Con falla o robo sin sustituto, la unidad sale de la obra ese día; con sustituto, sigue un solo alquiler hasta la vuelta del sustituto. El robo suma la indemnización.",
+      "occurrence": "Incidencia",
+      "occurrenceDate": "Fecha",
+      "occurrences": {
+        "none": "Ninguna",
+        "defectReplaced": "Falla, con sustituto",
+        "defect": "Falla, sin sustituto",
+        "stolenReplaced": "Robo, con sustituto",
+        "stolen": "Robo, sin sustituto"
+      },
+      "occurrenceOutside": "La incidencia debe estar entre el inicio y la devolución.",
+      "calculate": "Calcular",
+      "result": "Resultado",
+      "resultDescription": "Contrato del {start} al {end}; última devolución el {returned}.",
+      "stale": "Los campos cambiaron después de este cálculo. Calcule de nuevo para ver el valor actualizado.",
+      "loadFailed": "No se pudieron cargar los equipos"
+    }
   }
 }

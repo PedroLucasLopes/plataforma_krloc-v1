@@ -14,6 +14,7 @@ import type {
   Contract,
   ContractFilters,
   ContractInput,
+  ContractStatement,
   Equipment,
   EquipmentFilters,
   EquipmentInput,
@@ -22,8 +23,10 @@ import type {
   LesseeInput,
   ListQuery,
   Me,
+  MonthlyClosing,
   Replacement,
   ReturnStatus,
+  SimulationInput,
 } from '@/types/krloc'
 import { download, request } from './http'
 
@@ -120,12 +123,29 @@ export const contractsApi = {
     request<Contract>(`/elease/replace/${id(contractId)}`, { method: 'PUT', body: { replacements } }),
 }
 
+/**
+ * A cobranca pelas clausulas do contrato. A conta mora na API, e a calculadora
+ * usa a mesma: a tela nunca refaz a regra.
+ */
+export const financialApi = {
+  statement: (contractId: string) => request<ContractStatement>(`/finantial/${id(contractId)}`),
+  closing: (month: string) => request<MonthlyClosing>('/finantial', { query: { month } }),
+  /** `POST` porque leva equipamentos e eventos no corpo; nao grava nada. */
+  simulate: (body: SimulationInput) =>
+    request<ContractStatement>('/finantial/simulate', { method: 'POST', body }),
+}
+
 /** Documentos `.docx`. Gerar o do contrato e o que libera o inicio dele. */
 export const documentsApi = {
   contract: (contractId: string): Promise<GeneratedDocument> =>
     download(`/generate/contract/${id(contractId)}`, { method: 'POST' }),
-  financial: (contractId: string, period: { startDate: string, endDate: string }): Promise<GeneratedDocument> =>
-    download(`/generate/finantial/${id(contractId)}`, { method: 'POST', body: period }),
+  /** O extrato do contrato ativo: o que correu ate hoje. */
+  statement: (contractId: string): Promise<GeneratedDocument> =>
+    download(`/generate/finantial/${id(contractId)}`, { method: 'POST' }),
+  /** A baixa do contrato concluido (clausula 10a). */
   closure: (contractId: string): Promise<GeneratedDocument> =>
     download(`/generate/closure/${id(contractId)}`, { method: 'POST' }),
+  /** O fechamento do mes. */
+  closing: (month: string): Promise<GeneratedDocument> =>
+    download('/generate/finantial', { method: 'POST', body: { month } }),
 }

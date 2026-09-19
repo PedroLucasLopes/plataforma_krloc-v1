@@ -114,13 +114,33 @@
           :rows="accessories"
         />
       </DlSectionCard>
+
+      <DlSectionCard
+        v-if="showFinancial"
+        :description="financialDescription"
+        :title="t('contract.financial.title')"
+      >
+        <DlSkeleton v-if="statementLoading && !statement" height="120px" variant="block" />
+
+        <DlEmptyState
+          v-else-if="statementError && !statement"
+          compact
+          :description="statementError"
+          icon="mdi-alert-circle-outline"
+          :title="t('contract.financial.loadFailed')"
+          tone="error"
+        >
+          <DlButton icon="mdi-refresh" variant="outlined" @click="loadStatement">{{ t('common.tryAgain') }}</DlButton>
+        </DlEmptyState>
+
+        <StatementBreakdown v-else-if="statement" :statement="statement" />
+      </DlSectionCard>
     </template>
 
     <template v-if="contract">
       <AddEquipmentDialog v-model:open="dialogs.add" :contract="contract" />
       <ReturnEquipmentDialog v-model:open="dialogs.return" :contract="contract" :item="returning" />
       <ReplaceEquipmentDialog v-model:open="dialogs.replace" :contract="contract" :items="replaceable" />
-      <FinancialReportDialog v-model:open="dialogs.report" :contract="contract" />
     </template>
 
     <DlConfirmDialog
@@ -137,7 +157,7 @@
 </template>
 
 <script lang="ts" setup>
-  import type { EquipmentStatus, LeaseItem } from '@/types/krloc'
+  import type { ContractStatement, EquipmentStatus, LeaseItem } from '@/types/krloc'
   import {
     type Column,
     type DescriptionItem,
@@ -155,17 +175,18 @@
     type RowAction,
     toast,
   } from '@pedrolucaslopes/dotlog-ui'
-  import { computed, onMounted, reactive, ref } from 'vue'
+  import { computed, onMounted, reactive, ref, shallowRef, watch } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useRoute, useRouter } from 'vue-router'
   import AddEquipmentDialog from '@/components/contract/AddEquipmentDialog.vue'
-  import FinancialReportDialog from '@/components/contract/FinancialReportDialog.vue'
   import ReplaceEquipmentDialog from '@/components/contract/ReplaceEquipmentDialog.vue'
   import ReturnEquipmentDialog from '@/components/contract/ReturnEquipmentDialog.vue'
+  import StatementBreakdown from '@/components/financial/StatementBreakdown.vue'
   import { useConfirm } from '@/composables/useConfirm'
   import { EQUIPMENT_STATUS, leaseExits, leaseSteps } from '@/constants/status'
   import { ApiError, errorMessage } from '@/services/http'
   import { useContractsStore } from '@/stores/contracts'
+  import { useFinancialStore } from '@/stores/financial'
   import { useSessionStore } from '@/stores/session'
   import { saveDocument } from '@/utils/files'
   import { daysUntil, formatDate, formatDateTime, formatMoney, unitCode } from '@/utils/format'
@@ -183,6 +204,7 @@
   const router = useRouter()
   const session = useSessionStore()
   const store = useContractsStore()
+  const financial = useFinancialStore()
 
   const contractId = computed(() => String(route.params.id))
   const contract = computed(() => (store.current?.id === contractId.value ? store.current : null))
@@ -333,8 +355,10 @@
     { key: 'situation', label: t('common.status'), width: '150px' },
   ])
 
-  /** Na obra, sem volta registrada. So o que saiu como locado a API deixa registrar. */
-  const isOut = (item: LeaseItem | undefined): boolean => item?.startStatus === 'LEASED' && item.finalStatus === null
+  /** Na obra, sem volta registrada: o locado e o substituto. A API registra a volta dos dois. */
+  function isOut (item: LeaseItem | undefined): boolean {
+    return (item?.startStatus === 'LEASED' || item?.startStatus === 'REPLACE') && item.finalStatus === null
+  }
 
   const itemActions = computed<RowAction<ItemRow>[]>(() => {
     const current = contract.value
@@ -370,12 +394,15 @@
     return []
   })
 
-  /** Voltou para manutencao ou foi roubado, e ainda nao ganhou substituto. */
+  /**
+   * Voltou para manutencao ou foi roubado, e ainda nao ganhou substituto. O
+   * substituto aponta para quem ele substitui; o que quebrar tambem pode ser trocado.
+   */
   const replaceable = computed(() => {
-    const replacedCodes = new Set(leaseItems.value.filter(item => item.startStatus === 'REPLACE').map(item => item.equipmentCode))
+    const replaced = new Set(leaseItems.value.map(item => item.replacesItemId).filter(Boolean))
 
     return leaseItems.value.filter(item =>
-      (item.finalStatus === 'MAINTENANCE' || item.finalStatus === 'STOLEN') && !replacedCodes.has(item.equipmentCode))
+      (item.finalStatus === 'MAINTENANCE' || item.finalStatus === 'STOLEN') && !replaced.has(item.id))
   })
 
   /* ------------------------------- acessorios ------------------------------ */
@@ -398,6 +425,65 @@
     { key: 'name', label: t('common.name') },
     { key: 'indemnity', label: t('rates.indemnity'), align: 'end', width: '160px' },
   ])
+
+  /* ------------------------------ financeiro ------------------------------ */
+
+  /** Cancelado nao cobra nada: a secao so aparece quando ha conta a mostrar. */
+  const showFinancial = computed(() =>
+    !!contract.value && contract.value.status !== 'CANCELLED' && session.can('GET', '/finantial/:id'))
+
+  const statement = shallowRef<ContractStatement | null>(null)
+  const statementLoading = ref(false)
+  const statementError = ref<string | null>(null)
+
+  async function loadStatement (): Promise<void> {
+    const current = contract.value
+
+    if (!current || !showFinancial.value) {
+      statement.value = null
+
+      return
+    }
+
+    statementLoading.value = true
+    statementError.value = null
+
+    try {
+      const result = await financial.statement(current.id)
+
+      // Outro contrato aberto no meio do caminho nao herda este extrato.
+      if (contract.value?.id === current.id) {
+        statement.value = result
+      }
+    } catch (error) {
+      statementError.value = errorMessage(error)
+    } finally {
+      statementLoading.value = false
+    }
+  }
+
+  // Toda acao rele o contrato, e o extrato vem junto: volta, troca, fechamento.
+  watch(contract, (current, previous) => {
+    if (current?.id !== previous?.id) {
+      statement.value = null
+    }
+
+    void loadStatement()
+  })
+
+  const financialDescription = computed(() => {
+    switch (contract.value?.status) {
+      case 'PENDING': {
+        return t('contract.financial.pending')
+      }
+      case 'ACTIVE': {
+        return t('contract.financial.active')
+      }
+      default: {
+        return statement.value?.frozen ? t('contract.financial.completed') : t('contract.financial.completedComputed')
+      }
+    }
+  })
 
   /* -------------------------------- acoes -------------------------------- */
 
@@ -431,7 +517,7 @@
       }
       case 'ACTIVE': {
         return [
-          { key: 'report', label: t('contract.actions.report'), icon: 'mdi-file-chart-outline', method: 'POST', path: `/generate/finantial/${id}`, variant: 'outlined' },
+          { key: 'statement', label: t('contract.actions.statement'), icon: 'mdi-file-chart-outline', method: 'POST', path: `/generate/finantial/${id}`, variant: 'outlined' },
           ...(replaceable.value.length > 0
             ? [{ key: 'replace', label: t('contract.actions.replace'), icon: 'mdi-swap-horizontal', method: 'PUT', path: `/elease/replace/${id}`, variant: 'tonal' as const }]
             : []),
@@ -449,7 +535,7 @@
     }
   })
 
-  const dialogs = reactive({ add: false, return: false, replace: false, report: false })
+  const dialogs = reactive({ add: false, return: false, replace: false })
   const returning = ref<LeaseItem | null>(null)
 
   type PendingKind = 'start' | 'cancel' | 'close' | 'remove'
@@ -481,7 +567,7 @@
 
   const downloading = ref(false)
 
-  async function download (kind: 'document' | 'closure'): Promise<void> {
+  async function download (kind: 'document' | 'statement' | 'closure'): Promise<void> {
     const current = contract.value
 
     if (!current || downloading.value) {
@@ -494,6 +580,9 @@
       if (kind === 'document') {
         saveDocument(await store.contractDocument(current.id), t('documents.contractFile'))
         toast.success(t('documents.contractReady'), { description: t('documents.contractReadyDescription') })
+      } else if (kind === 'statement') {
+        saveDocument(await store.statementDocument(current.id), t('documents.statementFile'))
+        toast.success(t('documents.downloaded'))
       } else {
         saveDocument(await store.closureDocument(current.id), t('documents.closureFile'))
         toast.success(t('documents.downloaded'))
@@ -508,14 +597,14 @@
   function onAction (key: string): void {
     switch (key) {
       case 'document':
+      case 'statement':
       case 'closure': {
         void download(key)
 
         break
       }
       case 'add':
-      case 'replace':
-      case 'report': {
+      case 'replace': {
         dialogs[key] = true
 
         break
@@ -604,28 +693,8 @@
 </script>
 
 <style scoped>
+/* O aviso em si e global, em `styles/main.scss`. Aqui, so o respiro abaixo do ciclo. */
 .note {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin: 20px 0 0;
-  padding: 10px 12px;
-  font-size: 13px;
-  line-height: 1.5;
-  border-radius: var(--dl-radius-sm, 6px);
-  color: var(--dl-on-surface);
-  background: rgba(var(--note-rgb), 0.08);
-  border: 1px solid rgba(var(--note-rgb), 0.32);
-
-  --note-rgb: var(--v-theme-on-surface-variant);
+  margin-top: 20px;
 }
-
-.note .v-icon {
-  flex-shrink: 0;
-  color: rgb(var(--note-rgb));
-}
-
-.note--success { --note-rgb: var(--v-theme-success); }
-.note--warning { --note-rgb: var(--v-theme-warning); }
-.note--error { --note-rgb: var(--v-theme-error); }
 </style>

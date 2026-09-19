@@ -39,6 +39,21 @@ export const CURRENCY = 'BRL'
  */
 export const ZIPCODE_LOOKUP_URL = 'https://viacep.com.br/ws'
 
+/*
+ * Limites de data da API, conferidos antes pela tela. A conta da cobranca
+ * percorre os dias do periodo, e a API recusa o que passa daqui.
+ */
+
+/** Maior periodo contratado: cinco anos. */
+export const MAX_CONTRACT_DAYS = 1830
+
+/** Maior devolucao simulada, contada do inicio: dez anos. */
+export const MAX_SIMULATION_DAYS = 3660
+
+/** Datas aceitas: de 2000 ao fim de 2099, no formato do campo de data. */
+export const DATE_INPUT_MIN = '2000-01-01'
+export const DATE_INPUT_MAX = '2099-12-31'
+
 /** Teto do upload de planilha na API (`FileSizeValidationPipe`). */
 export const IMPORT_MAX_BYTES = 2 * 1024 * 1024
 

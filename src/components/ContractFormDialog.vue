@@ -65,10 +65,11 @@
   import { computed, watch } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useForm } from '@/composables/useForm'
+  import { MAX_CONTRACT_DAYS } from '@/constants/api'
   import { errorMessage } from '@/services/http'
   import { useContractsStore } from '@/stores/contracts'
   import { useLookupsStore } from '@/stores/lookups'
-  import { dateInputToIso, formatMoney, todayInput, unitCode } from '@/utils/format'
+  import { dateInputDays, dateInputToIso, formatMoney, isDateInputInRange, todayInput, unitCode } from '@/utils/format'
   import { asOption, asOptions, asText } from '@/utils/forms'
 
   /**
@@ -143,7 +144,18 @@
       return t('contractForm.enterEnd')
     }
 
-    return state.form.startDate && state.form.endDate < state.form.startDate ? t('contractForm.endBeforeStart') : null
+    if (!isDateInputInRange(state.form.endDate)) {
+      return t('errors.field.date_out_of_range')
+    }
+
+    if (state.form.startDate && state.form.endDate < state.form.startDate) {
+      return t('contractForm.endBeforeStart')
+    }
+
+    // A API recusa periodo acima disso: a conta percorre cada dia dele.
+    const days = dateInputDays(state.form.startDate, state.form.endDate)
+
+    return days !== null && days > MAX_CONTRACT_DAYS ? t('errors.field.period_too_long') : null
   })
 
   async function save (): Promise<void> {

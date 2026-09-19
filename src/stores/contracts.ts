@@ -77,8 +77,7 @@ export const useContractsStore = defineStore('contracts', () => {
     /** Gerar o documento do contrato grava a data dele, que libera o inicio. */
     contractDocument: (contractId: string): Promise<GeneratedDocument> =>
       act(contractId, () => documentsApi.contract(contractId)),
-    financialReport: (contractId: string, period: { startDate: string, endDate: string }) =>
-      documentsApi.financial(contractId, period),
+    statementDocument: (contractId: string) => documentsApi.statement(contractId),
     closureDocument: (contractId: string) => documentsApi.closure(contractId),
   }
 })

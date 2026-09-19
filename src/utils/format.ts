@@ -1,4 +1,4 @@
-import { CURRENCY } from '@/constants/api'
+import { CURRENCY, DATE_INPUT_MAX, DATE_INPUT_MIN } from '@/constants/api'
 import { currentLocale } from '@/plugins/i18n'
 
 const DATE: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' }
@@ -91,6 +91,41 @@ export function isoToDateInput (iso: string | null | undefined): string {
   const date = parse(iso)
 
   return date ? `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` : ''
+}
+
+/** O dia de uma data do campo, contado desde 1970. */
+function dateInputDay (value: string): number | null {
+  const [year, month, date] = value.split('-').map(Number)
+
+  return year && month && date ? Date.UTC(year, month - 1, date) / MS_PER_DAY : null
+}
+
+/** Dias de uma data do campo a outra, com sinal. `null` se falta data. */
+export function dateInputDelta (from: string, to: string): number | null {
+  const start = dateInputDay(from)
+  const end = dateInputDay(to)
+
+  return start === null || end === null ? null : end - start
+}
+
+/** Dias corridos entre duas datas do campo, como a API conta: ao menos um. `null` se falta data ou a ordem esta invertida. */
+export function dateInputDays (start: string, end: string): number | null {
+  const delta = dateInputDelta(start, end)
+
+  return delta === null || delta < 0 ? null : Math.max(1, delta)
+}
+
+/** A data do campo cai no intervalo que a API aceita. */
+export function isDateInputInRange (value: string): boolean {
+  return value >= DATE_INPUT_MIN && value <= DATE_INPUT_MAX
+}
+
+/** A data do campo somada de `days` dias, no formato do campo. */
+export function addDaysToDateInput (value: string, days: number): string {
+  const [year, month, date] = value.split('-').map(Number)
+  const result = new Date(year ?? 1970, (month ?? 1) - 1, (date ?? 1) + days)
+
+  return `${result.getFullYear()}-${pad(result.getMonth() + 1)}-${pad(result.getDate())}`
 }
 
 /**

@@ -61,6 +61,7 @@ export const ERROR_CODES: ReadonlySet<string> = new Set([
   'contract_last_equipment',
   'contract_items_out',
   'no_activity_in_period',
+  'period_too_long',
   // substituicao
   'replace_duplicate',
   'replace_old_state',
@@ -82,6 +83,8 @@ const FIELD_ERROR_CODES: ReadonlySet<string> = new Set([
   'zipcode_invalid',
   'state_invalid',
   'end_before_start',
+  'date_out_of_range',
+  'period_too_long',
 ])
 
 function leaseLabel (status: string): string {
