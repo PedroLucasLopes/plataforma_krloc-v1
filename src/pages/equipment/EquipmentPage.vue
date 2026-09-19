@@ -167,9 +167,8 @@
   ])
 
   /**
-   * Locado nao se edita: a API recusa enquanto o contrato estiver ativo. Reservado
-   * e substituto a API deixaria desativar, e o contrato ficaria com um equipamento
-   * que nao existe mais; a tela trava os tres.
+   * Reservado, locado e substituto estao num contrato, e so ele os muda: a API
+   * recusa editar e desativar os tres (`equipment_leased`).
    */
   const rowActions = computed<RowAction<EquipmentRow>[]>(() => [
     {
@@ -178,7 +177,7 @@
       icon: 'mdi-pencil-outline',
       method: 'PUT',
       path: '/equipment/:id',
-      unavailable: row => row.status === 'LEASED',
+      unavailable: row => CONTRACT_EQUIPMENT_STATUS.includes(row.status),
     },
     {
       key: 'retire',

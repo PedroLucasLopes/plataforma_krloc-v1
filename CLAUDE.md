@@ -165,8 +165,8 @@ lê toda string entre aspas simples ou crase com cara de chave: um namespace `im
 | `/contracts/:id` | `GET /elease/:id` | o ciclo do contrato e tudo o que se faz com ele |
 | `/equipment` | `GET /equipment` | unidades, busca por nome ou código (texto com `KR` busca pelo código), situação na URL |
 | `/equipment/:id` | `GET /equipment/:id` | identificação, tabela de preços, acessórios associados |
-| `/accessories` | `GET /accessory` | acessórios e estoque |
-| `/clients` · `/clients/:id` | `GET /client` · `GET /client/:id` | clientes, ficha e as obras do cliente |
+| `/accessories` | `GET /accessory` | acessórios e estoque, busca por nome |
+| `/clients` · `/clients/:id` | `GET /client` · `GET /client/:id` | clientes, busca por nome, e-mail completo, CPF ou CNPJ, ficha e as obras do cliente |
 | `/lessees` · `/lessees/:id` | `GET /lessee` · `GET /lessee/:id` | obras, ficha e contratos da obra |
 | `/financial` | `GET /finantial` | fechamento do mês: cartões, abas de fechados, ativos, na obra, manutenções e roubos, e o documento do mês. O mês fica na URL |
 | `/financial/calculator` | `POST /finantial/simulate` | calculadora de contrato: equipamentos, período contratado e a devolução e a ocorrência de cada equipamento |
@@ -259,20 +259,21 @@ ele repete à mão o desenho, o `primary` e o `onPrimary` da biblioteca, com a v
 | Comportamento da API | Onde é tratado |
 |---|---|
 | Listagem vazia responde 404 | `request(..., { emptyOn404: true })` devolve `[]` |
-| Não há total de registros; `limit` tem piso 10 e não tem teto | paginação cega, `PAGE_SIZE = 20`, `LOOKUP_LIMIT = 500` |
-| `GET /accessory` ignora filtro e página (controller sem `@Query()`) | a lista mostra os 10 primeiros; a busca por nome não filtra até a API ser corrigida |
-| Filtro de cliente por CPF ou CNPJ quebra na API | a busca de clientes vai só por nome e por e-mail completo |
-| CNPJ só é aceito sem pontuação | `normalizeTaxId` limpa antes de enviar; CPF e CNPJ conferidos pelo dígito antes |
-| Endereço é conferido contra a base de CEP | `AddressFields` consulta a mesma base e trava o que ela preencheu |
-| Na edição, a API confere o endereço enviado contra o endereço **antigo** | edição manda só CEP e número; a API busca o resto pelo CEP |
-| CEP sem logradouro grava a rua vazia (`??` em vez de `\|\|`) | limitação conhecida: a rua digitada não fica |
-| Datas de contrato têm dia, não hora | o front manda meio-dia local, que cai no mesmo dia em qualquer fuso |
+| Não há total de registros; `limit` tem piso 10 e teto 500 (`MAX_LIMIT`) | paginação cega, `PAGE_SIZE = 20`. As consultas de apoio pedem o teto, `LOOKUP_LIMIT = 500`, e o painel mostra "500+" quando chega nele |
+| Busca de cliente: `name` e `taxId` aceitam trecho; `email`, só o endereço completo (`@IsEmail()`) | uma caixa só, em `stores/clients.ts`: e-mail vai como `email`; dígitos com a pontuação do documento, ou um CPF ou CNPJ inteiro que confere, vão limpos como `taxId`; o resto, como `name` |
+| CNPJ só é aceito sem pontuação, e o `tax_id` é gravado como chega | `normalizeTaxId` limpa antes de enviar, o CNPJ alfanumérico inclusive, e a busca por documento procura nesse formato; CPF e CNPJ conferidos pelo dígito antes |
+| O filtro de contrato por equipamento olha o equipamento ainda ligado ao contrato (`Equipment.eleaseId`), não os itens | limitação conhecida: contrato concluído ou cancelado, e o equipamento que já voltou, não aparecem nessa busca |
+| Endereço é conferido contra a base de CEP: o que ela tem vence, e o que ela deixa vazio, como a rua de CEP geral de cidade, vem do corpo. Sem rua nenhuma, `address_required` | `AddressFields` consulta a mesma base, no cadastro e na edição, trava o que ela preencheu e pede a rua que ela não tem |
+| Na edição, a API só consulta a base quando o CEP muda ou chega campo de endereço, e confere contra a base, nunca contra o gravado. Com CEP novo, o endereço gravado não vale mais | `addressInput` manda o que mudou; com CEP novo, o endereço inteiro do formulário. Ao abrir a edição, a tela pergunta à base pelo CEP gravado e destrava o que ela não preenche |
+| Datas de contrato têm dia, não hora; cobrança e documentos contam o dia de São Paulo | o front manda meio-dia local, que cai no mesmo dia de São Paulo de −12h a +9h, o Brasil inteiro incluído |
 | Começar exige `contract_generated` | "Começar contrato" só aparece depois de gerar o documento |
-| Cancelar recusa contrato com equipamento | a recusa aparece dentro do modal; hoje nenhum contrato com equipamento cancela |
-| Apagar obra sempre recusa; mandar o cliente na edição da obra sempre recusa | a recusa aparece no modal; a edição não manda o cliente, que fica travado |
+| Cancelar só vale em `PENDING`, e com todo equipamento ainda reservado; senão, `contract_equipment_not_reserved` | "Cancelar" só aparece no pendente, e a recusa aparece dentro do modal |
+| Obra com contrato, até encerrado, não se apaga (`lessee_has_contracts`) | "Apagar" só aparece para obra sem contrato |
+| Obra não troca de cliente: o atual passa, outro é recusado (`lessee_owner_change`) | a edição trava o cliente e não o manda, porque não há o que mudar |
 | A volta aceita `LEASED` e `REPLACE`; substituto nasce `REPLACE` e aponta para o item que substitui | a volta vale para os dois; substituível é quem ainda não tem `replacedBy` |
 | A cobrança é por equipamento, até a volta de cada um | a tela não refaz conta: lê `GET /finantial/:id` e a calculadora |
-| Desativar equipamento reservado ou substituto a API aceita | a tela esconde o botão: o contrato ficaria sem o equipamento |
+| Editar e desativar equipamento reservado, locado ou substituto é recusado (`equipment_leased`): só o contrato o muda | a tela esconde as duas ações nessas situações |
+| O cadastro de equipamento só grava `AVAILABLE`, `MAINTENANCE` e `STOLEN`, e a edição sem `status` grava `AVAILABLE`: o `PartialType` herda o padrão do cadastro | o formulário manda a situação sempre, e oferece essas três mais a atual. Desativado mantido numa edição é recusado, com a mensagem genérica da validação |
 | Remover acessório com estoque tira uma unidade; sem estoque, apaga | o modal diz qual dos dois vai acontecer |
 | Erro sai com código em `error`, e valor em membro próprio | `apiErrorText`, em `constants/messages.ts`: código conhecido vira texto, o resto cai no status |
 | Upload até 2 MB | `DlFileDrop` recusa antes; o nginx aceita até 3 MB, acima do padrão de 1 MB |
@@ -330,6 +331,11 @@ não só no `.env` do `start:dev`: com a chave revogada o SSO recusa a troca do 
 
 ⚠️ **A base de CEP responde 200 com `"erro": "true"`**, em texto, para CEP que não existe.
 `services/zipcode.ts` aceita os dois formatos.
+
+⚠️ **`defineModel` com `v-model` do pai só relê o valor quando o pai redesenha.** Duas atribuições na
+mesma volta partem as duas do valor antigo, e a segunda desfaz a primeira. Era o que trazia de volta o
+CEP antigo quando um CEP novo chegava de uma vez, colado, sobre endereço travado: a cidade vinha do CEP
+novo e o CEP ficava o velho. `AddressFields` monta o endereço numa atribuição só.
 
 ⚠️ **Verificação com o painel do navegador oculto engana.** Sem pintura, `requestAnimationFrame` e as
 transições param: a troca de página fica presa na tela anterior e o gráfico no esqueleto. Confira o DOM.

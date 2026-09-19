@@ -131,9 +131,9 @@ export function addDaysToDateInput (value: string, days: number): string {
 /**
  * Data escolhida no campo como instante para a API: meio-dia local.
  *
- * Contrato tem dia, nao hora. Meia-noite em UTC apareceria como o dia anterior
- * no Brasil; meio-dia local cai no mesmo dia em qualquer fuso de -11h a +11h, e
- * e o que os documentos do servidor, em UTC, imprimem.
+ * Contrato tem dia, nao hora, e a API conta o dia em Sao Paulo: na cobranca e
+ * nos documentos. Meia-noite em UTC seria o dia anterior la; meio-dia local cai
+ * no mesmo dia de Sao Paulo em todo fuso de -12h a +9h, o Brasil inteiro incluido.
  */
 export function dateInputToIso (value: string): string {
   const [year, month, day] = value.split('-').map(Number)

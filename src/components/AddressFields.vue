@@ -19,11 +19,11 @@
     <DlTextField
       class="address__street"
       :disabled="disabled"
-      :error="attempted && !derived && !address.street.trim() ? t('address.enterStreet') : null"
+      :error="attempted && !address.street.trim() ? t('address.enterStreet') : null"
       :label="t('address.street')"
       :model-value="address.street"
-      :readonly="derived || locked.has('street')"
-      :required="!derived"
+      :readonly="locked.has('street')"
+      required
       @update:model-value="value => update('street', asText(value))"
     />
 
@@ -41,7 +41,7 @@
       :disabled="disabled"
       :label="t('address.neighborhood')"
       :model-value="address.neighborhood"
-      :readonly="derived || locked.has('neighborhood')"
+      :readonly="locked.has('neighborhood')"
       @update:model-value="value => update('neighborhood', asText(value))"
     />
 
@@ -50,7 +50,7 @@
       :disabled="disabled"
       :label="t('address.city')"
       :model-value="address.city"
-      :readonly="derived || locked.has('city')"
+      :readonly="locked.has('city')"
       @update:model-value="value => update('city', asText(value))"
     />
 
@@ -61,7 +61,7 @@
       :label="t('address.state')"
       :model-value="address.state"
       placeholder="SP"
-      :readonly="derived || locked.has('state')"
+      :readonly="locked.has('state')"
       @update:model-value="value => update('state', asText(value).toUpperCase().slice(0, 2))"
     />
   </div>
@@ -70,7 +70,7 @@
 <script lang="ts" setup>
   import type { ZipcodeAddress } from '@/services/zipcode'
   import { DlTextField } from '@pedrolucaslopes/dotlog-ui'
-  import { computed, onBeforeUnmount, reactive, ref, useId } from 'vue'
+  import { computed, onBeforeUnmount, onMounted, reactive, ref, useId } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { lookupZipcode } from '@/services/zipcode'
   import { zipcodeDigits } from '@/utils/documents'
@@ -88,7 +88,7 @@
   type FilledField = 'street' | 'neighborhood' | 'city' | 'state'
 
   /**
-   * Endereco conferido pelo CEP.
+   * Endereco conferido pelo CEP, no cadastro e na edicao.
    *
    * A API compara logradouro, bairro, cidade e UF com a base de CEP e recusa o
    * que nao bater. Por isso a tela consulta a mesma base assim que o CEP fica
@@ -96,20 +96,20 @@
    * onde a base diz "Rua Augusta" so produziria um erro no servidor.
    *
    * CEP que nao desce ate a rua, comum em cidade pequena, deixa o logradouro
-   * aberto. Consulta que falha deixa tudo aberto, e a API confere do mesmo jeito.
+   * aberto, e a API grava o digitado. Consulta que falha deixa tudo aberto, e a
+   * API confere do mesmo jeito.
    */
   const props = withDefaults(defineProps<{
     /** Liga as mensagens de validacao, depois da primeira tentativa de salvar. */
     attempted?: boolean
     disabled?: boolean
-    /** O endereco inicial veio do servidor, ja conferido: comeca travado. */
-    verified?: boolean
     /**
-     * O endereco so sai do CEP, como na edicao: a API grava o que a base de CEP
-     * disser e recusa rua enviada. Logradouro, bairro, cidade e UF ficam so para ler.
+     * O endereco inicial veio do servidor, ja conferido, como na edicao: comeca
+     * travado, e a base do CEP diz o que fica assim. O que ela nao preenche, como
+     * a rua de um CEP geral de cidade, abre para corrigir.
      */
-    derived?: boolean
-  }>(), { attempted: false, disabled: false, verified: false, derived: false })
+    verified?: boolean
+  }>(), { attempted: false, disabled: false, verified: false })
 
   const address = defineModel<AddressForm>({ required: true })
 
@@ -153,10 +153,10 @@
     }
 
     if (lookup.state === 'failed') {
-      return props.derived ? t('address.lookupFailedDerived') : t('address.lookupFailed')
+      return t('address.lookupFailed')
     }
 
-    return props.derived ? t('address.derivedHint') : t('address.zipcodeHint')
+    return t('address.zipcodeHint')
   })
 
   async function onZipcode (value: unknown): Promise<void> {
@@ -164,15 +164,20 @@
     const digits = zipcodeDigits(text)
     const changed = digits !== zipcodeDigits(address.value.zipcode)
 
-    update('zipcode', text)
+    // O endereco travado era do CEP anterior. Com outro CEP, ele nao vale mais.
+    // Numa atribuicao so: o `defineModel` so relê o valor quando o pai redesenha,
+    // e uma segunda, na mesma volta, partiria do CEP antigo e o traria de volta.
+    const cleared = changed && locked.value.size > 0
+
+    address.value = cleared
+      ? { ...address.value, zipcode: text, street: '', neighborhood: '', city: '', state: '' }
+      : { ...address.value, zipcode: text }
 
     if (!changed) {
       return
     }
 
-    // O endereco travado era do CEP anterior. Com outro CEP, ele nao vale mais.
-    if (locked.value.size > 0) {
-      address.value = { ...address.value, street: '', neighborhood: '', city: '', state: '' }
+    if (cleared) {
       locked.value = new Set()
     }
 
@@ -201,7 +206,11 @@
     }
   }
 
-  function fill (found: ZipcodeAddress): void {
+  /**
+   * Preenche e trava o que a base do CEP sabe. `keepSaved` e o endereco que veio
+   * do servidor: o gravado fica como esta, e so o que ficou vazio nele vem da base.
+   */
+  function fill (found: ZipcodeAddress, keepSaved = false): void {
     const values: Record<FilledField, string> = {
       street: found.street,
       neighborhood: found.neighborhood,
@@ -210,14 +219,56 @@
     }
 
     const known = FILLED.filter(field => values[field].trim())
+    const filled = keepSaved ? known.filter(field => !address.value[field].trim()) : known
 
     address.value = {
       ...address.value,
-      ...Object.fromEntries(known.map(field => [field, values[field]])),
+      ...Object.fromEntries(filled.map(field => [field, values[field]])),
     }
     locked.value = new Set(known)
     lookup.state = 'found'
   }
+
+  /**
+   * O endereco gravado chega todo travado, e a base do CEP diz o que fica assim.
+   * CEP que nao existe mais, ou consulta que falha, deixa como chegou: o gravado
+   * ja foi conferido, e trocar o CEP destrava tudo.
+   */
+  async function confirmSaved (): Promise<void> {
+    const digits = zipcodeDigits(address.value.zipcode)
+
+    if (digits.length !== 8) {
+      return
+    }
+
+    const current = new AbortController()
+
+    controller = current
+    lookup.state = 'loading'
+
+    try {
+      const found = await lookupZipcode(digits, current.signal)
+
+      if (found) {
+        fill(found, true)
+
+        return
+      }
+    } catch (error) {
+      // A pessoa trocou o CEP no meio da consulta: a consulta nova manda agora.
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return
+      }
+    }
+
+    lookup.state = 'idle'
+  }
+
+  onMounted(() => {
+    if (props.verified) {
+      void confirmSaved()
+    }
+  })
 </script>
 
 <style scoped>

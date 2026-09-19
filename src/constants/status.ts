@@ -40,7 +40,7 @@ export const EQUIPMENT_STATUS = labelled<EquipmentStatus>('equipment', {
 /** Situacao que a propria tela de equipamento pode gravar. O resto e do contrato. */
 export const EDITABLE_EQUIPMENT_STATUS: EquipmentStatus[] = ['AVAILABLE', 'MAINTENANCE', 'STOLEN']
 
-/** Situacao que so o contrato muda. Editar o equipamento nessas trava o campo. */
+/** Situacao que so o contrato muda. Nelas a API recusa editar e desativar o equipamento. */
 export const CONTRACT_EQUIPMENT_STATUS: EquipmentStatus[] = ['PENDING', 'LEASED', 'REPLACE']
 
 export const LEASE_STATUS = labelled<LeaseStatus>('lease', {

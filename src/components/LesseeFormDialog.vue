@@ -37,7 +37,6 @@
       :key="round"
       v-model="state.form.address"
       :attempted="state.attempted"
-      :derived="!!lessee"
       :disabled="state.submitting"
       :verified="!!lessee"
     />
@@ -60,8 +59,9 @@
   import { asOption, asText } from '@/utils/forms'
 
   /**
-   * Cadastro e edicao de obra. A obra nasce de um cliente e nao troca de dono:
-   * na edicao o cliente fica travado, e a API nem recebe o campo.
+   * Cadastro e edicao de obra. A obra nasce de um cliente e nao troca de dono: a
+   * API aceita o cliente atual e recusa outro (`lessee_owner_change`). Na edicao o
+   * cliente fica travado, e nem vai, porque nao ha o que mudar.
    */
   const props = defineProps<{
     /** Sem valor, cadastra. */
@@ -121,7 +121,7 @@
   async function save (): Promise<void> {
     const { form } = state
     const editing = props.lessee
-    const valid = !!form.name.trim() && !!form.clientId && addressValid(form.address, !!editing)
+    const valid = !!form.name.trim() && !!form.clientId && addressValid(form.address)
 
     const input: LesseeInput = {
       name: form.name.trim(),

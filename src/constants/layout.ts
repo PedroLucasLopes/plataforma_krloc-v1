@@ -15,7 +15,9 @@ export const PAGE_SIZE = 20
 
 /**
  * Teto das consultas de apoio: seletor de obra e de equipamento, nome no lugar
- * de id e painel. O backend nao impoe teto ao `limit`; este e o nosso.
+ * de id e painel. E o teto do `limit` no backend (`MAX_LIMIT`): acima dele a
+ * resposta vem cortada em 500 do mesmo jeito, e o painel, que mostra "500+" ao
+ * chegar no teto, deixaria de saber que chegou.
  */
 export const LOOKUP_LIMIT = 500
 

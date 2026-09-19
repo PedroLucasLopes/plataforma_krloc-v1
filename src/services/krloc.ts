@@ -10,6 +10,7 @@ import type {
   AccessoryInput,
   BatchResult,
   Client,
+  ClientFilters,
   ClientInput,
   Contract,
   ContractFilters,
@@ -76,7 +77,7 @@ export const accessoriesApi = {
 }
 
 export const clientsApi = {
-  list: (query: ListQuery & { name?: string, email?: string } = {}) =>
+  list: (query: ListQuery & ClientFilters = {}) =>
     request<Client[]>('/client', { query, emptyOn404: true }),
   get: (clientId: string) => request<Client>(`/client/${id(clientId)}`),
   create: (body: ClientInput) => request<Client>('/client', { method: 'POST', body }),

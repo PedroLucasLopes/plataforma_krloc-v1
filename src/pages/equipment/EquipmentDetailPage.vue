@@ -213,8 +213,9 @@
   const headerActions = computed<HeaderAction[]>(() => {
     const current = equipment.value
 
-    // Locado nao se edita nem se retira. O caminho existe de novo quando o contrato devolver.
-    if (!current || current.status === 'LEASED') {
+    // Reservado, locado e substituto so mudam pelo contrato: a API recusa editar e
+    // desativar. O caminho existe de novo quando o contrato soltar o equipamento.
+    if (!current || CONTRACT_EQUIPMENT_STATUS.includes(current.status)) {
       return []
     }
 
@@ -223,8 +224,7 @@
       { key: 'edit', label: t('common.edit'), icon: 'mdi-pencil-outline', method: 'PUT', path, variant: 'outlined' },
     ]
 
-    // Reservado e substituto estao num contrato: desativar deixaria o contrato sem o equipamento.
-    if (current.status !== 'RETIRED' && !CONTRACT_EQUIPMENT_STATUS.includes(current.status)) {
+    if (current.status !== 'RETIRED') {
       actions.push({ key: 'retire', label: t('equipment.retire'), icon: 'mdi-archive-arrow-down-outline', method: 'DELETE', path, color: 'error', variant: 'text' })
     }
 

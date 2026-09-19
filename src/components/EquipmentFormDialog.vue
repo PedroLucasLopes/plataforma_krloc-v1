@@ -34,8 +34,7 @@
 
     <DlSelect
       :clearable="false"
-      :disabled="managedByContract"
-      :hint="managedByContract ? t('equipmentForm.statusByContract') : t('equipmentForm.statusHint')"
+      :hint="t('equipmentForm.statusHint')"
       :label="t('common.status')"
       :model-value="state.form.status"
       :options="statusOptions"
@@ -76,7 +75,7 @@
   import { useI18n } from 'vue-i18n'
   import { useForm } from '@/composables/useForm'
   import { CURRENCY } from '@/constants/api'
-  import { CONTRACT_EQUIPMENT_STATUS, EDITABLE_EQUIPMENT_STATUS, EQUIPMENT_STATUS } from '@/constants/status'
+  import { EDITABLE_EQUIPMENT_STATUS, EQUIPMENT_STATUS } from '@/constants/status'
   import { useEquipmentStore } from '@/stores/equipment'
   import { unitCode } from '@/utils/format'
   import { asOption, asText, EQUIPMENT_CODE_PATTERN } from '@/utils/forms'
@@ -85,8 +84,8 @@
    * Cadastro e edicao de equipamento.
    *
    * O numero da unidade nao e digitado: a API numera em sequencia. O codigo e o
-   * tipo, com o prefixo `KR`. Situacao que so o contrato muda (reservado, locado,
-   * substituto) aparece travada.
+   * tipo, com o prefixo `KR`. Equipamento reservado, locado ou substituto nao
+   * chega aqui: so o contrato o muda, e a tela nao oferece a edicao.
    */
   const props = defineProps<{
     /** Sem valor, cadastra. */
@@ -143,8 +142,6 @@
       : {})
   })
 
-  const managedByContract = computed(() => !!props.equipment && CONTRACT_EQUIPMENT_STATUS.includes(props.equipment.status))
-
   const statusOptions = computed(() => {
     const allowed = new Set<EquipmentStatus>(props.equipment ? [...EDITABLE_EQUIPMENT_STATUS, props.equipment.status] : ['AVAILABLE', 'MAINTENANCE'])
 
@@ -174,8 +171,8 @@
       p_biweekly: form.p_biweekly,
       p_monthly: form.p_monthly,
       p_indemnity: form.p_indemnity ?? 0,
-      // Situacao do contrato nao sai daqui: a API aceitaria, e o contrato ficaria inconsistente.
-      ...(managedByContract.value ? {} : { status: form.status }),
+      // Vai sempre: na edicao sem ela, a API grava `AVAILABLE`, o padrao do cadastro.
+      status: form.status,
     }
 
     const ok = await state.submit(valid, async () => {

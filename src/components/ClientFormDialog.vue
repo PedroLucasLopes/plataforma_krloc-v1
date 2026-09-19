@@ -52,7 +52,6 @@
       :key="round"
       v-model="state.form.address"
       :attempted="state.attempted"
-      :derived="!!client"
       :disabled="state.submitting"
       :verified="!!client"
     />
@@ -76,7 +75,8 @@
    * Cadastro e edicao de cliente, o dono do contrato.
    *
    * CPF e CNPJ sao conferidos pelo digito verificador antes de sair, e vao sem
-   * pontuacao: a API so aceita o CNPJ assim. O endereco sai do CEP.
+   * pontuacao: a API so aceita o CNPJ assim, grava o documento como chega, e a
+   * busca por documento procura nesse formato. O endereco sai do CEP.
    */
   const props = defineProps<{
     /** Sem valor, cadastra. */
@@ -132,7 +132,7 @@
       && isValidTaxId(form.taxId)
       && (!email || EMAIL_PATTERN.test(email))
       && (!form.phone.trim() || phoneDigits.value.length >= 10)
-      && addressValid(form.address, !!editing)
+      && addressValid(form.address)
 
     const input: ClientInput = {
       name: form.name.trim(),

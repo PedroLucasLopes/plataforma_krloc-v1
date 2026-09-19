@@ -1,22 +1,45 @@
-import type { Client, ClientInput, Lessee } from '@/types/krloc'
+import type { Client, ClientFilters, ClientInput, Lessee } from '@/types/krloc'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { clientsApi, lesseesApi } from '@/services/krloc'
+import { isValidTaxId, normalizeTaxId } from '@/utils/documents'
 import { EMAIL_PATTERN } from '@/utils/forms'
 import { usePagedList } from './helpers/pagedList'
 import { useLookupsStore } from './lookups'
 
+/** Trecho de CPF ou CNPJ: so digitos e a pontuacao do documento. Nome tem letra. */
+const TAX_ID_FRAGMENT = /^(?=.*\d)[\d\s./-]+$/
+
 /**
- * Clientes: os donos dos contratos, paginados no servidor.
+ * A busca e uma caixa so, e cada filtro da API tem a sua forma:
  *
- * A busca e uma caixa so. O filtro `email` da API exige endereco completo, entao
- * texto com cara de e-mail vai como `email`, e o resto como `name`, que aceita
- * trecho. O filtro por CPF e CNPJ da API nao funciona e fica de fora.
+ * - `email` exige o endereco completo, entao so texto com cara de e-mail vai nele;
+ * - `taxId` e trecho do documento como foi gravado, e a tela grava so digitos e
+ *   letras. Trecho de digitos vai limpo, e o documento inteiro que confere tambem,
+ *   o CNPJ alfanumerico inclusive;
+ * - o resto e trecho do nome.
  */
+function searchFilters (value: string): ClientFilters {
+  if (!value) {
+    return {}
+  }
+
+  if (EMAIL_PATTERN.test(value)) {
+    return { email: value }
+  }
+
+  if (TAX_ID_FRAGMENT.test(value) || isValidTaxId(value)) {
+    return { taxId: normalizeTaxId(value) }
+  }
+
+  return { name: value }
+}
+
+/** Clientes: os donos dos contratos, paginados no servidor. */
 export const useClientsStore = defineStore('clients', () => {
   const lookups = useLookupsStore()
 
-  const list = usePagedList<Client, { name?: string, email?: string }>(
+  const list = usePagedList<Client, ClientFilters>(
     query => clientsApi.list({ ...query, order: 'asc' }),
     {},
   )
@@ -28,15 +51,10 @@ export const useClientsStore = defineStore('clients', () => {
   const lesseesOf = ref<string | null>(null)
 
   function applySearch (term: string): Promise<void> {
-    const value = term.trim()
-
     search.value = term
 
-    return list.applyFilters(
-      EMAIL_PATTERN.test(value)
-        ? { email: value, name: undefined }
-        : { name: value || undefined, email: undefined },
-    )
+    // Um filtro por vez: o que a busca anterior usou sai.
+    return list.applyFilters({ name: undefined, email: undefined, taxId: undefined, ...searchFilters(term.trim()) })
   }
 
   async function fetchOne (clientId: string): Promise<Client> {

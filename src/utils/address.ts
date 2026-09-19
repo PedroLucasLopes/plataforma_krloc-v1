@@ -1,5 +1,5 @@
 import type { AddressForm } from '@/components/AddressFields.vue'
-import type { Address } from '@/types/krloc'
+import type { Address, AddressInput } from '@/types/krloc'
 import { formatZipcode, zipcodeDigits } from './documents'
 import { asInteger, STATE_PATTERN } from './forms'
 
@@ -22,41 +22,60 @@ export function addressOf (record: Address | null): AddressForm {
   }
 }
 
-/** Na edicao o endereco sai do CEP, e so CEP e numero sao conferidos. */
-export function addressValid (form: AddressForm, editing = false): boolean {
+/**
+ * CEP completo e rua: a da base do CEP, ou a digitada quando o CEP nao desce ate
+ * a rua. Sem nenhuma das duas, a API recusa com `address_required`.
+ */
+export function addressValid (form: AddressForm): boolean {
   return zipcodeDigits(form.zipcode).length === 8
-    && (editing || !!form.street.trim())
+    && !!form.street.trim()
     && (!form.number.trim() || asInteger(form.number) !== null)
     && (!form.state || STATE_PATTERN.test(form.state))
 }
 
+type AddressField = 'address' | 'neighborhood' | 'city' | 'state'
+
 /**
- * O que vai para a API.
+ * O que vai para a API. Ela confere o endereco contra a base do CEP, grava o que
+ * a base disser, e completa com o que veio no corpo o que a base deixa vazio.
  *
- * **Cadastro** leva o endereco inteiro: a API confere cada campo contra o CEP e
- * grava o que a base de CEP disser.
+ * **Cadastro, ou CEP novo na edicao,** leva o endereco inteiro: com CEP novo, o
+ * endereco gravado deixa de valer, e a API so usa o que chegar.
  *
- * **Edicao** leva so o CEP, quando mudou, e o numero. A API confere o endereco
- * enviado contra o endereco ANTIGO antes de olhar o CEP novo, entao mandar a rua
- * do CEP novo seria recusado. Sem ela, a API busca o endereco pelo CEP e grava.
+ * **Edicao com o mesmo CEP** leva so o que mudou. Sem campo de endereco, a API
+ * nem consulta a base; com um, confere e completa o resto pelo gravado.
  */
-export function addressInput (form: AddressForm, editing?: Address | null): Record<string, string | number> {
+export function addressInput (form: AddressForm, editing?: Address | null): AddressInput {
   const zipcode = zipcodeDigits(form.zipcode)
   const number = asInteger(form.number)
-  const withNumber: Record<string, number> = number === null ? {} : { number }
+  const typed: Record<AddressField, string> = {
+    address: form.street.trim(),
+    neighborhood: form.neighborhood.trim(),
+    city: form.city.trim(),
+    state: form.state.trim(),
+  }
+  const whole = { zipcode, ...Object.fromEntries(Object.entries(typed).filter(([, value]) => value)) }
 
-  if (editing) {
-    return zipcode === zipcodeDigits(editing.zipcode) ? withNumber : { zipcode, ...withNumber }
+  if (!editing) {
+    return { ...whole, ...(number === null ? {} : { number }) }
   }
 
-  const optional = (value: string): string | undefined => value.trim() || undefined
+  // Numero apagado vai como `null`: sem o campo, o gravado ficaria.
+  const numberInput = number === editing.number ? {} : { number }
 
-  return Object.fromEntries(Object.entries({
-    zipcode,
-    address: form.street.trim(),
-    ...withNumber,
-    neighborhood: optional(form.neighborhood),
-    city: optional(form.city),
-    state: optional(form.state),
-  }).filter(([, value]) => value !== undefined)) as Record<string, string | number>
+  if (zipcode !== zipcodeDigits(editing.zipcode)) {
+    return { ...whole, ...numberInput }
+  }
+
+  const saved: Record<AddressField, string> = {
+    address: editing.address.trim(),
+    neighborhood: editing.neighborhood?.trim() ?? '',
+    city: editing.city.trim(),
+    state: editing.state?.trim() ?? '',
+  }
+
+  return {
+    ...Object.fromEntries(Object.entries(typed).filter(([field, value]) => value !== saved[field as AddressField])),
+    ...numberInput,
+  }
 }

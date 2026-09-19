@@ -101,6 +101,16 @@ export interface Address {
   country: string | null
 }
 
+/** O endereco que vai para a API. `number: null` apaga o numero gravado. */
+export interface AddressInput {
+  zipcode?: string
+  address?: string
+  number?: number | null
+  neighborhood?: string
+  city?: string
+  state?: string
+}
+
 export interface Client extends Address {
   id: string
   name: string
@@ -113,17 +123,18 @@ export interface Client extends Address {
   lessees?: Lessee[]
 }
 
-export interface ClientInput {
+/** `name` e `taxId` aceitam trecho; `email`, so o endereco completo. */
+export interface ClientFilters {
+  name?: string
+  email?: string
+  taxId?: string
+}
+
+export interface ClientInput extends AddressInput {
   name?: string
   email?: string
   phone?: string
   tax_id?: string
-  address?: string
-  number?: number
-  zipcode?: string
-  neighborhood?: string
-  city?: string
-  state?: string
 }
 
 /** Obra: onde o equipamento fica. Pertence a um cliente, que e o dono do contrato. */
@@ -137,15 +148,9 @@ export interface Lessee extends Address {
   eleases?: Contract[]
 }
 
-export interface LesseeInput {
+export interface LesseeInput extends AddressInput {
   name?: string
   clientId?: string
-  address?: string
-  number?: number
-  zipcode?: string
-  neighborhood?: string
-  city?: string
-  state?: string
 }
 
 /** Retrato do equipamento no contrato. O preco fica congelado aqui. */
