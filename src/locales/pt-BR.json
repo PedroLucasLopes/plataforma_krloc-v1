@@ -78,12 +78,6 @@
       "open": "Na obra"
     }
   },
-  "roles": {
-    "SUPERADMIN": "Superadministrador",
-    "ADMIN": "Administrador",
-    "MANAGER": "Gestor",
-    "VIEWER": "Leitor"
-  },
   "rates": {
     "daily": "Diária",
     "weekly": "Semanal",

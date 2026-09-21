@@ -78,12 +78,6 @@
       "open": "On site"
     }
   },
-  "roles": {
-    "SUPERADMIN": "Super admin",
-    "ADMIN": "Admin",
-    "MANAGER": "Manager",
-    "VIEWER": "Viewer"
-  },
   "rates": {
     "daily": "Daily rate",
     "weekly": "Weekly rate",
