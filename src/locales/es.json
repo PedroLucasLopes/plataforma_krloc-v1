@@ -78,6 +78,13 @@
       "open": "En la obra"
     }
   },
+  "rates": {
+    "daily": "Tarifa diaria",
+    "weekly": "Tarifa semanal",
+    "biweekly": "Tarifa quincenal",
+    "monthly": "Tarifa mensual",
+    "indemnity": "Indemnización"
+  },
   "errors": {
     "fallback": "Algo salió mal. Inténtalo de nuevo.",
     "status": {
