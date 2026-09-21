@@ -140,5 +140,7 @@ export function roleLabel(roles: readonly string[]): string | undefined {
     return undefined;
   }
 
-  return DEFAULT_ROLES.has(role) ? role : customRoleLabel(role);
+  return DEFAULT_ROLES.has(role)
+    ? customRoleLabel(role)
+    : customRoleLabel(role);
 }
