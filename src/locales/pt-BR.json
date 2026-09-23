@@ -122,6 +122,8 @@
       "equipment_leased": "Este equipamento está num contrato, e só o contrato o muda.",
       "equipment_not_found": "Este equipamento não existe.",
       "equipment_not_leased": "Este equipamento não está na obra por este contrato.",
+      "equipment_not_retired": "Este equipamento não está desativado, então não há o que reativar.",
+      "equipment_retired": "Este equipamento está desativado. Reative-o para trazê-lo de volta.",
       "equipment_reserved": "Algum equipamento foi reservado por outro contrato enquanto isso.",
       "equipment_unavailable": "Algum equipamento deixou de estar disponível.",
       "file_missing": "Escolha um arquivo para enviar.",
@@ -261,8 +263,12 @@
     "emptySearch": "Nenhum equipamento corresponde à busca.",
     "retire": "Desativar",
     "retireTitle": "Desativar este equipamento?",
-    "retireMessage": "{code} sai da lista de disponíveis e não entra em contrato novo. O histórico dos contratos fica.",
-    "retired": "Equipamento desativado"
+    "retireMessage": "{code} sai da lista de disponíveis e não entra em contrato novo. O histórico dos contratos fica, e só a reativação traz a unidade de volta.",
+    "retired": "Equipamento desativado",
+    "reactivate": "Reativar",
+    "reactivateTitle": "Reativar este equipamento?",
+    "reactivateMessage": "{code} volta à frota como disponível, e entra em contrato de novo.",
+    "reactivated": "Equipamento reativado"
   },
   "equipmentForm": {
     "createTitle": "Cadastrar equipamento",

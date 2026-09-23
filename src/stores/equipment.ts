@@ -74,6 +74,12 @@ export const useEquipmentStore = defineStore('equipment', () => {
     await reload(equipmentId)
   }
 
+  /** Desativado volta a frota so por aqui, e volta disponivel. */
+  async function reactivate (equipmentId: string): Promise<void> {
+    await equipmentApi.reactivate(equipmentId)
+    await reload(equipmentId)
+  }
+
   async function importCsv (file: File): Promise<BatchResult> {
     const result = await equipmentApi.importCsv(file)
 
@@ -88,5 +94,5 @@ export const useEquipmentStore = defineStore('equipment', () => {
     await reload(equipmentId)
   }
 
-  return { ...list, search, current, applySearch, fetchOne, create, update, retire, importCsv, associate }
+  return { ...list, search, current, applySearch, fetchOne, create, update, retire, reactivate, importCsv, associate }
 })

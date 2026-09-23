@@ -122,6 +122,8 @@
       "equipment_leased": "Este equipo está en un contrato, y solo el contrato lo cambia.",
       "equipment_not_found": "Este equipo no existe.",
       "equipment_not_leased": "Este equipo no está en obra por este contrato.",
+      "equipment_not_retired": "Este equipo no está dado de baja, así que no hay nada que reactivar.",
+      "equipment_retired": "Este equipo está dado de baja. Reactívalo para traerlo de vuelta.",
       "equipment_reserved": "Otro contrato reservó algún equipo mientras tanto.",
       "equipment_unavailable": "Algún equipo dejó de estar disponible.",
       "file_missing": "Elige un archivo para enviar.",
@@ -261,8 +263,12 @@
     "emptySearch": "Ningún equipo coincide con la búsqueda.",
     "retire": "Dar de baja",
     "retireTitle": "¿Dar de baja este equipo?",
-    "retireMessage": "{code} sale de la lista de disponibles y no entra en contratos nuevos. Su historial de contratos se mantiene.",
-    "retired": "Equipo dado de baja"
+    "retireMessage": "{code} sale de la lista de disponibles y no entra en contratos nuevos. Su historial de contratos se mantiene, y solo la reactivación lo trae de vuelta.",
+    "retired": "Equipo dado de baja",
+    "reactivate": "Reactivar",
+    "reactivateTitle": "¿Reactivar este equipo?",
+    "reactivateMessage": "{code} vuelve a la flota como disponible, y entra en contratos de nuevo.",
+    "reactivated": "Equipo reactivado"
   },
   "equipmentForm": {
     "createTitle": "Registrar equipo",

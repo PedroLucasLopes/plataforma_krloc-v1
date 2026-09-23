@@ -39,6 +39,8 @@ export const ERROR_CODES: ReadonlySet<string> = new Set([
   'equipment_code_too_short',
   'equipment_code_prefix',
   'equipment_unavailable',
+  'equipment_retired',
+  'equipment_not_retired',
   'equipment_reserved',
   'equipment_not_leased',
   'accessory_not_found',

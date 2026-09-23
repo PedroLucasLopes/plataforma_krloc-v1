@@ -84,8 +84,9 @@
    * Cadastro e edicao de equipamento.
    *
    * O numero da unidade nao e digitado: a API numera em sequencia. O codigo e o
-   * tipo, com o prefixo `KR`. Equipamento reservado, locado ou substituto nao
-   * chega aqui: so o contrato o muda, e a tela nao oferece a edicao.
+   * tipo, com o prefixo `KR`. Reservado, locado e substituto nao chegam aqui: so
+   * o contrato os muda. Desativado tambem nao: a volta dele e a reativacao, e o
+   * cadastro so grava disponivel, manutencao e roubado.
    */
   const props = defineProps<{
     /** Sem valor, cadastra. */
@@ -143,9 +144,10 @@
   })
 
   const statusOptions = computed(() => {
-    const allowed = new Set<EquipmentStatus>(props.equipment ? [...EDITABLE_EQUIPMENT_STATUS, props.equipment.status] : ['AVAILABLE', 'MAINTENANCE'])
+    // No cadastro, roubado nao faz sentido: a unidade acabou de entrar na frota.
+    const allowed: EquipmentStatus[] = props.equipment ? EDITABLE_EQUIPMENT_STATUS : ['AVAILABLE', 'MAINTENANCE']
 
-    return [...allowed].map(status => ({ title: EQUIPMENT_STATUS[status].label, value: status }))
+    return allowed.map(status => ({ title: EQUIPMENT_STATUS[status].label, value: status }))
   })
 
   const codeError = computed(() => {
@@ -171,7 +173,8 @@
       p_biweekly: form.p_biweekly,
       p_monthly: form.p_monthly,
       p_indemnity: form.p_indemnity ?? 0,
-      // Vai sempre: na edicao sem ela, a API grava `AVAILABLE`, o padrao do cadastro.
+      // Uma das tres do cadastro, sempre: o campo esta na tela, e quem o abriu ve
+      // qual e. A API mantem a gravada quando a situacao nao vai no corpo.
       status: form.status,
     }
 

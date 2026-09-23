@@ -122,6 +122,8 @@
       "equipment_leased": "This equipment is in a contract, and only the contract changes it.",
       "equipment_not_found": "This equipment does not exist.",
       "equipment_not_leased": "This equipment is not out on this contract.",
+      "equipment_not_retired": "This equipment is not retired, so there is nothing to reactivate.",
+      "equipment_retired": "This equipment is retired. Reactivate it to bring it back.",
       "equipment_reserved": "Some equipment was reserved by another contract in the meantime.",
       "equipment_unavailable": "Some equipment is no longer available.",
       "file_missing": "Choose a file to send.",
@@ -261,8 +263,12 @@
     "emptySearch": "No equipment matches the search.",
     "retire": "Retire",
     "retireTitle": "Retire this equipment?",
-    "retireMessage": "{code} leaves the available list and cannot join new contracts. Its contract history stays.",
-    "retired": "Equipment retired"
+    "retireMessage": "{code} leaves the available list and cannot join new contracts. Its contract history stays, and only reactivation brings it back.",
+    "retired": "Equipment retired",
+    "reactivate": "Reactivate",
+    "reactivateTitle": "Reactivate this equipment?",
+    "reactivateMessage": "{code} comes back to the fleet as available, and can join contracts again.",
+    "reactivated": "Equipment reactivated"
   },
   "equipmentForm": {
     "createTitle": "Register equipment",

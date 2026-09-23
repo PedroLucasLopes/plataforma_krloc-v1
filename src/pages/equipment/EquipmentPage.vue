@@ -78,6 +78,16 @@
       :title="t('equipment.retireTitle')"
       @confirm="retire"
     />
+
+    <DlConfirmDialog
+      v-model="reactivation.open"
+      :confirm-label="t('equipment.reactivate')"
+      :error="reactivation.error"
+      :message="reactivation.target ? t('equipment.reactivateMessage', { code: reactivation.target.code }) : ''"
+      :processing="reactivation.processing"
+      :title="t('equipment.reactivateTitle')"
+      @confirm="reactivate"
+    />
   </div>
 </template>
 
@@ -168,7 +178,11 @@
 
   /**
    * Reservado, locado e substituto estao num contrato, e so ele os muda: a API
-   * recusa editar e desativar os tres (`equipment_leased`).
+   * recusa editar e desativar os tres (`equipment_leased`). Desativado tambem
+   * nao se edita: a volta dele e a reativacao, e so ela.
+   *
+   * Reativar so entra na tabela quando ha unidade desativada na pagina. Como
+   * acao de toda linha, seria um icone apagado em quase todas.
    */
   const rowActions = computed<RowAction<EquipmentRow>[]>(() => [
     {
@@ -177,7 +191,7 @@
       icon: 'mdi-pencil-outline',
       method: 'PUT',
       path: '/equipment/:id',
-      unavailable: row => CONTRACT_EQUIPMENT_STATUS.includes(row.status),
+      unavailable: row => row.status === 'RETIRED' || CONTRACT_EQUIPMENT_STATUS.includes(row.status),
     },
     {
       key: 'retire',
@@ -188,6 +202,17 @@
       color: 'error',
       unavailable: row => row.status === 'RETIRED' || CONTRACT_EQUIPMENT_STATUS.includes(row.status),
     },
+    ...(rows.value.some(row => row.status === 'RETIRED')
+      ? [{
+        key: 'reactivate',
+        label: t('equipment.reactivate'),
+        icon: 'mdi-archive-arrow-up-outline',
+        method: 'POST',
+        path: '/equipment/reactivate/:id',
+        color: 'success',
+        unavailable: (row: EquipmentRow) => row.status !== 'RETIRED',
+      }]
+      : []),
   ])
 
   /* -------------------------------- busca -------------------------------- */
@@ -230,6 +255,7 @@
   const editing = reactive({ open: false, target: shallowRef<Equipment | null>(null) })
   const importing = ref(false)
   const retirement = useConfirm<EquipmentRow>()
+  const reactivation = useConfirm<EquipmentRow>()
 
   function onHeaderAction (key: string): void {
     if (key === 'create') {
@@ -241,11 +267,24 @@
   }
 
   function onRowAction (key: string, row: EquipmentRow): void {
-    if (key === 'edit') {
-      editing.target = byId.value.get(row.id) ?? null
-      editing.open = true
-    } else if (key === 'retire') {
-      retirement.ask(row)
+    switch (key) {
+      case 'edit': {
+        editing.target = byId.value.get(row.id) ?? null
+        editing.open = true
+
+        break
+      }
+      case 'retire': {
+        retirement.ask(row)
+
+        break
+      }
+      case 'reactivate': {
+        reactivation.ask(row)
+
+        break
+      }
+    // No default
     }
   }
 
@@ -254,6 +293,14 @@
 
     if (ok) {
       toast.success(t('equipment.retired'))
+    }
+  }
+
+  async function reactivate (): Promise<void> {
+    const ok = await reactivation.confirm(row => store.reactivate(row.id))
+
+    if (ok) {
+      toast.success(t('equipment.reactivated'))
     }
   }
 </script>

@@ -164,7 +164,7 @@ lê toda string entre aspas simples ou crase com cara de chave: um namespace `im
 | `/contracts` | `GET /elease` | contratos, filtro por situação (na URL) e por equipamento |
 | `/contracts/:id` | `GET /elease/:id` | o ciclo do contrato e tudo o que se faz com ele |
 | `/equipment` | `GET /equipment` | unidades, busca por nome ou código (texto com `KR` busca pelo código), situação na URL |
-| `/equipment/:id` | `GET /equipment/:id` | identificação, tabela de preços, acessórios associados |
+| `/equipment/:id` | `GET /equipment/:id` | identificação, tabela de preços, acessórios associados. Desativada, a unidade só oferece reativar |
 | `/accessories` | `GET /accessory` | acessórios e estoque, busca por nome |
 | `/clients` · `/clients/:id` | `GET /client` · `GET /client/:id` | clientes, busca por nome, e-mail completo, CPF ou CNPJ, ficha e as obras do cliente |
 | `/lessees` · `/lessees/:id` | `GET /lessee` · `GET /lessee/:id` | obras, ficha e contratos da obra |
@@ -273,7 +273,8 @@ ele repete à mão o desenho, o `primary` e o `onPrimary` da biblioteca, com a v
 | A volta aceita `LEASED` e `REPLACE`; substituto nasce `REPLACE` e aponta para o item que substitui | a volta vale para os dois; substituível é quem ainda não tem `replacedBy` |
 | A cobrança é por equipamento, até a volta de cada um | a tela não refaz conta: lê `GET /finantial/:id` e a calculadora |
 | Editar e desativar equipamento reservado, locado ou substituto é recusado (`equipment_leased`): só o contrato o muda | a tela esconde as duas ações nessas situações |
-| O cadastro de equipamento só grava `AVAILABLE`, `MAINTENANCE` e `STOLEN`, e a edição sem `status` grava `AVAILABLE`: o `PartialType` herda o padrão do cadastro | o formulário manda a situação sempre, e oferece essas três mais a atual. Desativado mantido numa edição é recusado, com a mensagem genérica da validação |
+| Desativar é baixa: o desativado não se edita (`equipment_retired`) e só volta por `POST /equipment/reactivate/:id`, que o devolve disponível e recusa quem não está desativado (`equipment_not_retired`) | "Reativar" é a única ação da unidade desativada, e entra na tabela quando há alguma na página |
+| O cadastro de equipamento só grava `AVAILABLE`, `MAINTENANCE` e `STOLEN`; sem `status` no corpo, a edição mantém a situação gravada | o seletor oferece as três, e o formulário manda a escolhida |
 | Remover acessório com estoque tira uma unidade; sem estoque, apaga | o modal diz qual dos dois vai acontecer |
 | Erro sai com código em `error`, e valor em membro próprio | `apiErrorText`, em `constants/messages.ts`: código conhecido vira texto, o resto cai no status |
 | Upload até 2 MB | `DlFileDrop` recusa antes; o nginx aceita até 3 MB, acima do padrão de 1 MB |

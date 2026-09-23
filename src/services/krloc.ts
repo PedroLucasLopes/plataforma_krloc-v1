@@ -57,6 +57,9 @@ export const equipmentApi = {
     request<Equipment>(`/equipment/${id(equipmentId)}`, { method: 'PUT', body }),
   /** Soft delete: o equipamento vira `RETIRED` e o historico fica. */
   retire: (equipmentId: string) => request<void>(`/equipment/${id(equipmentId)}`, { method: 'DELETE' }),
+  /** A volta do desativado, e o unico caminho dela: a unidade volta disponivel. */
+  reactivate: (equipmentId: string) =>
+    request<Equipment>(`/equipment/reactivate/${id(equipmentId)}`, { method: 'POST' }),
   importCsv: (file: File) =>
     request<BatchResult>('/equipment/upload', { method: 'POST', body: spreadsheet(file) }),
 }

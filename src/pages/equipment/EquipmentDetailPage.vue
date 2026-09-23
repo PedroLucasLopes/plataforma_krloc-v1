@@ -91,6 +91,16 @@
       :title="t('equipment.retireTitle')"
       @confirm="retire"
     />
+
+    <DlConfirmDialog
+      v-model="reactivation.open"
+      :confirm-label="t('equipment.reactivate')"
+      :error="reactivation.error"
+      :message="t('equipment.reactivateMessage', { code })"
+      :processing="reactivation.processing"
+      :title="t('equipment.reactivateTitle')"
+      @confirm="reactivate"
+    />
   </div>
 </template>
 
@@ -220,20 +230,28 @@
     }
 
     const path = `/equipment/${current.id}`
-    const actions: HeaderAction[] = [
-      { key: 'edit', label: t('common.edit'), icon: 'mdi-pencil-outline', method: 'PUT', path, variant: 'outlined' },
-    ]
 
-    if (current.status !== 'RETIRED') {
-      actions.push({ key: 'retire', label: t('equipment.retire'), icon: 'mdi-archive-arrow-down-outline', method: 'DELETE', path, color: 'error', variant: 'text' })
+    // Desativado e baixa: nao se edita, e a unica saida e voltar a frota.
+    if (current.status === 'RETIRED') {
+      return [{
+        key: 'reactivate',
+        label: t('equipment.reactivate'),
+        icon: 'mdi-archive-arrow-up-outline',
+        method: 'POST',
+        path: `/equipment/reactivate/${current.id}`,
+      }]
     }
 
-    return actions
+    return [
+      { key: 'edit', label: t('common.edit'), icon: 'mdi-pencil-outline', method: 'PUT', path, variant: 'outlined' },
+      { key: 'retire', label: t('equipment.retire'), icon: 'mdi-archive-arrow-down-outline', method: 'DELETE', path, color: 'error', variant: 'text' },
+    ]
   })
 
   const editOpen = ref(false)
   const associating = ref(false)
   const retirement = useConfirm<string>()
+  const reactivation = useConfirm<string>()
 
   function onAction (key: string): void {
     const current = equipment.value
@@ -242,10 +260,23 @@
       return
     }
 
-    if (key === 'edit') {
-      editOpen.value = true
-    } else if (key === 'retire') {
-      retirement.ask(current.id)
+    switch (key) {
+      case 'edit': {
+        editOpen.value = true
+
+        break
+      }
+      case 'retire': {
+        retirement.ask(current.id)
+
+        break
+      }
+      case 'reactivate': {
+        reactivation.ask(current.id)
+
+        break
+      }
+    // No default
     }
   }
 
@@ -254,6 +285,14 @@
 
     if (ok) {
       toast.success(t('equipment.retired'))
+    }
+  }
+
+  async function reactivate (): Promise<void> {
+    const ok = await reactivation.confirm(id => store.reactivate(id))
+
+    if (ok) {
+      toast.success(t('equipment.reactivated'))
     }
   }
 </script>
