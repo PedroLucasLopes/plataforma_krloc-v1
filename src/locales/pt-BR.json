@@ -598,14 +598,14 @@
     "done": "Equipamento substituído"
   },
   "documents": {
-    "contractFile": "contrato.docx",
-    "closureFile": "fechamento.docx",
+    "contractFile": "contrato.pdf",
+    "closureFile": "fechamento.pdf",
     "downloaded": "Documento baixado",
     "contractReady": "Documento do contrato baixado",
     "contractReadyDescription": "O contrato já pode começar.",
     "failed": "Não foi possível gerar o documento",
-    "statementFile": "extrato.docx",
-    "closingFile": "fechamento-do-mes.docx"
+    "statementFile": "extrato.pdf",
+    "closingFile": "fechamento-do-mes.pdf"
   },
   "financial": {
     "package": {

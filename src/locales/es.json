@@ -598,14 +598,14 @@
     "done": "Equipo sustituido"
   },
   "documents": {
-    "contractFile": "contrato.docx",
-    "closureFile": "cierre.docx",
+    "contractFile": "contrato.pdf",
+    "closureFile": "cierre.pdf",
     "downloaded": "Documento descargado",
     "contractReady": "Documento del contrato descargado",
     "contractReadyDescription": "El contrato ya puede empezar.",
     "failed": "No se pudo generar el documento",
-    "statementFile": "extracto.docx",
-    "closingFile": "cierre-del-mes.docx"
+    "statementFile": "extracto.pdf",
+    "closingFile": "cierre-del-mes.pdf"
   },
   "financial": {
     "package": {
