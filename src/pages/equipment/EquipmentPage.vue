@@ -119,10 +119,8 @@
   import { formatMoney, queryString, unitCode } from '@/utils/format'
   import { asOption, asText } from '@/utils/forms'
 
-  /** O que `POST /equipment/upload` le da planilha, pelo nome da coluna. */
   const IMPORT_COLUMNS = ['name', 'code', 'p_diary', 'p_weekly', 'p_biweekly', 'p_monthly', 'p_indemnity', 'status']
 
-  /** Equipamentos. Lista que cresce com o estoque, entao pagina no servidor. */
   const { t, locale } = useI18n()
   const route = useRoute()
   const router = useRouter()
@@ -176,14 +174,6 @@
     { key: 'create', label: t('equipment.register'), icon: 'mdi-plus', method: 'POST', path: '/equipment' },
   ])
 
-  /**
-   * Reservado, locado e substituto estao num contrato, e so ele os muda: a API
-   * recusa editar e desativar os tres (`equipment_leased`). Desativado tambem
-   * nao se edita: a volta dele e a reativacao, e so ela.
-   *
-   * Reativar so entra na tabela quando ha unidade desativada na pagina. Como
-   * acao de toda linha, seria um icone apagado em quase todas.
-   */
   const rowActions = computed<RowAction<EquipmentRow>[]>(() => [
     {
       key: 'edit',
@@ -215,8 +205,6 @@
       : []),
   ])
 
-  /* -------------------------------- busca -------------------------------- */
-
   const term = ref(store.search)
   const status = ref<EquipmentStatus | null>(null)
   const filtered = computed(() => !!term.value.trim() || !!status.value)
@@ -234,7 +222,6 @@
   function onStatus (value: unknown): void {
     status.value = asOption(value) as EquipmentStatus | null
 
-    // A situacao escolhida fica na URL: o painel leva para ca com ela, e voltar mantem.
     const { status: _previous, ...query } = route.query
 
     void router.replace({ query: status.value ? { ...query, status: status.value } : query })
@@ -249,8 +236,6 @@
     status.value = requested && requested in EQUIPMENT_STATUS ? requested as EquipmentStatus : null
     void store.applySearch(term.value, status.value)
   })
-
-  /* ------------------------------ gravacao ------------------------------ */
 
   const editing = reactive({ open: false, target: shallowRef<Equipment | null>(null) })
   const importing = ref(false)

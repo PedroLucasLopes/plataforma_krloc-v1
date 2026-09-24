@@ -191,14 +191,6 @@
   import { saveDocument } from '@/utils/files'
   import { daysUntil, formatDate, formatDateTime, formatMoney, unitCode } from '@/utils/format'
 
-  /**
-   * O contrato e tudo o que se faz com ele.
-   *
-   * O ciclo e fixo: pendente, ativo, concluido, ou cancelado antes de comecar.
-   * Cada situacao oferece so o que a API aceita nela, e o primeiro passo de cada
-   * uma aparece escrito embaixo do ciclo. O que o papel nao alcanca some junto:
-   * a acao so aparece com a permissao da rota que ela chama.
-   */
   const { t } = useI18n()
   const route = useRoute()
   const router = useRouter()
@@ -237,8 +229,6 @@
       : undefined
   })
 
-  /* --------------------------------- ciclo -------------------------------- */
-
   const steps = computed(() => {
     const current = contract.value
 
@@ -257,7 +247,6 @@
 
   const exits = computed(() => leaseExits(contract.value?.finishDate ? formatDate(contract.value.finishDate) : undefined))
 
-  /** O que falta, em uma frase, e o tom dela. */
   const nextStep = computed(() => {
     const current = contract.value
 
@@ -289,8 +278,6 @@
     }
   })
 
-  /* -------------------------------- resumo -------------------------------- */
-
   const summary = computed<DescriptionItem[]>(() => {
     const current = contract.value
 
@@ -308,8 +295,6 @@
       { key: 'id', label: t('common.identifier'), value: current.id, mono: true, copyable: true },
     ]
   })
-
-  /* ------------------------------ equipamentos ----------------------------- */
 
   interface ItemRow extends Record<string, unknown> {
     id: string
@@ -339,7 +324,6 @@
       indemnity: formatMoney(item.p_indemnity),
       since: formatDate(item.startDate),
       returned: formatDate(item.finishDate),
-      // A volta registrada diz mais que a saida: o item que foi para manutencao aparece assim.
       situation: item.finalStatus ?? item.startStatus,
     })),
   )
@@ -355,7 +339,6 @@
     { key: 'situation', label: t('common.status'), width: '150px' },
   ])
 
-  /** Na obra, sem volta registrada: o locado e o substituto. A API registra a volta dos dois. */
   function isOut (item: LeaseItem | undefined): boolean {
     return (item?.startStatus === 'LEASED' || item?.startStatus === 'REPLACE') && item.finalStatus === null
   }
@@ -371,15 +354,11 @@
         method: 'PUT',
         path: `/elease/remove/${current.id}`,
         color: 'error',
-        // A API nao deixa o contrato sem equipamento.
         unavailable: () => leaseItems.value.length <= 1,
       }]
     }
 
     if (current?.status === 'ACTIVE') {
-      // A acao que da razao a esta tabela existir num contrato ativo: botao
-      // redondo preenchido, com o caminhao de volta, e nao mais um icone
-      // apagado de tecla Enter no meio da linha.
       return [{
         key: 'return',
         label: t('contract.items.return'),
@@ -394,18 +373,12 @@
     return []
   })
 
-  /**
-   * Voltou para manutencao ou foi roubado, e ainda nao ganhou substituto. O
-   * substituto aponta para quem ele substitui; o que quebrar tambem pode ser trocado.
-   */
   const replaceable = computed(() => {
     const replaced = new Set(leaseItems.value.map(item => item.replacesItemId).filter(Boolean))
 
     return leaseItems.value.filter(item =>
       (item.finalStatus === 'MAINTENANCE' || item.finalStatus === 'STOLEN') && !replaced.has(item.id))
   })
-
-  /* ------------------------------- acessorios ------------------------------ */
 
   interface AccessoryRow extends Record<string, unknown> {
     id: string
@@ -426,9 +399,6 @@
     { key: 'indemnity', label: t('rates.indemnity'), align: 'end', width: '160px' },
   ])
 
-  /* ------------------------------ financeiro ------------------------------ */
-
-  /** Cancelado nao cobra nada: a secao so aparece quando ha conta a mostrar. */
   const showFinancial = computed(() =>
     !!contract.value && contract.value.status !== 'CANCELLED' && session.can('GET', '/finantial/:id'))
 
@@ -451,7 +421,6 @@
     try {
       const result = await financial.statement(current.id)
 
-      // Outro contrato aberto no meio do caminho nao herda este extrato.
       if (contract.value?.id === current.id) {
         statement.value = result
       }
@@ -462,7 +431,6 @@
     }
   }
 
-  // Toda acao rele o contrato, e o extrato vem junto: volta, troca, fechamento.
   watch(contract, (current, previous) => {
     if (current?.id !== previous?.id) {
       statement.value = null
@@ -484,8 +452,6 @@
       }
     }
   })
-
-  /* -------------------------------- acoes -------------------------------- */
 
   const headerActions = computed<HeaderAction[]>(() => {
     const current = contract.value
@@ -509,7 +475,6 @@
             path: `/generate/contract/${id}`,
             variant: current.contract_generated ? 'outlined' : 'flat',
           },
-          // Sem o documento a API recusa comecar. O botao so aparece quando o caminho existe.
           ...(current.contract_generated
             ? [{ key: 'start', label: t('contract.actions.start'), icon: 'mdi-play', method: 'POST', path: `/elease/start/${id}` }]
             : []),
@@ -635,7 +600,6 @@
     }
   }
 
-  /** O 400 do fechamento traz os itens sem volta. A mensagem diz quais sao. */
   function withPendingItems (error: unknown): unknown {
     const items = (error instanceof ApiError ? (error.payload as { equipments?: unknown } | null)?.equipments : null)
 
@@ -693,7 +657,6 @@
 </script>
 
 <style scoped>
-/* O aviso em si e global, em `styles/main.scss`. Aqui, so o respiro abaixo do ciclo. */
 .note {
   margin-top: 20px;
 }

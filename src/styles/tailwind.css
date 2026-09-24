@@ -26,26 +26,20 @@
   --breakpoint-xxl: 2138px;
 }
 
-/* Os temas do ecossistema se chamam dotlogLight e dotlogDark, vindos de @pedrolucaslopes/dotlog-ui. */
 @custom-variant light (&:where(.v-theme--dotlogLight, .v-theme--dotlogLight *));
 @custom-variant dark (&:where(.v-theme--dotlogDark, .v-theme--dotlogDark *));
 
-/* safelist to ensure variables are always available */
 @source inline('font-heading');
 @source inline('font-body');
 @source inline('font-mono');
 
-/*
-  note: adopt and extend values from TailwindCSS
-*/
 @utility rounded-pill   { border-radius: 9999px }
 @utility rounded-circle { border-radius: 50%    }
 @utility rounded-shaped { border-radius: 24px 0 }
 
-@source inline('rounded'); /* .25rem */
+@source inline('rounded');
 @source inline('rounded-{none,sm,md,lg,xl,2xl,3xl,full,pill,circle,shaped}');
 
-/* MD3 elevation */
 @utility elevation-0 {
   box-shadow: 0px 0px 0px 0px rgba(var(--v-shadow-color), var(--v-shadow-key-opacity, 0.3)), 0px 0px 0px 0px rgba(var(--v-shadow-color), var(--v-shadow-ambient-opacity, 0.15));
   --v-elevation-overlay: color-mix(in srgb, var(--v-elevation-overlay-color) 0%, transparent);
@@ -74,5 +68,4 @@
   background-image: linear-gradient(var(--v-elevation-overlay), var(--v-elevation-overlay));
 }
 
-/* safelist for elevation="..." props */
 @source inline('elevation-{0,1,2,3,4,5}');

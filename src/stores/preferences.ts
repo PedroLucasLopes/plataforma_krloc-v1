@@ -11,21 +11,16 @@ function readFlag (): boolean {
   }
 }
 
-function writeFlag (value: boolean): void {
+function writeFlag (value: boolean): boolean {
   try {
     window.localStorage.setItem(NAV_COLLAPSED_STORAGE_KEY, value ? '1' : '0')
+
+    return true
   } catch {
-    /* Conveniencia, nao requisito: sem armazenamento o menu so nao lembra. */
+    return false
   }
 }
 
-/**
- * Preferencias de interface desta pessoa neste navegador.
- *
- * O tema vem de `useThemePreferences`, da biblioteca, que ja resolve os tres
- * estados e le o armazenamento de forma sincrona no boot, sem piscar claro
- * antes do escuro. Este store so o expoe junto do resto da aplicacao.
- */
 export const usePreferencesStore = defineStore('preferences', () => {
   const theme = useThemePreferences()
   const navCollapsed = ref(readFlag())

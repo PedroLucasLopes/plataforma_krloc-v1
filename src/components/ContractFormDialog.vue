@@ -72,15 +72,7 @@
   import { dateInputDays, dateInputToIso, formatMoney, isDateInputInRange, todayInput, unitCode } from '@/utils/format'
   import { asOption, asOptions, asText } from '@/utils/forms'
 
-  /**
-   * Novo contrato: a obra, o periodo e os equipamentos.
-   *
-   * So equipamento disponivel entra. A API reserva todos de uma vez e recusa o
-   * contrato inteiro se algum deixou de estar disponivel entre abrir o modal e
-   * salvar. O preco de cada um fica congelado no contrato a partir daqui.
-   */
   const props = defineProps<{
-    /** Obra ja escolhida, como na ficha da obra. */
     lesseeId?: string | null
   }>()
 
@@ -106,7 +98,6 @@
 
     state.reset({ lesseeId: props.lesseeId ?? '' })
 
-    // Disponibilidade muda a todo momento: o modal sempre busca de novo.
     const results = await Promise.allSettled([lookups.ensure('lessees'), lookups.ensure('equipment', true)])
     const failure = results.find((result): result is PromiseRejectedResult => result.status === 'rejected')
 
@@ -152,7 +143,6 @@
       return t('contractForm.endBeforeStart')
     }
 
-    // A API recusa periodo acima disso: a conta percorre cada dia dele.
     const days = dateInputDays(state.form.startDate, state.form.endDate)
 
     return days !== null && days > MAX_CONTRACT_DAYS ? t('errors.field.period_too_long') : null

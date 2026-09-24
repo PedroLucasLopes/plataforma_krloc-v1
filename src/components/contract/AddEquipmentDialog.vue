@@ -36,7 +36,6 @@
   import { formatMoney, unitCode } from '@/utils/format'
   import { asOptions } from '@/utils/forms'
 
-  /** Acrescenta equipamento disponivel a um contrato que ainda nao comecou. */
   const props = defineProps<{ contract: Contract }>()
 
   const open = defineModel<boolean>('open', { required: true })

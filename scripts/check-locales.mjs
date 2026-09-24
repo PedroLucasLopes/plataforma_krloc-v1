@@ -1,18 +1,3 @@
-/**
- * Confere os arquivos de tradução contra o `en.json`, que é a referência.
- *
- * Recusa:
- * - chave faltando ou sobrando em outra língua, e texto vazio;
- * - parâmetro `{nome}` diferente do inglês, e número de formas de plural diferente;
- * - mensagem que o compilador do vue-i18n não aceita, como um `@` solto;
- * - com `--sources`, chave usada no código que não existe no `en.json`.
- *
- * Com `--sources` também avisa, sem recusar, de chave que nada no código usa.
- * Chave montada em template (`status.project.${status}`) conta como uso de tudo
- * o que começa com o prefixo.
- *
- * Uso: node scripts/check-locales.mjs <pasta dos JSON> [--sources=<pasta do código>]
- */
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { extname, join, relative } from 'node:path'
@@ -42,7 +27,6 @@ const reference = load('en.json')
 const problems = []
 const warnings = []
 
-/* Literal do vue-i18n, `{'@'}`, não é parâmetro nem separador de plural. */
 const withoutLiterals = text => text.replace(/\{\s*'[^']*'\s*\}/g, '')
 function parameters (text) {
   return [...new Set([...withoutLiterals(text).matchAll(/\{\s*(\w+)\s*\}/g)].map(match => match[1]))].toSorted().join(', ')
@@ -125,7 +109,6 @@ if (sources) {
   for (const file of code) {
     const text = readFileSync(file, 'utf8')
 
-    // Aspas simples ou crase. Aspas duplas, no template, são expressão do Vue: `:count="project.roles.length"`.
     for (const match of text.matchAll(/(['`])([a-z][A-Za-z0-9]*(?:\.\w+)+)\1/g)) {
       const key = match[2]
 

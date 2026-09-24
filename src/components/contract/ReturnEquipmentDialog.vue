@@ -32,14 +32,6 @@
   import { unitCode } from '@/utils/format'
   import { asOption } from '@/utils/forms'
 
-  /**
-   * O que aconteceu com um equipamento que estava na obra: voltou bem, voltou
-   * para manutencao, ou foi roubado. A data de volta e a de hoje, gravada pela API.
-   *
-   * Roubado tambem e volta: o uso e cobrado ate hoje, com a indenizacao junto
-   * (clausulas 6a e 7a), e o item deixa de travar o fechamento. Manutencao sem
-   * substituto para a cobranca hoje; com substituto, o aluguel segue um so.
-   */
   const props = defineProps<{
     contract: Contract
     item: LeaseItem | null

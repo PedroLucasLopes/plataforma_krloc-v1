@@ -15,16 +15,6 @@ interface LoadState {
 
 const idle = (): LoadState => ({ loading: false, loaded: false, error: null })
 
-/**
- * Cada recurso inteiro, ate `LOOKUP_LIMIT`.
- *
- * Serve ao que precisa de tudo de uma vez: o painel, e os seletores de obra, de
- * cliente, de equipamento e de acessorio. As telas de lista paginam no servidor,
- * cada uma no proprio store.
- *
- * Quem altera um recurso chama `invalidate`; a proxima tela que precisar busca
- * de novo.
- */
 export const useLookupsStore = defineStore('lookups', () => {
   const equipment = shallowRef<Equipment[]>([])
   const accessories = shallowRef<Accessory[]>([])

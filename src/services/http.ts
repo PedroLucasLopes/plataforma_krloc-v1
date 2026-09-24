@@ -1,21 +1,3 @@
-/**
- * Chamadas a API do KRLoc.
- *
- * O que este backend faz e que a camada resolve uma vez, para nenhuma tela
- * precisar lembrar:
- *
- * - **Listagem vazia responde 404.** Com `emptyOn404`, vira lista vazia.
- * - **A credencial e o cookie de sessao do `@pedrolucaslopes/sso-client`**,
- *   anexado pelo navegador na mesma origem. Nenhum token passa pelo JavaScript.
- * - **Escrita leva `X-CSRF-Token`.** Sem ele a API recusa com 403. Se a sessao
- *   foi refeita em outra aba, o token em memoria ficou velho: a camada relê o
- *   token uma vez e repete a chamada.
- * - **Sessao que cai no meio do uso** responde 401 com `login_required` e o
- *   endereco do login. A pessoa vai ao login e volta para a tela onde estava.
- *
- * O erro sai como `ApiError`, com mensagem pronta para mostrar a uma pessoa, na
- * lingua corrente no momento da falha.
- */
 import { API_PREFIX } from '@/constants/api'
 import { apiErrorText, STATUS_MESSAGE_KEYS } from '@/constants/messages'
 import { t } from '@/plugins/i18n'
@@ -25,7 +7,6 @@ export class ApiError extends Error {
     readonly status: number,
     message: string,
     readonly code: string | null = null,
-    /** O corpo da resposta, para quem precisa de mais que a mensagem. */
     readonly payload: unknown = null,
   ) {
     super(message)
@@ -35,22 +16,16 @@ export class ApiError extends Error {
 
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
-  /** Objeto vira JSON. `FormData` vai como veio, e o navegador monta o multipart. */
   body?: unknown
-  /** Filtros da listagem. So texto, numero e booleano viram parametro; vazio e ignorado. */
   query?: object
-  /** Este backend responde 404 para lista vazia. Com isto, vira `[]`. */
   emptyOn404?: boolean
-  /** `false` onde a propria chamada decide o que fazer com o 401. */
   redirectOnUnauthorized?: boolean
   signal?: AbortSignal
 }
 
 interface HttpHooks {
   csrfToken: () => string | null
-  /** Sessao caiu. Recebe o endereco de login que a API mandou, quando mandou. */
   unauthorized: (loginUrl: string | null) => void
-  /** A API recusou o token anti-CSRF. Devolve `true` se conseguiu um novo. */
   csrfRejected: () => Promise<boolean>
 }
 
@@ -62,7 +37,6 @@ let hooks: HttpHooks = {
   csrfRejected: async () => false,
 }
 
-/** Liga a camada a sessao. Chamado uma vez, no registro dos plugins. */
 export function configureHttp (next: HttpHooks): void {
   hooks = next
 }
@@ -101,18 +75,12 @@ function record (payload: unknown): Record<string, unknown> {
   return payload && typeof payload === 'object' ? payload as Record<string, unknown> : {}
 }
 
-/** O codigo do erro, no campo `error`, quando a API mandou um. */
 function codeOf (payload: unknown): string | null {
   const code = record(payload).error
 
   return typeof code === 'string' ? code : null
 }
 
-/**
- * O texto do erro sai do codigo, ou do status quando o codigo nao e conhecido.
- * O `message` do servidor nunca: ele e para quem le a resposta crua, e mostra-lo
- * poria na tela qualquer detalhe interno ou valor repetido da requisicao.
- */
 function describe (status: number, payload: unknown): string {
   const known = apiErrorText(codeOf(payload), record(payload))
 
@@ -210,26 +178,25 @@ export async function request<T> (path: string, options: RequestOptions = {}): P
   return (response.status === 204 ? null : await readBody(response)) as T
 }
 
-/** `filename*=UTF-8''...` primeiro: o nome com acento so vem ali. */
 function fileNameOf (disposition: string | null): string | null {
   if (!disposition) {
     return null
   }
 
+  const plain = disposition.match(/filename\s*=\s*"?([^";]+)"?/i)?.[1]?.trim() ?? null
   const encoded = disposition.match(/filename\*\s*=\s*UTF-8''([^;]+)/i)?.[1]
 
   if (encoded) {
     try {
       return decodeURIComponent(encoded.trim())
     } catch {
-      /* Nome mal codificado cai no nome simples. */
+      return plain
     }
   }
 
-  return disposition.match(/filename\s*=\s*"?([^";]+)"?/i)?.[1]?.trim() ?? null
+  return plain
 }
 
-/** Documento gerado pela API: o arquivo e o nome que ela sugere. */
 export async function download (path: string, options: RequestOptions = {}): Promise<{ blob: Blob, fileName: string | null }> {
   const response = await send(path, options, '*/*')
 
@@ -240,7 +207,6 @@ export async function download (path: string, options: RequestOptions = {}): Pro
   return { blob: await response.blob(), fileName: fileNameOf(response.headers.get('Content-Disposition')) }
 }
 
-/** Mensagem de qualquer falha, para toast e para erro dentro de modal. */
 export function errorMessage (error: unknown): string {
   return error instanceof ApiError ? error.message : t('errors.fallback')
 }

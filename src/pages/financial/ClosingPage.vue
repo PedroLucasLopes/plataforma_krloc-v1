@@ -167,21 +167,12 @@
   import { asOption } from '@/utils/forms'
   import { currentMonth, isMonth, monthLabel, recentMonths } from '@/utils/months'
 
-  /**
-   * O fechamento do mes, pelas clausulas do contrato: o que fechou e quanto se
-   * cobra, os contratos que atravessaram o fim do mes ainda ativos, com o que
-   * correu ate la, e a frota na obra, em manutencao e roubada.
-   *
-   * O mes fica na URL: o link leva ao mesmo fechamento, e voltar no navegador
-   * volta ao mes anterior.
-   */
   const { t } = useI18n()
   const route = useRoute()
   const router = useRouter()
   const session = useSessionStore()
   const store = useFinancialStore()
 
-  /** Quantos meses o seletor oferece, do atual para tras. */
   const MONTHS_OFFERED = 24
 
   const month = computed(() => {
@@ -193,7 +184,6 @@
   const monthOptions = computed(() => {
     const months = recentMonths(MONTHS_OFFERED)
 
-    // Mes mais antigo pedido pela URL tambem aparece, senao o seletor ficaria vazio.
     if (!months.includes(month.value)) {
       months.push(month.value)
     }
@@ -209,13 +199,10 @@
     }
   }
 
-  /* -------------------------------- carga -------------------------------- */
-
   const closing = shallowRef<MonthlyClosing | null>(null)
   const loading = ref(false)
   const loadError = ref<string | null>(null)
 
-  /** Trocar de mes no meio de um pedido nao deixa o pedido velho vencer. */
   let latest = 0
 
   async function load (): Promise<void> {
@@ -242,17 +229,13 @@
     }
   }
 
-  // Sair da tela tira o `month` da URL: o pedido so parte enquanto ela e a tela aberta.
   watch(month, () => {
     if (route.name === 'closing') {
       void load()
     }
   }, { immediate: true })
 
-  /** Mes em curso: ativos e frota contados ate agora, nao ate o fim do mes. */
   const partial = computed(() => !!closing.value && new Date(closing.value.asOf).getTime() < new Date(closing.value.to).getTime() - 1000)
-
-  /* ------------------------------ indicadores ----------------------------- */
 
   const tab = ref('closed')
 
@@ -268,7 +251,6 @@
     icon: string
     tone: 'primary' | 'success' | 'warning' | 'error' | 'info' | 'neutral'
     hint?: string
-    /** A aba que o cartao abre. */
     tab?: string
   }
 
@@ -296,7 +278,6 @@
         tab: 'closed',
       },
       {
-        // Os roubos do mes, com contrato fechado ou nao: o cartao conta o mesmo que a aba.
         key: 'indemnity',
         label: t('financial.closing.stats.indemnity'),
         value: summary.stolenIndemnity,
@@ -362,8 +343,6 @@
       { key: 'stolen', label: t('financial.closing.tabs.stolen'), icon: 'mdi-alert-octagon-outline', count: current?.stolen.length },
     ]
   })
-
-  /* -------------------------------- tabelas ------------------------------- */
 
   interface ClosedRow extends Record<string, unknown> {
     id: string
@@ -509,8 +488,6 @@
       void router.push({ name: 'contract', params: { id: contractId } })
     }
   }
-
-  /* ------------------------------- documento ------------------------------ */
 
   const headerActions = computed<HeaderAction[]>(() => [
     {

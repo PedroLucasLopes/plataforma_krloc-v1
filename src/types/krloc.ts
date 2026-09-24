@@ -1,9 +1,3 @@
-/**
- * Espelho do que a API do KRLoc devolve e recebe. O nome dos campos e o do
- * banco (`p_diary`, `tax_id`, `contract_generated`): a tela traduz o rotulo, nao
- * a chave.
- */
-
 export type EquipmentStatus
   = | 'AVAILABLE'
     | 'LEASED'
@@ -15,7 +9,6 @@ export type EquipmentStatus
 
 export type LeaseStatus = 'PENDING' | 'ACTIVE' | 'COMPLETED' | 'CANCELLED'
 
-/** O que se registra quando um equipamento volta de um contrato ativo. */
 export type ReturnStatus = 'AVAILABLE' | 'MAINTENANCE' | 'STOLEN'
 
 export type Order = 'asc' | 'desc'
@@ -31,7 +24,6 @@ export interface Permission {
   method: string
 }
 
-/** `GET /auth/me`, do `@pedrolucaslopes/sso-client`. */
 export interface Me {
   id: string
   email: string
@@ -51,7 +43,6 @@ export interface AccessorySummary {
 export interface Equipment {
   id: string
   name: string
-  /** Tipo do equipamento, com o prefixo `KR`. A unidade e o `suffix`. */
   code: string
   suffix: number
   p_diary: number
@@ -86,7 +77,6 @@ export interface EquipmentFilters {
 export interface Accessory {
   id: string
   name: string
-  /** Unidades em estoque. Associar a um equipamento consome uma. */
   quantity: number
   p_indemnity: number
 }
@@ -97,7 +87,6 @@ export interface AccessoryInput {
   p_indemnity: number
 }
 
-/** Endereco conferido contra o CEP. `address` e o logradouro. */
 export interface Address {
   address: string
   number: number | null
@@ -108,7 +97,6 @@ export interface Address {
   country: string | null
 }
 
-/** O endereco que vai para a API. `number: null` apaga o numero gravado. */
 export interface AddressInput {
   zipcode?: string
   address?: string
@@ -123,14 +111,12 @@ export interface Client extends Address {
   name: string
   email: string | null
   phone: string | null
-  /** CPF ou CNPJ. */
   tax_id: string
   createdAt: string
   updatedAt: string
   lessees?: Lessee[]
 }
 
-/** `name` e `taxId` aceitam trecho; `email`, so o endereco completo. */
 export interface ClientFilters {
   name?: string
   email?: string
@@ -144,7 +130,6 @@ export interface ClientInput extends AddressInput {
   tax_id?: string
 }
 
-/** Obra: onde o equipamento fica. Pertence a um cliente, que e o dono do contrato. */
 export interface Lessee extends Address {
   id: string
   name: string
@@ -160,7 +145,6 @@ export interface LesseeInput extends AddressInput {
   clientId?: string
 }
 
-/** Retrato do equipamento no contrato. O preco fica congelado aqui. */
 export interface LeaseItem {
   id: string
   contractId: string
@@ -177,7 +161,6 @@ export interface LeaseItem {
   finishDate: string | null
   startStatus: EquipmentStatus
   finalStatus: EquipmentStatus | null
-  /** O item que este substitui. A posicao do equipamento e o original e seus substitutos. */
   replacesItemId: string | null
   createdAt: string
 }
@@ -197,7 +180,6 @@ export interface Contract {
   endDate: string
   finishDate: string | null
   status: LeaseStatus
-  /** Quando o documento do contrato foi gerado. Sem ele, o contrato nao comeca. */
   contract_generated: string | null
   createdAt: string
   updatedAt: string
@@ -224,20 +206,16 @@ export interface Replacement {
   newEquipmentId: string
 }
 
-/** Resposta da importacao de planilha e da associacao de acessorios. */
 export interface BatchResult {
   message: string
   registers: number
   statusCode: number
 }
 
-/** Documento `.docx` gerado pela API, pronto para salvar. */
 export interface GeneratedDocument {
   blob: Blob
   fileName: string | null
 }
-
-/* -------------------------------- financeiro -------------------------------- */
 
 export type PackageKind = 'monthly' | 'biweekly' | 'weekly' | 'daily'
 
@@ -248,7 +226,6 @@ export interface PackageLine {
   amount: number
 }
 
-/** Uma linha da cobranca de uma posicao, com a clausula do contrato que a manda. */
 export type StatementLine
   = | {
     kind: 'contracted' | 'usage'
@@ -256,7 +233,6 @@ export type StatementLine
     packages: PackageLine[]
     amount: number
   }
-  /** Prorrogacoes seguidas de mesmo preco: `count` delas, a partir da `index`. Extrato antigo nao tem `count`. */
   | {
     kind: 'renewal'
     index: number
@@ -276,7 +252,6 @@ export type StatementLine
   }
   | { kind: 'indemnity', itemId: string, code: string, amount: number }
 
-/** Como a posicao terminou. `open` e a que ainda esta na obra. */
 export type PositionEnd = 'returned' | 'defect' | 'stolen' | 'open'
 
 export interface StatementUnit {
@@ -289,10 +264,8 @@ export interface StatementUnit {
   finalStatus: ReturnStatus | null
 }
 
-/** O lugar de um equipamento no contrato: o original e os substitutos, cobrados como um aluguel so. */
 export interface StatementPosition {
   end: PositionEnd
-  /** Equipamento sem diaria na tabela: a conta sai zerada. */
   missingPrice: boolean
   start: string
   endDate: string
@@ -305,7 +278,6 @@ export interface StatementPosition {
   total: number
 }
 
-/** `GET /finantial/:id`: o extrato do contrato pelas clausulas. */
 export interface ContractStatement {
   contractId: string
   status: LeaseStatus
@@ -314,7 +286,6 @@ export interface ContractStatement {
   finishDate: string | null
   asOf: string
   plannedDays: number
-  /** Concluido: o extrato gravado no fechamento, que nao muda mais. */
   frozen: boolean
   positions: StatementPosition[]
   totals: {
@@ -325,7 +296,6 @@ export interface ContractStatement {
   }
 }
 
-/** `GET /finantial?month=`: o fechamento do mes. */
 export interface MonthlyClosing {
   month: string
   from: string
@@ -343,7 +313,6 @@ export interface MonthlyClosing {
     onSite: number
     maintenance: number
     stolen: number
-    /** Indenizacao dos roubos do mes, com contrato fechado ou nao. */
     stolenIndemnity: number
   }
   closed: {
@@ -391,24 +360,18 @@ export interface MonthlyClosing {
   }[]
 }
 
-/** Defeito ou roubo de um equipamento da simulacao, com ou sem substituto. */
 export interface SimulationEvent {
   kind: 'defect' | 'stolen'
   date: string
   replaced: boolean
 }
 
-/**
- * Um equipamento da simulacao e a devolucao dele. Com substituto, e a devolucao
- * do substituto; sem, a unidade sai da obra na ocorrencia.
- */
 export interface SimulationItem {
   equipmentId: string
   returnDate: string
   event?: SimulationEvent
 }
 
-/** `POST /finantial/simulate`: a calculadora. Cada equipamento volta no proprio dia. */
 export interface SimulationInput {
   items: SimulationItem[]
   startDate: string

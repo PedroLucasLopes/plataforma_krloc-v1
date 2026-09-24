@@ -181,11 +181,6 @@
   import { useSessionStore } from '@/stores/session'
   import { daysUntil, firstName, formatDate } from '@/utils/format'
 
-  /**
-   * Painel de entrada: o que esta na obra, o que vence, e o que espera para
-   * comecar. Cada indicador so aparece para quem pode ler o recurso de onde ele
-   * sai; um cartao com "—" so apontaria o que o papel nao alcanca.
-   */
   const { t, locale } = useI18n()
   const router = useRouter()
   const session = useSessionStore()
@@ -217,7 +212,6 @@
   const equipment = computed(() => lookups.equipment)
   const contracts = computed(() => lookups.contracts)
 
-  /** A consulta tem teto. No teto, o numero exato e desconhecido e a tela diz isso. */
   const count = (length: number): number | string => (length >= LOOKUP_LIMIT ? `${LOOKUP_LIMIT}+` : length)
 
   function equipmentIn (...statuses: EquipmentStatus[]): number {
@@ -225,8 +219,6 @@
   }
 
   const contractsIn = (status: LeaseStatus) => contracts.value.filter(contract => contract.status === status)
-
-  /* ------------------------------ indicadores ----------------------------- */
 
   interface Stat {
     key: string
@@ -250,7 +242,6 @@
       const overdue = dueSoon.value.filter(row => row.overdue).length
       const upcoming = dueSoon.value.length - overdue
 
-      // Atraso vem antes: contrato vencido ha meses nao "vence em ate uma semana".
       let activeHint = t('dashboard.stats.noneDue')
 
       if (overdue > 0) {
@@ -328,8 +319,6 @@
     return list
   })
 
-  /* -------------------------------- frota -------------------------------- */
-
   const TONE_COLOR: Record<StatusTone, keyof typeof COLORS.light> = {
     success: 'success',
     info: 'info',
@@ -346,7 +335,6 @@
       status,
       label: EQUIPMENT_STATUS[status].label,
       value: equipmentIn(status),
-      // A mesma cor da pastilha de situacao: grafico e tabela contam a mesma historia.
       color: COLORS[theme.value][TONE_COLOR[EQUIPMENT_STATUS[status].tone]],
     })),
   )
@@ -360,8 +348,6 @@
   const fleetRows = computed(() =>
     fleetCounts.value.map(item => [item.label, String(item.value), share(item.value, equipment.value.length)]),
   )
-
-  /* ------------------------------- contratos ------------------------------- */
 
   const contractBars = computed(() =>
     (Object.keys(LEASE_STATUS) as LeaseStatus[]).map(status => ({
@@ -377,7 +363,6 @@
 
   const months = computed(() => {
     const now = new Date()
-    // Na lingua da tela: o eixo e a tabela trocam de mes junto com o resto.
     const MONTH = new Intl.DateTimeFormat(locale.value, { month: 'short' })
     const MONTH_YEAR = new Intl.DateTimeFormat(locale.value, { month: 'short', year: 'numeric' })
 
@@ -403,8 +388,6 @@
   ])
 
   const growthRows = computed(() => months.value.map((month, index) => [month.long, String(growthValues.value[index] ?? 0)]))
-
-  /* ------------------------------- vencimento ------------------------------ */
 
   interface DueRow extends Record<string, unknown> {
     id: string
@@ -467,7 +450,6 @@
       ...(canLessees.value ? ['lessees' as const] : []),
     ]
 
-    // O painel e a foto de agora: busca de novo a cada visita.
     const results = await Promise.allSettled(kinds.map(kind => lookups.ensure(kind, true)))
     const failure = results.find((result): result is PromiseRejectedResult => result.status === 'rejected')
 
@@ -478,12 +460,6 @@
 </script>
 
 <style scoped>
-/*
- * Flex, e nao grid. Com `repeat(auto-fit, minmax(...))` a ultima linha mantem a
- * largura das colunas e o que sobra vira buraco: cinco cartoes em quatro
- * colunas deixavam o quinto sozinho, com dois tercos da linha vazios. No flex,
- * quem fica na ultima linha cresce e ocupa a largura inteira.
- */
 .stats {
   display: flex;
   flex-wrap: wrap;
@@ -502,8 +478,6 @@
 }
 
 .charts > * {
-  /* `min-width: 0` para o grafico poder encolher: sem isso o conteudo define o
-     piso e a linha estoura para a direita. */
   flex: 1 1 320px;
   min-width: 0;
 }

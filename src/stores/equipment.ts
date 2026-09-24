@@ -5,15 +5,8 @@ import { accessoriesApi, equipmentApi } from '@/services/krloc'
 import { usePagedList } from './helpers/pagedList'
 import { useLookupsStore } from './lookups'
 
-/** Codigo de equipamento comeca com KR: texto assim busca pelo codigo, e o resto pelo nome. */
 const CODE = /^kr\S*$/i
 
-/**
- * Equipamentos, paginados no servidor e ordenados pelo numero da unidade.
- *
- * A busca e uma caixa so: o que tem cara de codigo vai como `code`, o resto
- * como `name`. Os dois aceitam trecho.
- */
 export const useEquipmentStore = defineStore('equipment', () => {
   const lookups = useLookupsStore()
 
@@ -43,7 +36,6 @@ export const useEquipmentStore = defineStore('equipment', () => {
     return current.value
   }
 
-  /** Depois de gravar, relê o que estiver na tela: nada de remendar estado local. */
   async function reload (equipmentId?: string): Promise<void> {
     lookups.invalidate('equipment')
 
@@ -74,7 +66,6 @@ export const useEquipmentStore = defineStore('equipment', () => {
     await reload(equipmentId)
   }
 
-  /** Desativado volta a frota so por aqui, e volta disponivel. */
   async function reactivate (equipmentId: string): Promise<void> {
     await equipmentApi.reactivate(equipmentId)
     await reload(equipmentId)

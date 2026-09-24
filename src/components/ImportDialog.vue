@@ -31,15 +31,9 @@
   import { useForm } from '@/composables/useForm'
   import { IMPORT_ACCEPT, IMPORT_MAX_BYTES } from '@/constants/api'
 
-  /**
-   * Importacao de planilha CSV. A API le o cabecalho pelo nome da coluna, em
-   * lotes de mil linhas, e pula registro duplicado sem avisar: o que volta e so
-   * quantos entraram.
-   */
   const props = defineProps<{
     title: string
     description: string
-    /** Colunas que a API le, na ordem em que a planilha costuma vir. */
     columns: string[]
     upload: (file: File) => Promise<BatchResult>
   }>()

@@ -1,12 +1,3 @@
-/**
- * Documentos brasileiros: CPF, CNPJ, CEP e telefone.
- *
- * A API confere o CPF e o CNPJ pelo digito verificador (`IsTaxId('pt-BR')`), e
- * so aceita o CNPJ sem pontuacao. A tela confere antes, com a mesma regra, e
- * manda o valor limpo; o formato com ponto e barra e so para ler.
- */
-
-/** Digitos e letras, em maiusculas: o CNPJ alfanumerico entra em vigor em julho de 2026. */
 export function normalizeTaxId (value: string): string {
   return value.replaceAll(/[^0-9a-z]/gi, '').toUpperCase()
 }
@@ -31,7 +22,6 @@ function isValidCpf (cpf: string): boolean {
   return digit(9) === Number(cpf[9]) && digit(10) === Number(cpf[10])
 }
 
-/** Modulo 11 com pesos de 2 a 9. Letra vale o codigo dela menos 48, como no alfanumerico. */
 function isValidCnpj (cnpj: string): boolean {
   if (!/^[0-9A-Z]{12}\d{2}$/.test(cnpj) || /^(.)\1{13}$/.test(cnpj)) {
     return false
@@ -60,7 +50,6 @@ export function isValidTaxId (value: string): boolean {
   return normalized.length === 11 ? isValidCpf(normalized) : isValidCnpj(normalized)
 }
 
-/** `12345678909` vira `123.456.789-09`; `11222333000181`, `11.222.333/0001-81`. */
 export function formatTaxId (value: string): string {
   const normalized = normalizeTaxId(value)
 
@@ -79,14 +68,12 @@ export function zipcodeDigits (value: string): string {
   return value.replaceAll(/\D/g, '')
 }
 
-/** `01001000` vira `01001-000`. */
 export function formatZipcode (value: string | null | undefined): string {
   const digits = zipcodeDigits(value ?? '')
 
   return digits.length === 8 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : (value ?? '')
 }
 
-/** `11987654321` vira `(11) 98765-4321`. Outro formato fica como veio. */
 export function formatPhone (value: string | null | undefined): string {
   const digits = (value ?? '').replaceAll(/\D/g, '')
 

@@ -93,14 +93,8 @@
   import { formatMoney } from '@/utils/format'
   import { asText } from '@/utils/forms'
 
-  /** O que `POST /accessory/upload` le da planilha, pelo nome da coluna. */
   const IMPORT_COLUMNS = ['name', 'quantity', 'p_indemnity']
 
-  /**
-   * Acessorios e o estoque deles. Remover segue a regra da API: com estoque sai
-   * uma unidade, sem estoque sai o cadastro, e o que esta associado a equipamento
-   * nao sai.
-   */
   const { t, locale } = useI18n()
   const session = useSessionStore()
   const store = useAccessoriesStore()
@@ -140,8 +134,6 @@
     { key: 'remove', label: t('accessories.remove'), icon: 'mdi-minus-circle-outline', method: 'DELETE', path: '/accessory/:id', color: 'error' },
   ])
 
-  /* -------------------------------- busca -------------------------------- */
-
   const term = ref(store.search)
 
   let timer: ReturnType<typeof setTimeout> | undefined
@@ -159,8 +151,6 @@
   onMounted(() => {
     void store.load()
   })
-
-  /* ------------------------------ gravacao ------------------------------ */
 
   const editing = reactive({ open: false, target: shallowRef<Accessory | null>(null) })
   const importing = ref(false)

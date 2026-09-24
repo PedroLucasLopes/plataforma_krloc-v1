@@ -21,7 +21,8 @@ neste projeto é composição com regra de domínio: diálogos, páginas e store
 A revisão de segurança deste front está em [`PENTEST.md`](PENTEST.md).
 
 A interface fala **inglês, espanhol e português do Brasil**, e a pessoa troca pelo menu com o nome dela.
-Comentário em português, como no resto do ecossistema. Ver "Traduções".
+Ver "Traduções". **O código não leva comentário**: nome de variável, função e tipo em inglês, e o que
+precisa de explicação mora no `CLAUDE.md` do repositório.
 
 ---
 

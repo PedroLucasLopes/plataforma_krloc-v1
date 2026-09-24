@@ -1,11 +1,3 @@
-/**
- * router/index.ts
- *
- * Rotas declaradas a mao. Cada tela diz qual permissao a libera, com o mesmo
- * metodo e caminho do catalogo de rotas do projeto KRLoc no SSO. O guard pergunta
- * isso antes de montar a tela, e a API pergunta de novo em cada chamada.
- */
-
 import type { RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
 import { watch } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
@@ -16,13 +8,9 @@ import { routeLoading } from './loading'
 
 declare module 'vue-router' {
   interface RouteMeta {
-    /** Chave de traducao do titulo da aba. */
     title?: string
-    /** Nao exige sessao: saida, API fora do ar e login recusado. */
     public?: boolean
-    /** `key` do item de menu que fica ativo. */
     nav?: string
-    /** Permissao que libera a tela. Sem ela, a tela de "nao permitido". */
     permission?: { method: string, path: string }
   }
 }
@@ -41,8 +29,6 @@ const routes: RouteRecordRaw[] = [
     meta: { public: true, title: 'pageTitles.unavailable' },
   },
   {
-    // `APP_LOGIN_ERROR_REDIRECT` da API aponta para ca. Publica de proposito: com
-    // guard, a conta recusada iria ao login, seria recusada de novo e voltaria.
     path: '/sign-in-error',
     name: 'sign-in-error',
     component: () => import('@/pages/SignInErrorPage.vue'),
@@ -156,14 +142,12 @@ router.beforeEach(async to => {
   const session = useSessionStore()
   const status = await session.ensure()
 
-  // Sem sessao, a API conduz o login no SSO e devolve a pessoa a esta mesma URL.
   if (status === 'unauthenticated') {
     session.beginLogin(to.fullPath)
 
     return false
   }
 
-  // Quem acabou de sair so entra de novo se pedir, na tela de saida.
   if (status === 'signed-out') {
     return { name: 'signed-out' }
   }
@@ -190,7 +174,6 @@ router.afterEach(to => {
   applyTitle(to)
 })
 
-// O titulo da aba acompanha a troca de lingua, sem esperar a proxima navegacao.
 watch(i18n.global.locale, () => applyTitle(router.currentRoute.value))
 
 router.onError(() => {

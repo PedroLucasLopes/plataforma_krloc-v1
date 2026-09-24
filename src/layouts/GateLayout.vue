@@ -7,11 +7,6 @@
 </template>
 
 <script lang="ts" setup>
-  /**
-   * Moldura das telas fora da casca: saida e API fora do ar. Um cartao
-   * centralizado sobre o fundo, sem menu, porque nessas telas a pessoa ainda
-   * nao tem para onde navegar.
-   */
 </script>
 
 <style scoped>

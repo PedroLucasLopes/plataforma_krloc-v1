@@ -45,18 +45,8 @@
   import { unitCode } from '@/utils/format'
   import { asOption } from '@/utils/forms'
 
-  /**
-   * Troca equipamento que saiu da obra para manutencao, ou que foi roubado, por
-   * outro disponivel do mesmo tipo.
-   *
-   * A API exige o mesmo codigo, outra unidade e o mesmo numero de acessorios, e
-   * liga o substituto ao item que ele substitui: o equipamento segue como um
-   * aluguel so, contado desde a retirada original. A tela so oferece o que
-   * cumpre as tres regras.
-   */
   const props = defineProps<{
     contract: Contract
-    /** Itens que podem ser trocados: voltaram para manutencao ou foram roubados. */
     items: LeaseItem[]
   }>()
 
@@ -95,7 +85,6 @@
     })),
   )
 
-  /** Quantos acessorios cada equipamento tem, pelo catalogo. */
   function accessoryCount (equipmentId: string): number {
     return lookups.equipment.find(item => item.id === equipmentId)?.equipmentAccessories?.length ?? 0
   }

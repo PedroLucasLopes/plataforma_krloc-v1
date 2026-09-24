@@ -20,11 +20,6 @@
   import { safeReturnPath, useSessionStore } from '@/stores/session'
   import { queryString } from '@/utils/format'
 
-  /**
-   * A API do KRLoc nao respondeu, e sem ela nao da para afirmar se a pessoa tem
-   * sessao. A tela nao manda ao login, que tambem passa pela API: so oferece
-   * tentar de novo.
-   */
   const { t } = useI18n()
   const route = useRoute()
   const router = useRouter()

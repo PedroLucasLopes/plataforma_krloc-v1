@@ -86,10 +86,6 @@
   import { daysUntil, formatDate, queryString } from '@/utils/format'
   import { asOption, asText } from '@/utils/forms'
 
-  /**
-   * Contratos, do mais recente para o mais antigo. A situacao escolhida fica na
-   * URL: o painel leva para ca ja filtrado, e voltar mantem o filtro.
-   */
   const { t, locale } = useI18n()
   const route = useRoute()
   const router = useRouter()
@@ -142,8 +138,6 @@
     { key: 'create', label: t('contracts.new'), icon: 'mdi-file-document-plus-outline', method: 'POST', path: '/elease' },
   ])
 
-  /* ------------------------------- filtros ------------------------------- */
-
   const status = ref<LeaseStatus | null>(null)
   const equipmentName = ref('')
 
@@ -180,8 +174,6 @@
     equipmentName.value = store.filters.equipmentName ?? ''
     void apply()
   })
-
-  /* ------------------------------- criacao ------------------------------- */
 
   const creating = ref(false)
 

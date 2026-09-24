@@ -5,12 +5,6 @@ import { accessoriesApi } from '@/services/krloc'
 import { usePagedList } from './helpers/pagedList'
 import { useLookupsStore } from './lookups'
 
-/**
- * Acessorios: itens avulsos com estoque, associados a equipamentos.
- *
- * Remover e do jeito da API: com estoque, sai uma unidade; sem estoque, sai o
- * cadastro. Acessorio associado a algum equipamento nao sai.
- */
 export const useAccessoriesStore = defineStore('accessories', () => {
   const lookups = useLookupsStore()
 

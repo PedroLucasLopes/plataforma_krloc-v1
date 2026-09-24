@@ -5,7 +5,6 @@ import { lesseesApi } from '@/services/krloc'
 import { usePagedList } from './helpers/pagedList'
 import { useLookupsStore } from './lookups'
 
-/** Obras: onde o equipamento fica. Cada uma pertence a um cliente e nao troca de dono. */
 export const useLesseesStore = defineStore('lessees', () => {
   const lookups = useLookupsStore()
 

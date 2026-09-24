@@ -188,15 +188,6 @@
   } from '@/utils/format'
   import { asOptions, asText } from '@/utils/forms'
 
-  /**
-   * A calculadora de contrato: equipamentos, periodo contratado e a devolucao de
-   * cada equipamento, com defeito ou roubo no meio se quiser, calculados pela
-   * mesma conta dos contratos de verdade, na API. Nada e gravado.
-   *
-   * Cada equipamento volta no proprio dia, como na obra: o cliente nao devolve
-   * tudo junto no vencimento. A devolucao nasce no termino contratado e o segue
-   * enquanto a pessoa nao a trocar.
-   */
   const { t } = useI18n()
   const session = useSessionStore()
   const lookups = useLookupsStore()
@@ -204,7 +195,6 @@
 
   const canEquipment = computed(() => session.can('GET', '/equipment'))
 
-  /** Os pacotes da tabela de precos, como atalho para o periodo contratado. */
   const PERIODS = [
     { key: 'daily', days: 1 },
     { key: 'weekly', days: 7 },
@@ -212,11 +202,9 @@
     { key: 'monthly', days: 30 },
   ] as const
 
-  /** Defeito ou roubo, com ou sem substituto. Vazio e sem ocorrencia. */
   type Occurrence = '' | 'defect' | 'defect:replaced' | 'stolen' | 'stolen:replaced'
 
   interface UnitForm {
-    /** A devolucao do equipamento, ou do substituto dele. */
     returnDate: string
     occurrence: Occurrence
     occurrenceDate: string
@@ -240,12 +228,8 @@
   const result = shallowRef<ContractStatement | null>(null)
   const calculatedWith = shallowRef<string | null>(null)
 
-  /** Sem substituto, a unidade sai da obra na ocorrencia: a devolucao nao conta. */
   const countsReturn = (unit: UnitForm): boolean => !unit.occurrence || unit.occurrence.endsWith(':replaced')
 
-  /* ------------------------------ equipamentos ----------------------------- */
-
-  /** O que existe na frota: desativado e roubado nao se alugam mais. */
   const available = computed(() =>
     lookups.equipment
       .filter(item => item.status !== 'RETIRED' && item.status !== 'STOLEN')
@@ -262,7 +246,6 @@
     return { returnDate: state.form.plannedEndDate, occurrence: '', occurrenceDate: '' }
   }
 
-  /** Quem entra volta no termino contratado; quem sai leva junto a devolucao que tinha. */
   function onEquipments (ids: string[]): void {
     state.form.equipments = ids
     state.form.units = Object.fromEntries(ids.map(id => [id, state.form.units[id] ?? freshUnit()]))
@@ -278,7 +261,6 @@
     indemnity: string
   }
 
-  /** A tabela de hoje de cada equipamento escolhido, para a conta nao ser caixa-preta. */
   const priceRows = computed<PriceRow[]>(() =>
     state.form.equipments.flatMap(id => {
       const item = byId.value.get(id)
@@ -306,8 +288,6 @@
     { key: 'indemnity', label: t('rates.indemnity'), align: 'end', secondary: true },
   ])
 
-  /* -------------------------------- periodo -------------------------------- */
-
   const plannedDays = computed(() => dateInputDays(state.form.startDate, state.form.plannedEndDate))
 
   const startProblem = computed(() => {
@@ -318,7 +298,6 @@
     return isDateInputInRange(state.form.startDate) ? null : t('errors.field.date_out_of_range')
   })
 
-  /** Mudar o inicio leva tudo junto: os prazos sao os que a pessoa escolheu. */
   function onStart (value: string): void {
     const delta = dateInputDelta(state.form.startDate, value)
 
@@ -338,7 +317,6 @@
     }]))
   }
 
-  /** A devolucao acompanha o termino enquanto for igual a ele: e o caso de quem devolve no prazo. */
   function onPlannedEnd (value: string): void {
     const previous = state.form.plannedEndDate
 
@@ -374,8 +352,6 @@
 
     return plannedDays.value !== null && plannedDays.value > MAX_CONTRACT_DAYS ? t('errors.field.period_too_long') : null
   })
-
-  /* ------------------------ devolucao e ocorrencias ------------------------ */
 
   const occurrenceOptions = computed(() => [
     { title: t('financial.calculator.occurrences.none'), value: '' },
@@ -468,15 +444,12 @@
 
     unit.occurrence = value as Occurrence
 
-    // Sem data ainda, a do meio do caminho ate a devolucao: a pessoa ajusta a partir dela.
     if (unit.occurrence && !unit.occurrenceDate) {
       const kept = dateInputDays(state.form.startDate, unit.returnDate) ?? 2
 
       unit.occurrenceDate = addDaysToDateInput(state.form.startDate || todayInput(), Math.floor(kept / 2))
     }
   }
-
-  /* -------------------------------- calculo -------------------------------- */
 
   function toItem (id: string, unit: UnitForm): SimulationItem {
     if (!unit.occurrence) {
@@ -490,7 +463,6 @@
       replaced: replaced === 'replaced',
     }
 
-    // Sem substituto, a unidade sai da obra na ocorrencia: e ela a devolucao.
     return {
       equipmentId: id,
       returnDate: dateInputToIso(event.replaced ? unit.returnDate : unit.occurrenceDate),
@@ -530,7 +502,6 @@
     })
   }
 
-  /** O resultado na tela e de outros campos: a pessoa mudou algo depois de calcular. */
   const stale = computed(() => !!calculatedWith.value && valid.value && JSON.stringify(toInput()) !== calculatedWith.value)
 
   const resultDescription = computed(() => {
@@ -545,9 +516,6 @@
       : undefined
   })
 
-  /* --------------------------------- carga --------------------------------- */
-
-  /** A ultima simulacao volta com os campos que a geraram. */
   function restore (): void {
     const last = store.lastSimulation
 

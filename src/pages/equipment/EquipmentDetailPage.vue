@@ -132,7 +132,6 @@
   import { useSessionStore } from '@/stores/session'
   import { formatDateTime, formatMoney, unitCode } from '@/utils/format'
 
-  /** Ficha de uma unidade: identificacao, tabela de precos e acessorios. */
   const { t } = useI18n()
   const route = useRoute()
   const router = useRouter()
@@ -215,7 +214,6 @@
     { key: 'indemnity', label: t('rates.indemnity'), align: 'end', width: '160px' },
   ])
 
-  /** Associar consome estoque de acessorio, e so vale para equipamento disponivel. */
   const canAssociate = computed(() =>
     equipment.value?.status === 'AVAILABLE' && session.can('POST', '/accessory/associate') && session.can('GET', '/accessory'),
   )
@@ -223,15 +221,12 @@
   const headerActions = computed<HeaderAction[]>(() => {
     const current = equipment.value
 
-    // Reservado, locado e substituto so mudam pelo contrato: a API recusa editar e
-    // desativar. O caminho existe de novo quando o contrato soltar o equipamento.
     if (!current || CONTRACT_EQUIPMENT_STATUS.includes(current.status)) {
       return []
     }
 
     const path = `/equipment/${current.id}`
 
-    // Desativado e baixa: nao se edita, e a unica saida e voltar a frota.
     if (current.status === 'RETIRED') {
       return [{
         key: 'reactivate',

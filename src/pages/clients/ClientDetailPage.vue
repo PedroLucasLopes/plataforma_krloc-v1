@@ -107,7 +107,6 @@
   import { formatPhone, formatTaxId, formatZipcode } from '@/utils/documents'
   import { formatDateTime } from '@/utils/format'
 
-  /** Ficha do cliente e as obras dele. */
   const { t } = useI18n()
   const route = useRoute()
   const router = useRouter()
@@ -211,7 +210,6 @@
       { key: 'edit', label: t('common.edit'), icon: 'mdi-pencil-outline', method: 'PUT', path, variant: 'outlined' },
     ]
 
-    // Com obra a API recusa apagar. O botao so criaria um erro garantido.
     if (canSeeLessees.value && !lesseesLoading.value && lessees.value.length === 0) {
       actions.push({ key: 'delete', label: t('common.delete'), icon: 'mdi-delete-outline', method: 'DELETE', path, color: 'error', variant: 'text' })
     }

@@ -1,12 +1,6 @@
 import { reactive, ref, shallowRef } from 'vue'
 import { errorMessage } from '@/services/http'
 
-/**
- * Estado de uma confirmacao de acao destrutiva.
- *
- * Falha fica dentro do modal, com o modal aberto, pela mesma razao do
- * formulario: a pessoa precisa ler por que nao deu, ao lado do que tentou.
- */
 export function useConfirm<Target> () {
   const target = shallowRef<Target | null>(null)
   const open = ref(false)

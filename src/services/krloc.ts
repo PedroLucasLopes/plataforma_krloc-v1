@@ -1,10 +1,3 @@
-/**
- * Endpoints da API do KRLoc, um grupo por recurso.
- *
- * O caminho e o do catalogo de rotas do SSO, sem o prefixo global. E o mesmo
- * texto que as permissoes usam, o que deixa a tela perguntar
- * `can('POST', '/elease/start/:id')` com a mesma forma que vai na chamada.
- */
 import type {
   Accessory,
   AccessoryInput,
@@ -33,7 +26,6 @@ import { download, request } from './http'
 
 const id = (value: string): string => encodeURIComponent(value)
 
-/** Planilha no campo `file`, como o `FileInterceptor('file')` da API espera. */
 function spreadsheet (file: File): FormData {
   const form = new FormData()
 
@@ -42,7 +34,6 @@ function spreadsheet (file: File): FormData {
   return form
 }
 
-/** As rotas que o `@pedrolucaslopes/sso-client` instala. */
 export const sessionApi = {
   me: () => request<Me>('/auth/me', { redirectOnUnauthorized: false }),
   logout: () => request<void>('/auth/logout', { method: 'POST', redirectOnUnauthorized: false }),
@@ -55,9 +46,7 @@ export const equipmentApi = {
   create: (body: EquipmentInput) => request<Equipment>('/equipment', { method: 'POST', body }),
   update: (equipmentId: string, body: Partial<EquipmentInput>) =>
     request<Equipment>(`/equipment/${id(equipmentId)}`, { method: 'PUT', body }),
-  /** Soft delete: o equipamento vira `RETIRED` e o historico fica. */
   retire: (equipmentId: string) => request<void>(`/equipment/${id(equipmentId)}`, { method: 'DELETE' }),
-  /** A volta do desativado, e o unico caminho dela: a unidade volta disponivel. */
   reactivate: (equipmentId: string) =>
     request<Equipment>(`/equipment/reactivate/${id(equipmentId)}`, { method: 'POST' }),
   importCsv: (file: File) =>
@@ -70,11 +59,9 @@ export const accessoriesApi = {
   create: (body: AccessoryInput) => request<Accessory>('/accessory', { method: 'POST', body }),
   update: (accessoryId: string, body: Partial<AccessoryInput>) =>
     request<Accessory>(`/accessory/${id(accessoryId)}`, { method: 'PUT', body }),
-  /** Com estoque, tira uma unidade; sem estoque, apaga o cadastro. */
   remove: (accessoryId: string) => request<void>(`/accessory/${id(accessoryId)}`, { method: 'DELETE' }),
   importCsv: (file: File) =>
     request<BatchResult>('/accessory/upload', { method: 'POST', body: spreadsheet(file) }),
-  /** Cada acessorio associado consome uma unidade do estoque. */
   associate: (body: { equipmentId: string, accessoryIds: string[] }) =>
     request<BatchResult>('/accessory/associate', { method: 'POST', body }),
 }
@@ -93,7 +80,6 @@ export const lesseesApi = {
   list: (query: ListQuery & { name?: string, city?: string } = {}) =>
     request<Lessee[]>('/lessee', { query, emptyOn404: true }),
   get: (lesseeId: string) => request<Lessee>(`/lessee/${id(lesseeId)}`),
-  /** As obras de um cliente. Sem obra a API responde 404, que aqui vira lista vazia. */
   byClient: async (clientId: string): Promise<Lessee[]> => {
     const result = await request<(Client & { lessees?: Lessee[] }) | []>(
       `/lessee/lesseesbyclient/${id(clientId)}`,
@@ -120,36 +106,26 @@ export const contractsApi = {
     request<Contract>(`/elease/add/${id(contractId)}`, { method: 'PUT', body: { equipments } }),
   removeEquipment: (contractId: string, equipments: string[]) =>
     request<Contract>(`/elease/remove/${id(contractId)}`, { method: 'PUT', body: { equipments } }),
-  /** Volta, manutencao ou roubo de equipamento que esta na obra. */
   setEquipmentStatus: (contractId: string, equipments: { id: string, status: ReturnStatus }[]) =>
     request<unknown>(`/elease/status/${id(contractId)}`, { method: 'PUT', body: { equipments } }),
   replace: (contractId: string, replacements: Replacement[]) =>
     request<Contract>(`/elease/replace/${id(contractId)}`, { method: 'PUT', body: { replacements } }),
 }
 
-/**
- * A cobranca pelas clausulas do contrato. A conta mora na API, e a calculadora
- * usa a mesma: a tela nunca refaz a regra.
- */
 export const financialApi = {
   statement: (contractId: string) => request<ContractStatement>(`/finantial/${id(contractId)}`),
   closing: (month: string) => request<MonthlyClosing>('/finantial', { query: { month } }),
-  /** `POST` porque leva equipamentos e eventos no corpo; nao grava nada. */
   simulate: (body: SimulationInput) =>
     request<ContractStatement>('/finantial/simulate', { method: 'POST', body }),
 }
 
-/** Documentos `.docx`. Gerar o do contrato e o que libera o inicio dele. */
 export const documentsApi = {
   contract: (contractId: string): Promise<GeneratedDocument> =>
     download(`/generate/contract/${id(contractId)}`, { method: 'POST' }),
-  /** O extrato do contrato ativo: o que correu ate hoje. */
   statement: (contractId: string): Promise<GeneratedDocument> =>
     download(`/generate/finantial/${id(contractId)}`, { method: 'POST' }),
-  /** A baixa do contrato concluido (clausula 10a). */
   closure: (contractId: string): Promise<GeneratedDocument> =>
     download(`/generate/closure/${id(contractId)}`, { method: 'POST' }),
-  /** O fechamento do mes. */
   closing: (month: string): Promise<GeneratedDocument> =>
     download('/generate/finantial', { method: 'POST', body: { month } }),
 }

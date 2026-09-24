@@ -58,15 +58,8 @@
   import { formatTaxId } from '@/utils/documents'
   import { asOption, asText } from '@/utils/forms'
 
-  /**
-   * Cadastro e edicao de obra. A obra nasce de um cliente e nao troca de dono: a
-   * API aceita o cliente atual e recusa outro (`lessee_owner_change`). Na edicao o
-   * cliente fica travado, e nem vai, porque nao ha o que mudar.
-   */
   const props = defineProps<{
-    /** Sem valor, cadastra. */
     lessee?: Lessee | null
-    /** Cliente ja escolhido, como na ficha do cliente. */
     clientId?: string | null
   }>()
 
@@ -110,7 +103,6 @@
     const options = lookups.clients.map(client => ({ title: `${client.name} · ${formatTaxId(client.tax_id)}`, value: client.id }))
     const current = props.lessee?.client
 
-    // O cliente da obra aparece mesmo que o catalogo tenha chegado ao teto.
     if (current && !options.some(option => option.value === current.id)) {
       options.push({ title: current.name, value: current.id })
     }

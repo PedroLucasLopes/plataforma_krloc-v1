@@ -3,13 +3,6 @@ import { defineStore } from 'pinia'
 import { shallowRef } from 'vue'
 import { documentsApi, financialApi } from '@/services/krloc'
 
-/**
- * O financeiro: fechamento do mes, extrato de contrato e calculadora. A conta e
- * toda da API, pelas clausulas do contrato; aqui so se pede e se guarda.
- *
- * A ultima simulacao fica no store: quem sai da calculadora para conferir um
- * contrato volta e encontra o que tinha montado.
- */
 export const useFinancialStore = defineStore('financial', () => {
   const lastSimulation = shallowRef<{ input: SimulationInput, result: ContractStatement } | null>(null)
 

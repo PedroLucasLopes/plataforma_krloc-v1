@@ -80,16 +80,8 @@
   import { EQUIPMENT_STATUS, POSITION_END } from '@/constants/status'
   import { formatDate, formatMoney } from '@/utils/format'
 
-  /**
-   * O extrato de um contrato pelas clausulas: os totais e, por equipamento, de
-   * onde sai cada valor. A conta e toda da API; aqui so se escreve.
-   *
-   * Cada posicao e um equipamento do contrato com os substitutos que vieram
-   * depois dele, cobrados como um aluguel so. A linha diz a clausula que a manda.
-   */
   const props = defineProps<{
     statement: ContractStatement
-    /** Resultado da calculadora: a devolucao e simulada, nao registrada. */
     simulation?: boolean
   }>()
 
@@ -97,11 +89,8 @@
 
   const days = (count: number): string => t('counts.days', count)
 
-  /** Pendente ainda nao correu: so o contratado. Ativo corre ate hoje. */
   const pending = computed(() => props.statement.status === 'PENDING')
   const running = computed(() => props.statement.status === 'ACTIVE')
-
-  /* -------------------------------- totais -------------------------------- */
 
   interface Stat {
     key: string
@@ -172,12 +161,9 @@
     ]
   })
 
-  /** Unidade sem diaria na tabela: a conta dela sai zerada, e isso precisa ser dito. */
   const missingPrice = computed(() =>
     props.statement.positions.filter(position => position.missingPrice).map(position => position.units[0]?.code ?? '—'),
   )
-
-  /* ------------------------------- posicoes ------------------------------- */
 
   function packagesText (packages: PackageLine[]): string {
     return packages
@@ -185,7 +171,6 @@
       .join(' + ')
   }
 
-  /** Descricao e detalhe de cada linha, com a clausula que a manda. */
   function lineText (line: StatementLine): [string, string] {
     switch (line.kind) {
       case 'contracted': {
@@ -238,7 +223,6 @@
     subtotal: boolean
   }
 
-  /** Como a posicao se descreve fechada: dias, fim e total. Pendente so tem o contratado. */
   function summaryOf (position: StatementPosition): string {
     return pending.value
       ? [days(props.statement.plannedDays), formatMoney(position.contracted)].join(' · ')
@@ -275,7 +259,6 @@
           name: unit.name,
           from: formatDate(unit.start),
           to: unit.end ? formatDate(unit.end) : t('financial.statement.onSite'),
-          // Sem volta, o original esta locado e o substituto, como substituto.
           outcome: unit.finalStatus ?? (unitIndex === 0 ? 'LEASED' : 'REPLACE'),
         })),
         lines: [
@@ -300,7 +283,6 @@
     positions.value.map(({ key, title, summary, icon }) => ({ key, title, summary, icon })),
   )
 
-  // Um equipamento so: aberto, que nao ha o que escolher.
   const openPanels = ref<string[]>([])
 
   watch(panels, current => {

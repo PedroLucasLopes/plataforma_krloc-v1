@@ -7,14 +7,6 @@ export interface PagedQuery {
   limit: number
 }
 
-/**
- * Estado de uma lista paginada pelo servidor, para usar dentro de store.
- *
- * O backend nao devolve total e responde 404 para lista vazia; a camada HTTP
- * ja transforma o 404 em `[]`, e a tabela decide "ha proxima" pelo tamanho da
- * pagina. Filtro novo sempre volta a primeira pagina: ficar na terceira de um
- * resultado que agora tem uma so mostraria uma tela vazia sem motivo.
- */
 export function usePagedList<Row, Filters extends object> (
   fetchPage: (query: PagedQuery & Filters) => Promise<Row[]>,
   initialFilters: Filters,
@@ -38,8 +30,6 @@ export function usePagedList<Row, Filters extends object> (
     try {
       const result = await fetchPage({ ...filters, page: page.value, limit: limit.value })
 
-      // Quem digita rapido dispara varias buscas. Resposta velha nao
-      // sobrescreve a mais nova.
       if (current === generation) {
         rows.value = result
         loaded.value = true

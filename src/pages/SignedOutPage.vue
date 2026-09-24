@@ -19,13 +19,6 @@
   import GateLayout from '@/layouts/GateLayout.vue'
   import { useSessionStore } from '@/stores/session'
 
-  /**
-   * A pessoa saiu do KRLoc.
-   *
-   * A sessao dela com o SSO continua de pe, e e ela que a colocaria de volta sem
-   * pedir nada. Por isso esta tela nao manda ao login sozinha: entrar de novo e
-   * um clique, e so acontece quando a pessoa quer.
-   */
   const { t } = useI18n()
   const router = useRouter()
   const session = useSessionStore()
@@ -38,7 +31,6 @@
   }
 
   onMounted(async () => {
-    // Aberta direto por quem ainda tem sessao, a tela so atrapalharia.
     if (session.status !== 'signed-out' && (await session.ensure()) === 'authenticated') {
       await router.replace('/')
     }

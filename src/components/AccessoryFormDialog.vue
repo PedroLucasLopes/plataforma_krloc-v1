@@ -49,9 +49,7 @@
   import { useAccessoriesStore } from '@/stores/accessories'
   import { asInteger, asText } from '@/utils/forms'
 
-  /** Cadastro e edicao de acessorio. A API nao deixa o estoque diminuir por aqui. */
   const props = defineProps<{
-    /** Sem valor, cadastra. */
     accessory?: Accessory | null
   }>()
 

@@ -36,11 +36,6 @@
   import { formatMoney, unitCode } from '@/utils/format'
   import { asOptions } from '@/utils/forms'
 
-  /**
-   * Associa acessorios a um equipamento disponivel. Cada associacao consome uma
-   * unidade do estoque, e so aparece acessorio com estoque que ainda nao esta
-   * no equipamento.
-   */
   const props = defineProps<{ equipment: Equipment }>()
 
   const open = defineModel<boolean>('open', { required: true })

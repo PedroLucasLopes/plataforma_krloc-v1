@@ -85,7 +85,6 @@
   import { formatPhone, formatTaxId } from '@/utils/documents'
   import { asText } from '@/utils/forms'
 
-  /** Clientes, os donos dos contratos. Pagina no servidor. */
   const { t, locale } = useI18n()
   const router = useRouter()
   const store = useClientsStore()
@@ -142,12 +141,9 @@
       method: 'DELETE',
       path: '/client/:id',
       color: 'error',
-      // A API recusa apagar cliente que ainda tem obra.
       unavailable: row => row.lessees > 0,
     },
   ])
-
-  /* -------------------------------- busca -------------------------------- */
 
   const term = ref(store.search)
 
@@ -167,8 +163,6 @@
     void store.load()
   })
 
-  /* ------------------------------ gravacao ------------------------------ */
-
   const editing = reactive({ open: false, target: shallowRef<Client | null>(null) })
   const removal = useConfirm<ClientRow>()
 
@@ -186,7 +180,6 @@
     }
   }
 
-  /** Cliente novo abre a ficha: o passo seguinte e cadastrar a obra dele. */
   function onSaved (client: Client | null): void {
     if (client) {
       void router.push({ name: 'client', params: { id: client.id } })

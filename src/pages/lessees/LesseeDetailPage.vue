@@ -118,7 +118,6 @@
   import { formatZipcode } from '@/utils/documents'
   import { formatDate, formatDateTime } from '@/utils/format'
 
-  /** Ficha da obra: onde fica, de quem e, e os contratos que passaram por ela. */
   const { t } = useI18n()
   const route = useRoute()
   const router = useRouter()
@@ -200,7 +199,6 @@
       { key: 'edit', label: t('common.edit'), icon: 'mdi-pencil-outline', method: 'PUT', path, variant: 'outlined' },
     ]
 
-    // Obra com contrato nao sai. O botao so criaria um erro garantido.
     if ((current.eleases?.length ?? 0) === 0) {
       actions.push({ key: 'delete', label: t('common.delete'), icon: 'mdi-delete-outline', method: 'DELETE', path, color: 'error', variant: 'text' })
     }

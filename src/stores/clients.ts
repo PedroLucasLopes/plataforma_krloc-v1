@@ -7,18 +7,8 @@ import { EMAIL_PATTERN } from '@/utils/forms'
 import { usePagedList } from './helpers/pagedList'
 import { useLookupsStore } from './lookups'
 
-/** Trecho de CPF ou CNPJ: so digitos e a pontuacao do documento. Nome tem letra. */
 const TAX_ID_FRAGMENT = /^(?=.*\d)[\d\s./-]+$/
 
-/**
- * A busca e uma caixa so, e cada filtro da API tem a sua forma:
- *
- * - `email` exige o endereco completo, entao so texto com cara de e-mail vai nele;
- * - `taxId` e trecho do documento como foi gravado, e a tela grava so digitos e
- *   letras. Trecho de digitos vai limpo, e o documento inteiro que confere tambem,
- *   o CNPJ alfanumerico inclusive;
- * - o resto e trecho do nome.
- */
 function searchFilters (value: string): ClientFilters {
   if (!value) {
     return {}
@@ -35,7 +25,6 @@ function searchFilters (value: string): ClientFilters {
   return { name: value }
 }
 
-/** Clientes: os donos dos contratos, paginados no servidor. */
 export const useClientsStore = defineStore('clients', () => {
   const lookups = useLookupsStore()
 
@@ -47,13 +36,11 @@ export const useClientsStore = defineStore('clients', () => {
   const search = ref('')
   const current = ref<Client | null>(null)
   const lessees = ref<Lessee[]>([])
-  /** De qual cliente sao as obras em `lessees`: trocar de ficha nao mostra as do anterior. */
   const lesseesOf = ref<string | null>(null)
 
   function applySearch (term: string): Promise<void> {
     search.value = term
 
-    // Um filtro por vez: o que a busca anterior usou sai.
     return list.applyFilters({ name: undefined, email: undefined, taxId: undefined, ...searchFilters(term.trim()) })
   }
 

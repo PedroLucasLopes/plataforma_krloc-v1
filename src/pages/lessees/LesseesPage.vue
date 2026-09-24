@@ -93,7 +93,6 @@
   import { formatZipcode } from '@/utils/documents'
   import { asText } from '@/utils/forms'
 
-  /** Obras de todos os clientes. Pagina no servidor. */
   const { t, locale } = useI18n()
   const router = useRouter()
   const store = useLesseesStore()
@@ -147,12 +146,9 @@
       method: 'DELETE',
       path: '/lessee/:id',
       color: 'error',
-      // Obra com contrato nao sai: e o historico do contrato.
       unavailable: row => row.contracts > 0,
     },
   ])
-
-  /* -------------------------------- busca -------------------------------- */
 
   const term = ref(store.search)
   const city = ref(store.city)
@@ -173,8 +169,6 @@
   onMounted(() => {
     void store.load()
   })
-
-  /* ------------------------------ gravacao ------------------------------ */
 
   const editing = reactive({ open: false, target: shallowRef<Lessee | null>(null) })
   const removal = useConfirm<LesseeRow>()

@@ -5,14 +5,6 @@ import { contractsApi, documentsApi } from '@/services/krloc'
 import { usePagedList } from './helpers/pagedList'
 import { useLookupsStore } from './lookups'
 
-/**
- * Contratos e o ciclo de vida deles: criar, gerar o documento, comecar, mexer
- * nos equipamentos, fechar ou cancelar.
- *
- * Toda acao muda equipamento junto, entao toda acao relê o contrato e invalida
- * o catalogo de equipamentos. A regra de transicao e da API; a tela so oferece o
- * que a situacao permite.
- */
 export const useContractsStore = defineStore('contracts', () => {
   const lookups = useLookupsStore()
 
@@ -41,7 +33,6 @@ export const useContractsStore = defineStore('contracts', () => {
     }
   }
 
-  /** Roda a acao e relê. Erro sobe para o modal que a disparou. */
   async function act<T> (contractId: string, action: () => Promise<T>): Promise<T> {
     const result = await action()
 
@@ -74,7 +65,6 @@ export const useContractsStore = defineStore('contracts', () => {
       act(contractId, () => contractsApi.setEquipmentStatus(contractId, [{ id: equipmentId, status }])),
     replace: (contractId: string, replacements: Replacement[]) =>
       act(contractId, () => contractsApi.replace(contractId, replacements)),
-    /** Gerar o documento do contrato grava a data dele, que libera o inicio. */
     contractDocument: (contractId: string): Promise<GeneratedDocument> =>
       act(contractId, () => documentsApi.contract(contractId)),
     statementDocument: (contractId: string) => documentsApi.statement(contractId),

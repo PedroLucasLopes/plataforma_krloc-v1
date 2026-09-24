@@ -71,15 +71,7 @@
   import { isValidTaxId, normalizeTaxId } from '@/utils/documents'
   import { asText, EMAIL_PATTERN } from '@/utils/forms'
 
-  /**
-   * Cadastro e edicao de cliente, o dono do contrato.
-   *
-   * CPF e CNPJ sao conferidos pelo digito verificador antes de sair, e vao sem
-   * pontuacao: a API so aceita o CNPJ assim, grava o documento como chega, e a
-   * busca por documento procura nesse formato. O endereco sai do CEP.
-   */
   const props = defineProps<{
-    /** Sem valor, cadastra. */
     client?: Client | null
   }>()
 
@@ -90,7 +82,6 @@
   const { t } = useI18n()
   const store = useClientsStore()
 
-  /** Cada abertura recria o endereco, com o travamento do registro que abriu. */
   const round = ref(0)
 
   const state = useForm(() => ({
