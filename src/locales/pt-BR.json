@@ -1,0 +1,772 @@
+{
+  "app": {
+    "subtitle": "Locação de equipamentos"
+  },
+  "pageTitles": {
+    "dashboard": "Visão geral",
+    "contracts": "Contratos",
+    "contract": "Contrato",
+    "equipment": "Equipamentos",
+    "equipmentUnit": "Equipamento",
+    "accessories": "Acessórios",
+    "clients": "Clientes",
+    "client": "Cliente",
+    "lessees": "Obras",
+    "lessee": "Obra",
+    "signedOut": "Você saiu",
+    "unavailable": "Indisponível",
+    "signInError": "Login não concluído",
+    "forbidden": "Não permitido",
+    "notFound": "Não encontrado",
+    "closing": "Fechamento do mês",
+    "calculator": "Calculadora de contrato"
+  },
+  "nav": {
+    "overview": "Visão geral",
+    "operation": "Operação",
+    "inventory": "Estoque",
+    "customers": "Clientes",
+    "contracts": "Contratos",
+    "equipment": "Equipamentos",
+    "accessories": "Acessórios",
+    "clients": "Clientes",
+    "lessees": "Obras",
+    "financial": "Financeiro",
+    "closing": "Fechamento do mês",
+    "calculator": "Calculadora"
+  },
+  "common": {
+    "name": "Nome",
+    "email": "E-mail",
+    "status": "Situação",
+    "search": "Buscar",
+    "allStatuses": "Todas as situações",
+    "edit": "Editar",
+    "delete": "Apagar",
+    "tryAgain": "Tentar de novo",
+    "goToOverview": "Ir para a visão geral",
+    "identifier": "Identificador",
+    "registered": "Cadastrado em",
+    "updated": "Última alteração"
+  },
+  "counts": {
+    "equipment": "{count} unidade | {count} unidades",
+    "contracts": "{count} contrato | {count} contratos",
+    "lessees": "{count} obra | {count} obras",
+    "days": "{count} dia | {count} dias"
+  },
+  "status": {
+    "equipment": {
+      "AVAILABLE": "Disponível",
+      "PENDING": "Reservado",
+      "LEASED": "Locado",
+      "REPLACE": "Substituto",
+      "MAINTENANCE": "Manutenção",
+      "STOLEN": "Roubado",
+      "RETIRED": "Desativado"
+    },
+    "lease": {
+      "PENDING": "Pendente",
+      "ACTIVE": "Ativo",
+      "COMPLETED": "Concluído",
+      "CANCELLED": "Cancelado"
+    },
+    "position": {
+      "returned": "Devolvido",
+      "defect": "Defeito",
+      "stolen": "Roubado",
+      "open": "Na obra"
+    }
+  },
+  "rates": {
+    "daily": "Diária",
+    "weekly": "Semanal",
+    "biweekly": "Quinzenal",
+    "monthly": "Mensal",
+    "indemnity": "Indenização"
+  },
+  "errors": {
+    "fallback": "Algo deu errado. Tente de novo.",
+    "status": {
+      "network": "A API do KRLoc não respondeu. Confira a conexão e tente de novo.",
+      "badRequest": "A API do KRLoc recusou a requisição.",
+      "unauthorized": "Sua sessão terminou. Entre de novo para continuar.",
+      "forbidden": "A API do KRLoc recusou esta ação.",
+      "notFound": "O registro não foi encontrado, ou seu papel não o alcança.",
+      "conflict": "Este registro conflita com um que já existe.",
+      "tooLarge": "O arquivo é grande demais para enviar.",
+      "server": "A API do KRLoc falhou ao processar isto. Tente de novo daqui a pouco.",
+      "tooManyRequests": "Muitas requisições em pouco tempo. Aguarde um instante e tente de novo."
+    },
+    "code": {
+      "accessories_unavailable": "Alguns acessórios estão sem estoque.",
+      "accessory_in_use": "Este acessório está associado a equipamentos e não pode sair.",
+      "accessory_not_found": "Este acessório não existe.",
+      "accessory_quantity_decrease": "O estoque não diminui por aqui, só aumenta.",
+      "address_mismatch": "\"{value}\" não bate com o CEP. Confira o endereço.",
+      "address_required": "Este CEP não tem logradouro. Preencha o endereço.",
+      "client_has_lessees": "Este cliente tem obras e não pode ser apagado.",
+      "client_not_found": "Este cliente não existe.",
+      "contract_document_missing": "Gere o documento do contrato antes de começar.",
+      "contract_equipment_not_reserved": "Algum equipamento deste contrato não está mais reservado para ele.",
+      "contract_in_state": "Este contrato está {status}.",
+      "contract_items_out": "Algum equipamento ainda não voltou.",
+      "contract_last_equipment": "O contrato precisa de pelo menos um equipamento.",
+      "contract_not_active": "Este contrato não está ativo.",
+      "contract_not_found": "Este contrato não existe.",
+      "contract_not_pending": "Este contrato já começou, e a lista de equipamentos dele está fechada.",
+      "csrf_token_invalid": "Sua sessão mudou em outra aba. Recarregue a página e tente de novo.",
+      "duplicate": "Já existe um registro com estes dados.",
+      "equipment_code_prefix": "O código precisa começar com KR.",
+      "equipment_code_too_short": "O código precisa de pelo menos três caracteres.",
+      "equipment_leased": "Este equipamento está num contrato, e só o contrato o muda.",
+      "equipment_not_found": "Este equipamento não existe.",
+      "equipment_not_leased": "Este equipamento não está na obra por este contrato.",
+      "equipment_not_retired": "Este equipamento não está desativado, então não há o que reativar.",
+      "equipment_retired": "Este equipamento está desativado. Reative-o para trazê-lo de volta.",
+      "equipment_reserved": "Algum equipamento foi reservado por outro contrato enquanto isso.",
+      "equipment_unavailable": "Algum equipamento deixou de estar disponível.",
+      "file_missing": "Escolha um arquivo para enviar.",
+      "file_too_large": "O arquivo passa do limite de 2 MB.",
+      "file_type_invalid": "Só arquivos .csv são aceitos.",
+      "internal_error": "A API do KRLoc falhou ao processar isto. Tente de novo em instantes.",
+      "lessee_has_contracts": "Esta obra tem contratos e não pode ser apagada.",
+      "lessee_not_found": "Esta obra não existe.",
+      "lessee_owner_change": "A obra não passa para outro cliente.",
+      "no_activity_in_period": "Nenhuma movimentação de equipamento neste período.",
+      "no_results": "Nada foi encontrado.",
+      "origin_not_allowed": "Esta requisição veio de uma origem que a API não aceita.",
+      "period_too_long": "O período passa do que a cobrança aceita.",
+      "replace_accessories": "O substituto não tem os mesmos acessórios.",
+      "replace_duplicate": "A mesma unidade aparece duas vezes na substituição.",
+      "replace_new_unavailable": "O substituto deixou de estar disponível.",
+      "replace_old_state": "Só se substitui equipamento que voltou para manutenção ou foi roubado.",
+      "replace_pair": "Não foi possível identificar o par da substituição.",
+      "replace_same_unit": "{equipment} é a mesma unidade. Escolha outra.",
+      "replace_type_mismatch": "{from} e {to} não são do mesmo tipo de equipamento.",
+      "validation_failed": "A API do KRLoc recusou alguns dos valores enviados. Confira o formulário e tente de novo.",
+      "zipcode_not_found": "Este CEP não foi encontrado."
+    },
+    "field": {
+      "date_out_of_range": "Use uma data entre 2000 e 2099.",
+      "end_before_start": "A data final não pode ser antes da inicial.",
+      "period_too_long": "O período é longo demais: até 5 anos de contrato, e devolução até 10 anos depois do início.",
+      "phone_invalid": "Digite um telefone brasileiro válido, com DDD.",
+      "state_invalid": "Use a sigla da UF, como SP.",
+      "tax_id_invalid": "Digite um CPF ou CNPJ válido.",
+      "zipcode_invalid": "Digite um CEP válido, com oito dígitos."
+    }
+  },
+  "signedOut": {
+    "title": "Você saiu do KRLoc",
+    "description": "Sua sessão com o SSO pode continuar aberta em outras aplicações. Entrar de novo traz você direto para cá.",
+    "signIn": "Entrar de novo"
+  },
+  "unavailable": {
+    "title": "O KRLoc está indisponível",
+    "description": "A API do KRLoc não respondeu, e não dá para confirmar sua sessão. Nada foi perdido.",
+    "stillTitle": "Ainda indisponível",
+    "stillDescription": "A API ainda não respondeu. Tente de novo daqui a pouco."
+  },
+  "signInError": {
+    "access_denied": {
+      "title": "Sua conta não tem acesso ao KRLoc",
+      "description": "Você entrou no SSO, mas sua conta não tem papel no projeto KRLoc. Peça acesso a um administrador do SSO e tente de novo."
+    },
+    "login_expired": {
+      "title": "O pedido de login expirou",
+      "description": "Um pedido dura cinco minutos e só vale no navegador onde começou. Comece de novo."
+    },
+    "state_mismatch": {
+      "title": "Esta resposta é de outro login",
+      "description": "Acontece quando o login está aberto em duas abas ao mesmo tempo. Comece de novo por uma só."
+    },
+    "sso_unavailable": {
+      "title": "O SSO não está respondendo",
+      "description": "Nada foi alterado. Tente de novo em instantes."
+    },
+    "login_failed": {
+      "title": "Não foi possível concluir o login",
+      "description": "Tente de novo. Se continuar acontecendo, avise um administrador."
+    }
+  },
+  "forbidden": {
+    "title": "Seu papel não alcança esta tela",
+    "description": "Peça a um administrador do SSO que conceda esta tela ao seu papel no projeto KRLoc."
+  },
+  "notFound": {
+    "title": "Esta página não existe",
+    "description": "O endereço pode estar errado, ou a página mudou de lugar."
+  },
+  "dashboard": {
+    "welcome": "Olá, {name}",
+    "description": "O que está nas obras, o que vence e o que espera para começar.",
+    "totals": "Totais",
+    "charts": "Gráficos",
+    "share": "Parcela",
+    "loadFailed": "Parte da visão geral não carregou",
+    "nothingTitle": "Nada para mostrar ainda",
+    "nothingDescription": "Seu papel não alcança contratos, equipamentos nem clientes. Fale com um administrador do SSO.",
+    "stats": {
+      "active": "Contratos ativos",
+      "pending": "Esperando começar",
+      "available": "Equipamentos disponíveis",
+      "out": "Equipamentos na obra",
+      "dueSoon": "{count} vence em até uma semana | {count} vencem em até uma semana",
+      "overdue": "{count} vencido | {count} vencidos",
+      "noneDue": "Nenhum vence esta semana",
+      "withoutDocument": "{count} sem documento do contrato | {count} sem documento do contrato",
+      "registered": "de {count} cadastrados",
+      "maintenance": "Nenhum em manutenção | {count} em manutenção | {count} em manutenção"
+    },
+    "fleet": {
+      "title": "Equipamentos por situação",
+      "empty": "Nenhum equipamento cadastrado ainda."
+    },
+    "contracts": {
+      "title": "Contratos por situação",
+      "empty": "Nenhum contrato ainda."
+    },
+    "growth": {
+      "title": "Contratos iniciados",
+      "description": "Últimos doze meses, pela data de início.",
+      "month": "Mês"
+    },
+    "due": {
+      "title": "Vencendo",
+      "description": "Contratos ativos que terminam em até {days} dias, e os que já venceram.",
+      "when": "Quando",
+      "overdue": "{count} dia de atraso | {count} dias de atraso",
+      "inDays": "Hoje | Amanhã | Em {count} dias",
+      "emptyTitle": "Nada vence esta semana",
+      "emptyDescription": "Nenhum contrato ativo termina nos próximos dias."
+    },
+    "waiting": {
+      "title": "Esperando começar",
+      "description": "Contratos pendentes. Cada um precisa do documento do contrato antes de começar.",
+      "noDocument": "Não gerado",
+      "emptyTitle": "Nada esperando",
+      "emptyDescription": "Todo contrato já começou ou foi encerrado."
+    }
+  },
+  "equipment": {
+    "description": "Cada unidade, com a tabela de preços e onde ela está agora.",
+    "code": "Código",
+    "register": "Cadastrar equipamento",
+    "import": "Importar planilha",
+    "importDescription": "Cadastra equipamentos em lote. Linha que repete uma unidade existente é pulada.",
+    "searchPlaceholder": "Nome ou código",
+    "searchHint": "Texto que começa com KR busca pelo código.",
+    "loadFailed": "Não foi possível carregar os equipamentos",
+    "emptyTitle": "Nenhum equipamento",
+    "emptyDescription": "Os equipamentos cadastrados aparecem aqui.",
+    "emptySearch": "Nenhum equipamento corresponde à busca.",
+    "retire": "Desativar",
+    "retireTitle": "Desativar este equipamento?",
+    "retireMessage": "{code} sai da lista de disponíveis e não entra em contrato novo. O histórico dos contratos fica, e só a reativação traz a unidade de volta.",
+    "retired": "Equipamento desativado",
+    "reactivate": "Reativar",
+    "reactivateTitle": "Reativar este equipamento?",
+    "reactivateMessage": "{code} volta à frota como disponível, e entra em contrato de novo.",
+    "reactivated": "Equipamento reativado"
+  },
+  "equipmentForm": {
+    "createTitle": "Cadastrar equipamento",
+    "createDescription": "O número da unidade é dado em sequência. Os preços ficam congelados em cada contrato quando a unidade é locada.",
+    "editTitle": "Editar {code}",
+    "namePlaceholder": "Betoneira 400L",
+    "enterName": "Digite o nome do equipamento.",
+    "codeHint": "O tipo do equipamento, começando com KR. O que vier depois de um traço é descartado.",
+    "codeRule": "Use pelo menos três caracteres, começando com KR.",
+    "statusHint": "Locado, reservado e substituto quem define é o contrato.",
+    "rates": "Tabela de preços",
+    "enterDaily": "Digite o valor da diária.",
+    "enterIndemnity": "Digite o valor da indenização.",
+    "indemnityHint": "Cobrada se a unidade for perdida ou roubada.",
+    "created": "Equipamento cadastrado",
+    "updated": "Equipamento atualizado"
+  },
+  "equipmentUnit": {
+    "loadFailed": "Não foi possível carregar este equipamento",
+    "identification": {
+      "title": "Identificação",
+      "description": "Tipo, número da unidade e onde ela está."
+    },
+    "codeHint": "Toda unidade deste tipo tem o mesmo código.",
+    "unit": "Número da unidade",
+    "contract": "Contrato",
+    "openContract": "Abrir contrato",
+    "inContract": "Em um contrato",
+    "rates": {
+      "title": "Tabela de preços",
+      "description": "Preços atuais. Contrato já emitido mantém os preços com que foi criado."
+    },
+    "accessories": {
+      "description": "Acessórios que saem junto com esta unidade.",
+      "emptyTitle": "Nenhum acessório",
+      "emptyDescription": "Os acessórios associados são copiados para cada contrato em que a unidade entrar."
+    },
+    "associate": "Associar acessórios"
+  },
+  "spreadsheet": {
+    "file": "Planilha CSV",
+    "columns": "Colunas lidas pelo nome: {columns}.",
+    "chooseFile": "Escolha a planilha para importar.",
+    "submit": "Importar",
+    "done": "{count} registro importado | {count} registros importados",
+    "doneDescription": "Linhas que repetiam registros existentes foram puladas."
+  },
+  "accessories": {
+    "description": "Itens que saem junto com os equipamentos, e o estoque deles.",
+    "register": "Cadastrar acessório",
+    "import": "Importar planilha",
+    "importDescription": "Cadastra acessórios em lote.",
+    "searchPlaceholder": "Nome do acessório",
+    "quantity": "Em estoque",
+    "loadFailed": "Não foi possível carregar os acessórios",
+    "emptyTitle": "Nenhum acessório",
+    "emptyDescription": "Os acessórios cadastrados aparecem aqui.",
+    "emptySearch": "Nenhum acessório corresponde à busca.",
+    "remove": "Tirar do estoque",
+    "removeUnit": "Tirar uma unidade",
+    "removeUnitTitle": "Tirar uma unidade do estoque?",
+    "removeUnitMessage": "Uma unidade de {name} sai do estoque: {from} vira {to}.",
+    "deleteTitle": "Apagar este acessório?",
+    "deleteMessage": "{name} não tem mais unidades, então o cadastro é apagado.",
+    "unitRemoved": "Uma unidade saiu do estoque",
+    "deleted": "Acessório apagado"
+  },
+  "accessoryForm": {
+    "createTitle": "Cadastrar acessório",
+    "editTitle": "Editar acessório",
+    "namePlaceholder": "Braçadeira de andaime",
+    "enterName": "Digite o nome do acessório.",
+    "quantityHint": "Unidades disponíveis para associar a equipamentos.",
+    "enterQuantity": "Digite a quantidade em unidades inteiras.",
+    "quantityCantDecrease": "O estoque não pode ficar abaixo de {count}.",
+    "enterIndemnity": "Digite o valor da indenização.",
+    "created": "Acessório cadastrado",
+    "updated": "Acessório atualizado"
+  },
+  "associate": {
+    "title": "Associar acessórios a {code}",
+    "description": "Cada acessório associado usa uma unidade do estoque dele.",
+    "hint": "Só acessórios com estoque que esta unidade ainda não tem.",
+    "noneInStock": "Nenhum acessório com estoque para associar.",
+    "option": "{name} · {count} em estoque · indenização {indemnity}",
+    "choose": "Escolha pelo menos um acessório.",
+    "submit": "Associar",
+    "loadFailed": "Não foi possível carregar os acessórios",
+    "done": "{count} acessório associado | {count} acessórios associados"
+  },
+  "clients": {
+    "description": "Os donos dos contratos.",
+    "register": "Cadastrar cliente",
+    "searchPlaceholder": "Nome, e-mail completo, CPF ou CNPJ",
+    "searchHint": "Nome e documento aceitam trecho; e-mail precisa do endereço completo.",
+    "taxId": "CPF ou CNPJ",
+    "phone": "Telefone",
+    "loadFailed": "Não foi possível carregar os clientes",
+    "emptyTitle": "Nenhum cliente",
+    "emptyDescription": "Os clientes cadastrados aparecem aqui.",
+    "emptySearch": "Nenhum cliente corresponde à busca.",
+    "deleteTitle": "Apagar cliente",
+    "deleteMessage": "{name} será apagado. Só cliente sem obra pode ser apagado.",
+    "deleted": "Cliente apagado"
+  },
+  "clientForm": {
+    "createTitle": "Cadastrar cliente",
+    "createDescription": "O cliente é o dono dos contratos. As obras vêm em seguida.",
+    "editTitle": "Editar cliente",
+    "name": "Nome ou razão social",
+    "namePlaceholder": "Construtora Andrade Ltda",
+    "enterName": "Digite o nome do cliente.",
+    "taxIdHint": "Conferido pelo dígito verificador. A pontuação é opcional.",
+    "taxIdInvalid": "Este CPF ou CNPJ não é válido.",
+    "emailInvalid": "Digite um e-mail válido.",
+    "phoneHint": "Com DDD.",
+    "phoneInvalid": "Digite o telefone com DDD.",
+    "created": "Cliente cadastrado",
+    "updated": "Cliente atualizado"
+  },
+  "client": {
+    "loadFailed": "Não foi possível carregar este cliente",
+    "details": {
+      "title": "Dados",
+      "description": "Identificação, contato e endereço de cobrança."
+    },
+    "lessees": {
+      "description": "Para onde vão os equipamentos deste cliente.",
+      "emptyTitle": "Nenhuma obra",
+      "emptyDescription": "O contrato nasce de uma obra. Cadastre a primeira."
+    },
+    "addLessee": "Adicionar obra"
+  },
+  "address": {
+    "title": "Endereço",
+    "zipcode": "CEP",
+    "zipcodeHint": "O endereço é preenchido pelo CEP.",
+    "filled": "Preenchido pelo CEP.",
+    "lookupFailed": "Não foi possível consultar este CEP. Preencha o endereço; a API confere.",
+    "zipcodeNotFound": "Este CEP não existe.",
+    "enterZipcode": "Digite o CEP, com oito dígitos.",
+    "street": "Logradouro",
+    "enterStreet": "Digite o logradouro.",
+    "number": "Número",
+    "numberDigits": "Use só números.",
+    "neighborhood": "Bairro",
+    "city": "Cidade",
+    "state": "UF",
+    "stateLetters": "Duas letras, como SP."
+  },
+  "lessees": {
+    "description": "Para onde vão os equipamentos. Cada obra pertence a um cliente.",
+    "register": "Cadastrar obra",
+    "searchPlaceholder": "Nome da obra",
+    "cityPlaceholder": "Qualquer cidade",
+    "client": "Cliente",
+    "loadFailed": "Não foi possível carregar as obras",
+    "emptyTitle": "Nenhuma obra",
+    "emptyDescription": "As obras cadastradas aparecem aqui.",
+    "emptySearch": "Nenhuma obra corresponde à busca.",
+    "deleteTitle": "Apagar obra",
+    "deleteMessage": "{name} será apagada. Só obra sem contrato pode ser apagada.",
+    "deleted": "Obra apagada"
+  },
+  "lesseeForm": {
+    "createTitle": "Cadastrar obra",
+    "createDescription": "O contrato é emitido para uma obra, e o equipamento é entregue no endereço dela.",
+    "editTitle": "Editar obra",
+    "namePlaceholder": "Edifício Paulista",
+    "enterName": "Digite o nome da obra.",
+    "chooseClient": "Escolha o cliente.",
+    "clientFixed": "A obra não passa para outro cliente.",
+    "clientsLoadFailed": "Não foi possível carregar os clientes",
+    "created": "Obra cadastrada",
+    "updated": "Obra atualizada"
+  },
+  "lessee": {
+    "loadFailed": "Não foi possível carregar esta obra",
+    "details": {
+      "title": "Dados",
+      "description": "Onde fica e de quem é."
+    },
+    "contracts": {
+      "description": "Contratos emitidos para esta obra.",
+      "emptyTitle": "Nenhum contrato",
+      "emptyDescription": "Os contratos emitidos para esta obra aparecem aqui."
+    }
+  },
+  "contracts": {
+    "description": "Locações por obra, da mais recente para a mais antiga.",
+    "new": "Novo contrato",
+    "lessee": "Obra",
+    "start": "Início",
+    "end": "Fim",
+    "period": "Período",
+    "periodRange": "{start} a {end}",
+    "equipmentSearch": "Equipamento",
+    "equipmentSearchPlaceholder": "Nome do equipamento",
+    "loadFailed": "Não foi possível carregar os contratos",
+    "emptyTitle": "Nenhum contrato",
+    "emptyDescription": "Os contratos aparecem aqui depois de emitidos.",
+    "emptySearch": "Nenhum contrato corresponde aos filtros."
+  },
+  "contractForm": {
+    "title": "Novo contrato",
+    "description": "Só entra equipamento disponível. Os preços dele ficam congelados no contrato.",
+    "chooseLessee": "Escolha a obra.",
+    "noLessees": "Cadastre uma obra antes.",
+    "enterStart": "Digite a data de início.",
+    "enterEnd": "Digite a data de fim.",
+    "endHint": "A data prevista de devolução.",
+    "endBeforeStart": "O fim não pode ser antes do início.",
+    "equipmentHint": "Só equipamento disponível. Busque pelo código ou pelo nome.",
+    "noEquipment": "Nenhum equipamento está disponível agora.",
+    "equipmentOption": "{code} · {name} · {daily} por dia",
+    "chooseEquipment": "Escolha pelo menos um equipamento.",
+    "loadFailed": "Não foi possível carregar as opções",
+    "submit": "Criar contrato",
+    "created": "Contrato criado",
+    "createdDescription": "Os equipamentos estão reservados. Gere o documento do contrato para começar."
+  },
+  "contract": {
+    "loadFailed": "Não foi possível carregar este contrato",
+    "summary": "Resumo",
+    "finished": "Encerrado em",
+    "document": "Documento do contrato",
+    "documentHint": "Gerado com os preços congelados no contrato.",
+    "closeBlocked": "Algum equipamento ainda não voltou: {items}. Registre as devoluções antes de fechar.",
+    "lifecycle": {
+      "title": "Situação",
+      "created": "Criado em {date}"
+    },
+    "next": {
+      "generate": "Gere o documento do contrato. O contrato só começa depois que ele existe.",
+      "ready": "Documento do contrato gerado em {date}. O contrato pode começar.",
+      "active": "Termina hoje. | Termina amanhã. | Termina em {count} dias.",
+      "overdue": "Terminou há {count} dia. Registre as devoluções e feche o contrato. | Terminou há {count} dias. Registre as devoluções e feche o contrato.",
+      "completed": "Fechado em {date}.",
+      "cancelled": "Cancelado em {date}."
+    },
+    "actions": {
+      "generate": "Gerar contrato",
+      "regenerate": "Gerar de novo",
+      "start": "Começar contrato",
+      "add": "Adicionar equipamento",
+      "cancel": "Cancelar contrato",
+      "replace": "Substituir equipamento",
+      "close": "Fechar contrato",
+      "statement": "Baixar extrato",
+      "closure": "Documento de fechamento"
+    },
+    "items": {
+      "description": "Os equipamentos deste contrato, com os preços congelados quando entraram.",
+      "emptyTitle": "Nenhum equipamento",
+      "emptyDescription": "Os equipamentos adicionados a este contrato aparecem aqui.",
+      "since": "Na obra desde",
+      "returned": "Devolvido em",
+      "remove": "Tirar do contrato",
+      "return": "Registrar devolução"
+    },
+    "accessories": {
+      "description": "Acessórios que saíram junto com os equipamentos."
+    },
+    "confirm": {
+      "startTitle": "Começar este contrato?",
+      "startMessage": "Os equipamentos reservados passam a contar como locados a partir de agora.",
+      "cancelTitle": "Cancelar este contrato?",
+      "cancelMessage": "Os equipamentos reservados voltam a ficar disponíveis. Contrato cancelado não reabre.",
+      "closeTitle": "Fechar este contrato?",
+      "closeMessage": "Para fechar, todo equipamento precisa ter a devolução registrada. O extrato do fechamento fica gravado e não muda depois.",
+      "removeTitle": "Tirar o equipamento do contrato?",
+      "removeMessage": "{code} volta a ficar disponível e sai deste contrato."
+    },
+    "done": {
+      "start": "Contrato começou",
+      "cancel": "Contrato cancelado",
+      "close": "Contrato fechado",
+      "remove": "Equipamento saiu do contrato"
+    },
+    "financial": {
+      "title": "Financeiro",
+      "pending": "O valor contratado, pela tabela congelada neste contrato (cláusula 7ª).",
+      "active": "O que correu até hoje, como se todos os equipamentos voltassem hoje.",
+      "completed": "O extrato gravado no fechamento. Ele não muda mais.",
+      "completedComputed": "Calculado agora: este contrato fechou antes de o extrato passar a ser gravado.",
+      "loadFailed": "Não foi possível carregar o extrato"
+    }
+  },
+  "addEquipment": {
+    "title": "Adicionar equipamento",
+    "description": "O equipamento fica reservado para este contrato, com os preços de hoje.",
+    "submit": "Adicionar",
+    "done": "{count} unidade adicionada | {count} unidades adicionadas"
+  },
+  "returnEquipment": {
+    "title": "Registrar devolução",
+    "description": "{code} · {name}",
+    "outcome": "O que aconteceu",
+    "submit": "Registrar",
+    "options": {
+      "AVAILABLE": "Voltou em bom estado",
+      "MAINTENANCE": "Voltou para manutenção",
+      "STOLEN": "Foi roubado"
+    },
+    "hints": {
+      "AVAILABLE": "A unidade fica disponível para outros contratos, e a cobrança dela vai até hoje.",
+      "MAINTENANCE": "A unidade vai para manutenção. Sem substituto, a cobrança dela para hoje; com substituto, segue um aluguel só.",
+      "STOLEN": "O uso é cobrado até hoje, mais a indenização do equipamento (cláusulas 6ª e 7ª). A unidade pode ser substituída."
+    },
+    "done": {
+      "AVAILABLE": "{code} devolvido e disponível de novo",
+      "MAINTENANCE": "{code} enviado para manutenção",
+      "STOLEN": "{code} registrado como roubado"
+    }
+  },
+  "replaceEquipment": {
+    "title": "Substituir equipamento",
+    "description": "A unidade que voltou para manutenção ou foi roubada dá lugar a outra do mesmo tipo. O equipamento segue como um aluguel só, contado desde a retirada original.",
+    "old": "Unidade a substituir",
+    "oldOption": "{code} · {name} ({status})",
+    "chooseOld": "Escolha a unidade a substituir.",
+    "new": "Substituto",
+    "newHint": "Unidades {code} disponíveis com o mesmo número de acessórios.",
+    "noCandidates": "Nenhuma unidade {code} disponível com os mesmos acessórios.",
+    "chooseNew": "Escolha o substituto.",
+    "submit": "Substituir",
+    "done": "Equipamento substituído"
+  },
+  "documents": {
+    "contractFile": "contrato.docx",
+    "closureFile": "fechamento.docx",
+    "downloaded": "Documento baixado",
+    "contractReady": "Documento do contrato baixado",
+    "contractReadyDescription": "O contrato já pode começar.",
+    "failed": "Não foi possível gerar o documento",
+    "statementFile": "extrato.docx",
+    "closingFile": "fechamento-do-mes.docx"
+  },
+  "financial": {
+    "package": {
+      "monthly": "{count} mês | {count} meses",
+      "biweekly": "{count} quinzena | {count} quinzenas",
+      "weekly": "{count} semana | {count} semanas",
+      "daily": "{count} diária | {count} diárias"
+    },
+    "line": {
+      "contracted": "Período contratado ({days})",
+      "usage": "Uso na obra ({days})",
+      "renewal": "Prorrogação {index}, a partir de {date} (cláusula 5ª)",
+      "renewals": "Prorrogações {first} a {last}, a partir de {date} (cláusula 5ª)",
+      "renewalsDetail": "{count} × ({packages})",
+      "excess": "Dias excedentes (parágrafo único da cláusula 5ª)",
+      "excessDaily": "{days} × {rate}: diária, sem valor mensal na tabela",
+      "excessMonthly": "{days} × {rate}: 10% do mensal de {monthly}",
+      "indemnity": "Indenização de {code} (cláusulas 6ª e 7ª)",
+      "indemnityDetail": "Valor do equipamento no dia do pagamento"
+    },
+    "statement": {
+      "totals": "Totais",
+      "contracted": "Contratado",
+      "contractedHint": "{days} pela tabela da assinatura",
+      "rental": "Aluguel",
+      "untilToday": "Até hoje, {date}",
+      "beyondContracted": "Ficou além do período contratado",
+      "indemnity": "Indenizações",
+      "total": "Total a cobrar",
+      "totalSoFar": "Total até hoje",
+      "onReturn": "Com a última devolução em {date}",
+      "frozen": "Gravado no fechamento, em {date}",
+      "missingPrice": "Sem diária na tabela de preços de {units}: a cobrança delas sai zerada. Preencha a tabela dessas unidades.",
+      "emptyTitle": "Nada a cobrar",
+      "emptyDescription": "Este contrato não tem equipamento a cobrar.",
+      "clauses": "Cálculo pelas cláusulas do contrato de locação: cada equipamento é cobrado pelos dias corridos da retirada à efetiva devolução (1ª, parágrafo segundo), na combinação mais barata de diária, semana, quinzena e mês da tabela da data da assinatura (7ª); vencido o período contratado, prorrogação por igual período pela tabela em vigor no vencimento (5ª) e dias excedentes a 10% do valor mensal atual (parágrafo único da 5ª); indenização de equipamento pelo valor do dia do pagamento (6ª e 7ª).",
+      "plannedPeriod": "Período contratado: de {start} a {end}",
+      "period": "De {start} a {end} · {days}",
+      "periodOpen": "Desde {start}, ainda na obra em {end} · {days}",
+      "onSite": "Na obra",
+      "positionTotal": "Total deste equipamento",
+      "from": "De",
+      "to": "Até",
+      "description": "Descrição",
+      "detail": "Detalhe",
+      "amount": "Valor"
+    },
+    "closing": {
+      "description": "Os contratos fechados no mês e quanto cobrar de cada um, os que seguem ativos no fim do mês, e a frota na obra, em manutenção e roubada.",
+      "month": "Mês",
+      "loadFailed": "Não foi possível carregar o fechamento",
+      "partial": "O mês ainda não acabou: contratos ativos e frota contados até {date}.",
+      "summary": "Resumo do mês",
+      "download": "Baixar fechamento",
+      "stats": {
+        "billed": "Faturado nos fechados",
+        "billedHint": "{count} contrato fechado | {count} contratos fechados",
+        "indemnity": "Indenizações de roubos",
+        "stolenHint": "{count} roubo no mês | {count} roubos no mês",
+        "active": "Ativos no fim do mês",
+        "overdue": "{count} atrasado | {count} atrasados",
+        "noneOverdue": "Nenhum atrasado",
+        "contracted": "Contratado nos ativos",
+        "contractedHint": "Valor dos períodos contratados",
+        "accrued": "Corrido nos ativos",
+        "accruedHint": "Até {date}",
+        "onSite": "Equipamentos na obra",
+        "maintenanceHint": "{count} manutenção no mês | {count} manutenções no mês"
+      },
+      "tabs": {
+        "closed": "Fechados",
+        "active": "Ativos",
+        "onSite": "Na obra",
+        "maintenance": "Manutenções",
+        "stolen": "Roubos"
+      },
+      "closed": {
+        "title": "Contratos fechados no mês",
+        "description": "Todos os equipamentos devolvidos. O que cobrar, pelo extrato gravado no fechamento.",
+        "emptyTitle": "Nenhum contrato fechado",
+        "emptyDescription": "Os contratos fechados neste mês aparecem aqui.",
+        "finish": "Fechado em",
+        "total": "A cobrar"
+      },
+      "active": {
+        "title": "Ativos no fim do mês",
+        "description": "Contratos que atravessaram o fim do mês ainda ativos, com o que correu até lá.",
+        "emptyTitle": "Nenhum contrato ativo",
+        "emptyDescription": "Os contratos ativos no fim deste mês aparecem aqui.",
+        "overdue": "{date} · atrasado",
+        "accrued": "Até o fechamento"
+      },
+      "onSite": {
+        "title": "Equipamentos na obra",
+        "description": "As unidades que estavam em alguma obra no fim do mês.",
+        "emptyTitle": "Nenhum equipamento na obra",
+        "emptyDescription": "As unidades em obra no fim deste mês aparecem aqui.",
+        "since": "Na obra desde"
+      },
+      "maintenance": {
+        "title": "Manutenções no mês",
+        "description": "As unidades que voltaram para manutenção durante o mês.",
+        "emptyTitle": "Nenhuma manutenção",
+        "emptyDescription": "As unidades que voltaram para manutenção neste mês aparecem aqui.",
+        "date": "Voltou em",
+        "replacement": "Substituto",
+        "replaced": "Substituído",
+        "notReplaced": "Sem substituto"
+      },
+      "stolen": {
+        "title": "Roubos no mês",
+        "description": "As unidades registradas como roubadas durante o mês, com a indenização cobrada.",
+        "emptyTitle": "Nenhum roubo",
+        "emptyDescription": "As unidades registradas como roubadas neste mês aparecem aqui.",
+        "date": "Registrado em"
+      }
+    },
+    "calculator": {
+      "description": "Simule quanto custa um contrato: equipamentos, período contratado e a data da devolução, com defeito ou roubo no meio do caminho. A conta é a mesma dos contratos de verdade. Nada é gravado.",
+      "noEquipmentTitle": "Sem acesso aos equipamentos",
+      "noEquipmentAccess": "A calculadora precisa da lista de equipamentos. Peça a um administrador o acesso a equipamentos.",
+      "contract": "Contrato simulado",
+      "contractDescription": "O período contratado define o valor contratado; a devolução de cada equipamento define o que se cobra.",
+      "chooseEquipment": "Escolha ao menos um equipamento.",
+      "equipmentHint": "A conta usa a tabela de preços em vigor na data de início.",
+      "enterStart": "Informe o início.",
+      "plannedEnd": "Término contratado",
+      "plannedDays": "{days} contratados",
+      "returnDate": "Devolução",
+      "substituteReturn": "Devolução do substituto",
+      "leavesOnOccurrence": "Sai da obra na ocorrência",
+      "periodsLabel": "Período contratado",
+      "periods": {
+        "daily": "1 dia",
+        "weekly": "1 semana",
+        "biweekly": "1 quinzena",
+        "monthly": "1 mês"
+      },
+      "enterPlannedEnd": "Informe o término contratado.",
+      "endBeforeStart": "O término não pode ser antes do início.",
+      "enterReturn": "Informe a devolução.",
+      "returnBeforeStart": "A devolução não pode ser antes do início.",
+      "onSiteDays": "{days} na obra",
+      "late": "{days} depois do término",
+      "units": "Devolução de cada equipamento",
+      "unitsDescription": "Cada equipamento corre da retirada até a própria devolução. Com defeito ou roubo sem substituto, a unidade sai da obra no dia; com substituto, segue um aluguel só até a volta do substituto. O roubo soma a indenização.",
+      "occurrence": "Ocorrência",
+      "occurrenceDate": "Data",
+      "occurrences": {
+        "none": "Nenhuma",
+        "defectReplaced": "Defeito, com substituto",
+        "defect": "Defeito, sem substituto",
+        "stolenReplaced": "Roubo, com substituto",
+        "stolen": "Roubo, sem substituto"
+      },
+      "occurrenceOutside": "A ocorrência precisa estar entre o início e a devolução.",
+      "calculate": "Calcular",
+      "result": "Resultado",
+      "resultDescription": "Contrato de {start} a {end}; última devolução em {returned}.",
+      "stale": "Os campos mudaram depois deste cálculo. Calcule de novo para ver o valor atualizado.",
+      "loadFailed": "Não foi possível carregar os equipamentos"
+    }
+  }
+}

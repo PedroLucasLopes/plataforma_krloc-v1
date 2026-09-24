@@ -1,0 +1,40 @@
+name: plataforma_krloc-v1
+
+# O front do KRLoc, servido por nginx. O nginx repassa /api a API do KRLoc pelo
+# endereco da maquina: a mesma origem que o proxy do Vite oferece em
+# desenvolvimento, e que o rewrite do hosting oferece em producao. Suba a API do
+# KRLoc, e o SSO para entrar, antes de abrir a tela.
+#
+# O build instala @pedrolucaslopes/dotlog-ui do GitHub Packages: rode num
+# terminal com NODE_AUTH_TOKEN (token classico com read:packages). Ele entra como
+# secret do BuildKit, so durante o `npm ci`, e nao fica na imagem.
+
+services:
+  krloc-plataforma:
+    build:
+      context: .
+      target: runtime
+      secrets:
+        - NODE_AUTH_TOKEN
+    restart: unless-stopped
+    environment:
+      # O nginx resolve este nome pelo DNS do Docker a cada requisicao e nao le
+      # o /etc/hosts, entao `extra_hosts` nao ajudaria aqui. O Docker Desktop
+      # responde host.docker.internal nesse DNS; em Docker Engine no Linux, use o
+      # IP do host.
+      KRLOC_UPSTREAM: http://host.docker.internal:3000
+    ports:
+      # E a porta de APP_BASE_URL no krloc e da redirect_uri registrada no SSO.
+      # Mudou aqui, mude as duas.
+      - "${KRLOC_PLATAFORMA_PORT:-5174}:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/healthz >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+secrets:
+  # Token do GitHub com `read:packages`, lido do ambiente de quem roda o build.
+  # Nunca em arquivo versionado, nunca como ARG.
+  NODE_AUTH_TOKEN:
+    environment: NODE_AUTH_TOKEN
