@@ -128,9 +128,37 @@
       </DlSectionCard>
 
       <div class="actions">
-        <DlButton icon="mdi-calculator-variant-outline" :loading="state.submitting" @click="calculate">
-          {{ t('financial.calculator.calculate') }}
-        </DlButton>
+        <p v-if="canEquipmentQuote || canContractQuote" class="actions__hint">
+          {{ t('financial.calculator.quoteHint') }}
+        </p>
+
+        <div class="actions__buttons">
+          <DlButton
+            v-if="canEquipmentQuote"
+            :disabled="state.form.equipments.length === 0"
+            icon="mdi-file-table-outline"
+            :loading="quoting === 'equipment'"
+            variant="outlined"
+            @click="quoteEquipment"
+          >
+            {{ t('financial.calculator.equipmentQuote') }}
+          </DlButton>
+
+          <DlButton
+            v-if="canContractQuote"
+            :disabled="!valid"
+            icon="mdi-file-document-outline"
+            :loading="quoting === 'contract'"
+            variant="outlined"
+            @click="quoteContract"
+          >
+            {{ t('financial.calculator.contractQuote') }}
+          </DlButton>
+
+          <DlButton icon="mdi-calculator-variant-outline" :loading="state.submitting" @click="calculate">
+            {{ t('financial.calculator.calculate') }}
+          </DlButton>
+        </div>
       </div>
 
       <p v-if="state.error" class="note note--error" role="alert">
@@ -153,7 +181,7 @@
 </template>
 
 <script lang="ts" setup>
-  import type { ContractStatement, SimulationInput, SimulationItem } from '@/types/krloc'
+  import type { ContractStatement, GeneratedDocument, SimulationInput, SimulationItem } from '@/types/krloc'
   import {
     type Column,
     DlButton,
@@ -174,6 +202,7 @@
   import { useFinancialStore } from '@/stores/financial'
   import { useLookupsStore } from '@/stores/lookups'
   import { useSessionStore } from '@/stores/session'
+  import { saveDocument } from '@/utils/files'
   import {
     addDaysToDateInput,
     dateInputDays,
@@ -254,6 +283,7 @@
   interface PriceRow extends Record<string, unknown> {
     id: string
     code: string
+    name: string
     daily: string
     weekly: string
     biweekly: string
@@ -269,6 +299,7 @@
         ? [{
           id,
           code: unitCode(item.code, item.suffix),
+          name: item.name,
           daily: formatMoney(item.p_diary),
           weekly: formatMoney(item.p_weekly || null),
           biweekly: formatMoney(item.p_biweekly || null),
@@ -281,6 +312,7 @@
 
   const priceColumns = computed<Column<PriceRow>[]>(() => [
     { key: 'code', label: t('equipment.code'), mono: true, width: '130px' },
+    { key: 'name', label: t('equipment.name') },
     { key: 'daily', label: t('rates.daily'), align: 'end' },
     { key: 'weekly', label: t('rates.weekly'), align: 'end', secondary: true },
     { key: 'biweekly', label: t('rates.biweekly'), align: 'end', secondary: true },
@@ -502,6 +534,39 @@
     })
   }
 
+  const canEquipmentQuote = computed(() => session.can('POST', '/generate/quote/equipment'))
+  const canContractQuote = computed(() => session.can('POST', '/generate/quote/contract'))
+
+  const quoting = shallowRef<'equipment' | 'contract' | null>(null)
+
+  async function quote (
+    kind: 'equipment' | 'contract',
+    run: () => Promise<GeneratedDocument>,
+    fallback: string,
+  ): Promise<void> {
+    quoting.value = kind
+
+    try {
+      saveDocument(await run(), fallback)
+    } catch (error) {
+      toast.error(t('financial.calculator.quoteFailed'), { description: errorMessage(error) })
+    } finally {
+      quoting.value = null
+    }
+  }
+
+  function quoteEquipment (): Promise<void> {
+    return quote(
+      'equipment',
+      () => store.equipmentQuoteDocument(state.form.equipments),
+      'orcamento-equipamentos.pdf',
+    )
+  }
+
+  function quoteContract (): Promise<void> {
+    return quote('contract', () => store.contractQuoteDocument(toInput()), 'orcamento-contrato.pdf')
+  }
+
   const stale = computed(() => !!calculatedWith.value && valid.value && JSON.stringify(toInput()) !== calculatedWith.value)
 
   const resultDescription = computed(() => {
@@ -634,7 +699,24 @@
 
 .actions {
   display: flex;
-  justify-content: flex-end;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.actions__hint {
+  flex: 1 1 280px;
+  margin: 0;
+  font-size: 13px;
+  color: var(--dl-on-surface-muted);
+}
+
+.actions__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-inline-start: auto;
 }
 
 @media (max-width: 900px) {

@@ -252,6 +252,7 @@
   "equipment": {
     "description": "Every unit, with its rates and where it is now.",
     "code": "Code",
+    "name": "Equipment",
     "register": "Register equipment",
     "import": "Import spreadsheet",
     "importDescription": "Registers equipment in bulk. Rows that duplicate an existing unit are skipped.",
@@ -763,6 +764,10 @@
       },
       "occurrenceOutside": "The occurrence must be between the start and the return.",
       "calculate": "Calculate",
+      "equipmentQuote": "Equipment quote",
+      "contractQuote": "Contract quote",
+      "quoteHint": "The equipment quote lists the price of every period; the contract quote uses the period and the returns filled in above.",
+      "quoteFailed": "The quote could not be generated",
       "result": "Result",
       "resultDescription": "Contract from {start} to {end}; last return on {returned}.",
       "stale": "The fields changed after this calculation. Calculate again to see the updated value.",

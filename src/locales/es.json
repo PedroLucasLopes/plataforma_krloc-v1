@@ -252,6 +252,7 @@
   "equipment": {
     "description": "Cada unidad, con sus tarifas y dónde está ahora.",
     "code": "Código",
+    "name": "Equipo",
     "register": "Registrar equipo",
     "import": "Importar hoja de cálculo",
     "importDescription": "Registra equipos en lote. Las filas que repiten una unidad existente se omiten.",
@@ -763,6 +764,10 @@
       },
       "occurrenceOutside": "La incidencia debe estar entre el inicio y la devolución.",
       "calculate": "Calcular",
+      "equipmentQuote": "Presupuesto de equipos",
+      "contractQuote": "Presupuesto del contrato",
+      "quoteHint": "El presupuesto de equipos trae el precio de cada período; el del contrato usa el período y las devoluciones indicados arriba.",
+      "quoteFailed": "No se pudo generar el presupuesto",
       "result": "Resultado",
       "resultDescription": "Contrato del {start} al {end}; última devolución el {returned}.",
       "stale": "Los campos cambiaron después de este cálculo. Calcule de nuevo para ver el valor actualizado.",

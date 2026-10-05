@@ -128,4 +128,8 @@ export const documentsApi = {
     download(`/generate/closure/${id(contractId)}`, { method: 'POST' }),
   closing: (month: string): Promise<GeneratedDocument> =>
     download('/generate/finantial', { method: 'POST', body: { month } }),
+  equipmentQuote: (equipmentIds: string[]): Promise<GeneratedDocument> =>
+    download('/generate/quote/equipment', { method: 'POST', body: { equipmentIds } }),
+  contractQuote: (input: SimulationInput): Promise<GeneratedDocument> =>
+    download('/generate/quote/contract', { method: 'POST', body: input }),
 }
