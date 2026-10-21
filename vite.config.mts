@@ -1,7 +1,6 @@
 import { fileURLToPath, URL } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import Vue from '@vitejs/plugin-vue'
-import Fonts from 'unplugin-fonts/vite'
 import { defineConfig } from 'vite'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 
@@ -32,21 +31,6 @@ export default defineConfig({
       autoImport: true,
       styles: {
         configFile: 'src/styles/settings.scss',
-      },
-    }),
-    Fonts({
-      fontsource: {
-        families: [
-          {
-            name: 'Roboto Mono',
-            weights: [400, 700],
-          },
-          {
-            name: 'Roboto',
-            weights: [100, 300, 400, 500, 700, 900],
-            styles: ['normal', 'italic'],
-          },
-        ],
       },
     }),
   ],
