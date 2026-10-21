@@ -4,7 +4,7 @@ import { registerPlugins } from '@/plugins'
 
 import App from './App.vue'
 
-import 'unfonts.css'
+import './styles/fonts.css'
 import './styles/tailwind.css'
 import './styles/main.scss'
 

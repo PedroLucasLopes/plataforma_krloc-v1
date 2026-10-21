@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 ########################  build  #######################
-FROM node:22-alpine AS build
+FROM node:26-alpine AS build
 WORKDIR /app
 
 # @pedrolucaslopes/dotlog-ui vem do GitHub Packages, que exige token ate para
