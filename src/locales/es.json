@@ -606,7 +606,9 @@
     "contractReadyDescription": "El contrato ya puede empezar.",
     "failed": "No se pudo generar el documento",
     "statementFile": "extracto.pdf",
-    "closingFile": "cierre-del-mes.pdf"
+    "closingFile": "cierre-del-mes.pdf",
+    "equipmentQuoteFile": "presupuesto-equipos.pdf",
+    "contractQuoteFile": "presupuesto-contrato.pdf"
   },
   "financial": {
     "package": {

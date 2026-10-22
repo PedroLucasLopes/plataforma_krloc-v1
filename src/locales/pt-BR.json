@@ -606,7 +606,9 @@
     "contractReadyDescription": "O contrato já pode começar.",
     "failed": "Não foi possível gerar o documento",
     "statementFile": "extrato.pdf",
-    "closingFile": "fechamento-do-mes.pdf"
+    "closingFile": "fechamento-do-mes.pdf",
+    "equipmentQuoteFile": "orcamento-equipamentos.pdf",
+    "contractQuoteFile": "orcamento-contrato.pdf"
   },
   "financial": {
     "package": {

@@ -559,12 +559,12 @@
     return quote(
       'equipment',
       () => store.equipmentQuoteDocument(state.form.equipments),
-      'orcamento-equipamentos.pdf',
+      t('documents.equipmentQuoteFile'),
     )
   }
 
   function quoteContract (): Promise<void> {
-    return quote('contract', () => store.contractQuoteDocument(toInput()), 'orcamento-contrato.pdf')
+    return quote('contract', () => store.contractQuoteDocument(toInput()), t('documents.contractQuoteFile'))
   }
 
   const stale = computed(() => !!calculatedWith.value && valid.value && JSON.stringify(toInput()) !== calculatedWith.value)
