@@ -20,5 +20,7 @@ export const useFinancialStore = defineStore('financial', () => {
     closing: (month: string) => financialApi.closing(month),
     statement: (contractId: string) => financialApi.statement(contractId),
     closingDocument: (month: string) => documentsApi.closing(month),
+    equipmentQuoteDocument: (equipmentIds: string[]) => documentsApi.equipmentQuote(equipmentIds),
+    contractQuoteDocument: (input: SimulationInput) => documentsApi.contractQuote(input),
   }
 })

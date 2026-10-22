@@ -252,6 +252,7 @@
   "equipment": {
     "description": "Cada unidade, com a tabela de preços e onde ela está agora.",
     "code": "Código",
+    "name": "Equipamento",
     "register": "Cadastrar equipamento",
     "import": "Importar planilha",
     "importDescription": "Cadastra equipamentos em lote. Linha que repete uma unidade existente é pulada.",
@@ -598,14 +599,16 @@
     "done": "Equipamento substituído"
   },
   "documents": {
-    "contractFile": "contrato.docx",
-    "closureFile": "fechamento.docx",
+    "contractFile": "contrato.pdf",
+    "closureFile": "fechamento.pdf",
     "downloaded": "Documento baixado",
     "contractReady": "Documento do contrato baixado",
     "contractReadyDescription": "O contrato já pode começar.",
     "failed": "Não foi possível gerar o documento",
-    "statementFile": "extrato.docx",
-    "closingFile": "fechamento-do-mes.docx"
+    "statementFile": "extrato.pdf",
+    "closingFile": "fechamento-do-mes.pdf",
+    "equipmentQuoteFile": "orcamento-equipamentos.pdf",
+    "contractQuoteFile": "orcamento-contrato.pdf"
   },
   "financial": {
     "package": {
@@ -763,6 +766,10 @@
       },
       "occurrenceOutside": "A ocorrência precisa estar entre o início e a devolução.",
       "calculate": "Calcular",
+      "equipmentQuote": "Orçamento dos equipamentos",
+      "contractQuote": "Orçamento do contrato",
+      "quoteHint": "O orçamento dos equipamentos traz o preço de cada período; o do contrato usa o período e as devoluções preenchidos acima.",
+      "quoteFailed": "Não foi possível gerar o orçamento",
       "result": "Resultado",
       "resultDescription": "Contrato de {start} a {end}; última devolução em {returned}.",
       "stale": "Os campos mudaram depois deste cálculo. Calcule de novo para ver o valor atualizado.",
